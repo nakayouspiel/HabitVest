@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HabitVest | 習慣投資複利シミュレータ</title>
+    <!-- Google Fonts: Outfit & Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- PWA settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ==========================================================================
+           🎨 HabitVest - デザインシステム
+           ========================================================================== */
+        :root {
+            /* ☀️ ライトモード (デフォルト) */
+            --bg-base: #f1f5f9;
+            --bg-gradient: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
+                           radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.08) 0%, transparent 40%);
+            --bg-card: rgba(255, 255, 255, 0.82);
+            --border-glass: rgba(14, 165, 233, 0.15);
+            --neon-primary: #0284c7;  /* スカイブルー */
+            --neon-secondary: #db2777; /* マゼンタ */
+            --neon-green: #16a34a;    /* グリーン */
+            --text-main: #0f172a;     /* ダークスレート */
+            --text-sub: #475569;      /* ミディアムスレート */
+            --bg-input: rgba(255, 255, 255, 0.9);
+            --border-input: #cbd5e1;
+            --card-shadow: 0 10px 30px rgba(148, 163, 184, 0.12);
+            --nav-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        /* 🌙 ダークモード */
+        .theme-dark {
+            --bg-base: #060913;
+            --bg-gradient: radial-gradient(circle at 10% 20%, rgba(0, 243, 255, 0.08) 0%, transparent 40%),
+                           radial-gradient(circle at 90% 80%, rgba(255, 0, 127, 0.08) 0%, transparent 40%);
+            --bg-card: rgba(16, 24, 48, 0.7);
+            --border-glass: rgba(0, 243, 255, 0.18);
+            --neon-primary: #00f3ff;
+            --neon-secondary: #ff007f;
+            --neon-green: #39ff14;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --bg-input: rgba(0, 0, 0, 0.3);
+            --border-input: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
+            --nav-bg: rgba(16, 24, 48, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 16px 16px 80px 16px;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+            padding: 0 4px;
+        }
+
+        .header-title h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--neon-primary) 0%, var(--neon-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title p {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-top: 1px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s, background-color 0.3s;
+            outline: none;
+        }
+
+        .control-btn:active {
+            transform: scale(0.9);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.35s ease-out;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: var(--card-shadow);
+            transition: background-color 0.4s, border-color 0.4s;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--neon-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .preset-btn {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-input);
+            border-radius: 12px;
+            padding: 8px;
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .preset-btn .emoji {
+            font-size: 1.25rem;
+        }
+
+        .preset-btn .price {
+            font-size: 0.65rem;
+            color: var(--text-sub);
+            font-weight: 400;
+        }
+
+        .preset-btn.active {
+            background: rgba(14, 165, 233, 0.08);
+            border-color: var(--neon-primary);
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.15);
+        }
+
+        .theme-dark .preset-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .theme-dark .preset-btn.active {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: var(--neon-primary);
+        }
+
+        .details-panel {
+            background: rgba(0, 0, 0, 0.015);
+            border: 1px dashed var(--border-glass);
+            border-radius: 14px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .details-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .details-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-sub);
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .label-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-sub);
+        }
+
+        .val-badge {
+            background: rgba(2, 132, 199, 0.07);
+            border: 1px solid rgba(2, 132, 199, 0.12);
+            padding: 1px 6px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--neon-primary);
+        }
+
+        .theme-dark .val-badge {
+            background: rgba(0, 243, 255, 0.12);
+            border-color: rgba(0, 243, 255, 0.2);
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-input);
+            border-radius: 10px;
+            padding: 8px 10px;
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            font-size: 0.8rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .input-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 🚫 標準の上下矢印を非表示 */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .spin-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.15s, background-color 0.2s, border-color 0.2s;
+            user-select: none;
+            outline: none;
+        }
+
+        .spin-btn:active {
+            transform: scale(0.9);
+            background: rgba(2, 132, 199, 0.08);
+            border-color: var(--neon-primary);
+        }
+
+        .theme-dark .spin-btn:active {
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .input-box input[type="number"] {
+            padding-right: 48px;
+            text-align: right;
+        }
+
+        .input-box span {
+            position: absolute;
+            right: 12px;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            pointer-events: none; /* テキストをクリックしても背後の入力欄に届くようにする */
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .theme-dark input[type="range"] {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: linear-gradient(135deg, var(--neon-primary) 0%, var(--neon-secondary) 100%);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .dash-card {
+            background: rgba(0, 0, 0, 0.01);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: 14px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .theme-dark .dash-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .dash-card.highlight {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.06) 0%, rgba(219, 39, 119, 0.06) 100%);
+            border: 1.5px solid rgba(2, 132, 199, 0.2);
+        }
+
+        .theme-dark .dash-card.highlight {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.08) 0%, rgba(255, 0, 127, 0.08) 100%);
+            border-color: rgba(0, 243, 255, 0.25);
+        }
+
+        .dash-label {
+            font-size: 0.65rem;
+            color: var(--text-sub);
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .dash-val {
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .dash-card.highlight .dash-val {
+            font-size: 1.45rem;
+            background: linear-gradient(135deg, var(--neon-primary) 0%, var(--neon-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            margin-top: 6px;
+        }
+
+        .milestone-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(22, 163, 74, 0.05);
+            border: 1px solid rgba(22, 163, 74, 0.12);
+            border-radius: 16px;
+            padding: 10px;
+            margin-top: 8px;
+        }
+
+        .theme-dark .milestone-box {
+            background: rgba(57, 255, 20, 0.05);
+            border-color: rgba(57, 255, 20, 0.15);
+        }
+
+        .milestone-box .icon {
+            font-size: 1.4rem;
+            animation: bounce 2s infinite;
+        }
+
+        .milestone-content h4 {
+            font-size: 0.78rem;
+            color: var(--neon-green);
+            font-weight: 700;
+            margin-bottom: 1px;
+        }
+
+        .milestone-content p {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            line-height: 1.3;
+        }
+
+        .life-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .life-card {
+            background: rgba(0, 0, 0, 0.01);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .theme-dark .life-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .life-card-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .life-card-header .emoji {
+            font-size: 1.1rem;
+        }
+
+        .life-card-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--neon-primary);
+        }
+
+        .life-card-desc {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            line-height: 1.35;
+        }
+
+        /* 🚪 モーダル */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            transform: translateY(15px);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 8px;
+        }
+
+        .modal-header h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--neon-primary);
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .auth-sync-section {
+            border-top: 1px dashed var(--border-glass);
+            padding-top: 14px;
+            margin-top: 4px;
+        }
+
+        .auth-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .auth-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .auth-btn {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-input);
+            padding: 8px;
+            border-radius: 10px;
+            font-family: var(--font-ui);
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            opacity: 0.6;
+        }
+
+        .theme-dark .auth-btn {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .auth-btn.coming-soon::after {
+            content: " (準備中)";
+            font-size: 0.55rem;
+            color: var(--text-sub);
+        }
+
+        .modal-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--neon-primary) 0%, var(--neon-secondary) 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 10px;
+            color: #fff;
+            font-family: var(--font-ui);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+            margin-top: 10px;
+        }
+
+        /* 🗑️ オールリセットボタンのスタイル */
+        .modal-btn-reset {
+            width: 100%;
+            background: transparent;
+            border: 1.5px solid var(--neon-secondary);
+            border-radius: 12px;
+            padding: 9px;
+            color: var(--neon-secondary);
+            font-family: var(--font-ui);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            outline: none;
+        }
+
+        .modal-btn-reset:active {
+            background: rgba(219, 39, 119, 0.1);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 440px;
+            height: 60px;
+            background: var(--nav-bg);
+            border-top: 1px solid var(--border-glass);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            z-index: 900;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            font-family: var(--font-ui);
+            font-size: 0.68rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .nav-item .icon {
+            font-size: 1.15rem;
+            transition: transform 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--neon-primary);
+        }
+
+        .nav-item.active .icon {
+            transform: translateY(-2px);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 💳 アフィリエイトバナーのスタイル */
+        .affiliate-banner-box {
+            margin-top: 12px;
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.06) 0%, rgba(219, 39, 119, 0.06) 100%);
+            border: 1.5px solid rgba(2, 132, 199, 0.25);
+            border-radius: 16px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            animation: pulse-border 3s infinite alternate;
+            transition: background-color 0.4s, border-color 0.4s;
+        }
+
+        .theme-dark .affiliate-banner-box {
+            border-color: rgba(0, 243, 255, 0.3);
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.08) 0%, rgba(255, 0, 127, 0.08) 100%);
+        }
+
+        .banner-badge {
+            align-self: flex-start;
+            background: linear-gradient(135deg, var(--neon-primary) 0%, var(--neon-secondary) 100%);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);
+        }
+
+        .banner-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .banner-text {
+            flex: 1;
+        }
+
+        .banner-text h4 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .banner-text p {
+            font-size: 0.65rem;
+            color: var(--text-sub);
+            line-height: 1.35;
+        }
+
+        .banner-action-btn {
+            background: var(--text-main);
+            color: var(--bg-base);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+        }
+
+        .theme-dark .banner-action-btn {
+            background: #f8fafc;
+            color: #060913;
+        }
+
+        .banner-action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(2, 132, 199, 0.2);
+        }
+
+        .banner-action-btn:active {
+            transform: scale(0.97);
+        }
+
+        @keyframes pulse-border {
+            0% {
+                border-color: rgba(2, 132, 199, 0.25);
+            }
+            100% {
+                border-color: rgba(219, 39, 119, 0.45);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 👑 タイトルヘッダー -->
+        <header>
+            <div class="header-title">
+                <h1>HabitVest</h1>
+                <p>やめた習慣を複利に変える <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.3.0 (2026.06.05)</span></p>
+            </div>
+            <div class="header-controls">
+                <button id="settings-toggle" class="control-btn" title="設定を開く">⚙️</button>
+                <button id="theme-toggle" class="control-btn" title="テーマ切り替え">☀️</button>
+            </div>
+        </header>
+
+        <!-- ==========================================
+             📋 タブ1: 習慣 (Habits) 入力欄
+             ========================================== -->
+        <div id="tab-content-habits" class="tab-content active">
+            <div class="glass-card">
+                <h2 class="card-title">🚨 やめる習慣を選択 (複数選択可能)</h2>
+                <div class="preset-grid">
+                    <button class="preset-btn active" data-name="tobacco">
+                        <span class="emoji">🚭</span>
+                        <span>タバコ</span>
+                        <span class="price" id="btn-desc-tobacco">600円 / 日</span>
+                    </button>
+                    <button class="preset-btn" data-name="beer">
+                        <span class="emoji">🍺</span>
+                        <span>ビール・お酒</span>
+                        <span class="price" id="btn-desc-beer">500円 / 日</span>
+                    </button>
+                    <button class="preset-btn" data-name="sub">
+                        <span class="emoji">📱</span>
+                        <span>無駄なサブスク</span>
+                        <span class="price" id="btn-desc-sub">1,000円 / 月</span>
+                    </button>
+                    <button class="preset-btn" data-name="gacha">
+                        <span class="emoji">🎮</span>
+                        <span>ソシャゲ課金</span>
+                        <span class="price" id="btn-desc-gacha">3,000円 / 月</span>
+                    </button>
+                </div>
+
+                <!-- 🚭 タバコ詳細パネル -->
+                <div class="details-panel" id="panel-tobacco">
+                    <div class="details-title">🚭 タバコの詳細設定</div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="tobacco-pack-price">1箱あたりの価格</label>
+                            <span class="val-badge" id="tobacco-price-badge">600円</span>
+                        </div>
+                        <input type="range" id="tobacco-pack-price" min="400" max="800" step="10" value="600">
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="tobacco-packs-per-day">1日あたりの消費量</label>
+                            <span class="val-badge" id="tobacco-count-badge">1.0箱</span>
+                        </div>
+                        <input type="range" id="tobacco-packs-per-day" min="0.1" max="3.0" step="0.1" value="1.0">
+                    </div>
+                </div>
+
+                <!-- 🍺 お酒詳細パネル -->
+                <div class="details-panel" id="panel-beer">
+                    <div class="details-title">🍺 お酒の詳細設定</div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="beer-unit-price">1本/1杯あたりの価格</label>
+                            <span class="val-badge" id="beer-price-badge">250円</span>
+                        </div>
+                        <input type="range" id="beer-unit-price" min="100" max="800" step="10" value="250">
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="beer-units-per-day">1日あたりの本数/杯数</label>
+                            <span class="val-badge" id="beer-count-badge">2.0本</span>
+                        </div>
+                        <input type="range" id="beer-units-per-day" min="0.5" max="8.0" step="0.5" value="2.0">
+                    </div>
+                </div>
+
+                <!-- 📱 サブスク詳細パネル -->
+                <div class="details-panel" id="panel-sub">
+                    <div class="details-title">📱 サブスクの詳細設定</div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="sub-unit-price">1契約あたりの月額</label>
+                            <span class="val-badge" id="sub-price-badge">1,000円</span>
+                        </div>
+                        <input type="range" id="sub-unit-price" min="500" max="3000" step="100" value="1000">
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="sub-count">契約数</label>
+                            <span class="val-badge" id="sub-count-badge">1個</span>
+                        </div>
+                        <input type="range" id="sub-count" min="1" max="5" step="1" value="1">
+                    </div>
+                </div>
+
+                <!-- 🎮 ガチャ詳細パネル -->
+                <div class="details-panel" id="panel-gacha">
+                    <div class="details-title">🎮 ソシャゲ課金の詳細設定</div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="gacha-unit-price">1回(または1P)あたりの額</label>
+                            <span class="val-badge" id="gacha-price-badge">3,000円</span>
+                        </div>
+                        <input type="range" id="gacha-unit-price" min="1000" max="10000" step="500" value="3000">
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="gacha-count">1ヶ月あたりの回数</label>
+                            <span class="val-badge" id="gacha-count-badge">1回</span>
+                        </div>
+                        <input type="range" id="gacha-count" min="1" max="10" step="1" value="1">
+                    </div>
+                </div>
+
+                <!-- 💰 月間節約額 -->
+                <div class="form-group">
+                    <div class="label-wrapper">
+                        <label for="input-custom-price">月間節約合計額</label>
+                        <span class="val-badge" id="custom-freq-badge">自動合算</span>
+                    </div>
+                    <div class="input-box">
+                        <button type="button" id="price-minus" class="spin-btn" title="1,000円減らす">−</button>
+                        <div style="position: relative; flex: 1; display: flex; align-items: center;">
+                            <input type="number" id="input-custom-price" value="18000">
+                            <span>円 / 月</span>
+                        </div>
+                        <button type="button" id="price-plus" class="spin-btn" title="1,000円増やす">+</button>
+                    </div>
+                </div>
+
+                <!-- 📈 利回りスライダー -->
+                <div class="form-group">
+                    <div class="label-wrapper">
+                        <label for="slider-yield">想定年間利回り (投資先)</label>
+                        <span class="val-badge" id="yield-badge">7%</span>
+                    </div>
+                    <input type="range" id="slider-yield" min="1" max="15" step="0.5" value="7">
+                </div>
+
+                <!-- ⏳ 期間スライダー -->
+                <div class="form-group">
+                    <div class="label-wrapper">
+                        <label for="slider-years">シミュレーション期間</label>
+                        <span class="val-badge" id="years-badge">20年</span>
+                    </div>
+                    <input type="range" id="slider-years" min="1" max="30" step="1" value="20">
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             📈 タブ2: 資産 (Assets) グラフ
+             ========================================== -->
+        <div id="tab-content-assets" class="tab-content">
+            <div class="glass-card">
+                <h2 class="card-title">🔮 資産シミュレーション</h2>
+                
+                <div class="dashboard-grid">
+                    <div class="dash-card">
+                        <div class="dash-label">浮いたお金 (元本)</div>
+                        <div class="dash-val" id="val-saving">--- 円</div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-label">想定期間利回り</div>
+                        <div class="dash-val" id="val-yield-info">--- %</div>
+                    </div>
+                    <div class="dash-card highlight">
+                        <div class="dash-label">複利運用後の総資産</div>
+                        <div class="dash-val" id="val-total">--- 円</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 6px; font-size: 0.72rem; color: var(--text-sub);">
+                    複利効果によるボーナス： <span id="val-bonus" style="color: var(--neon-secondary); font-weight: 700;">--- 円</span>
+                </div>
+
+                <!-- 折れ線グラフ -->
+                <div class="chart-container">
+                    <canvas id="yieldChart"></canvas>
+                </div>
+
+                <!-- 🎁 パーソナライズ・マイルストーン -->
+                <div class="milestone-box">
+                    <div class="icon" id="milestone-emoji">💡</div>
+                    <div class="milestone-content">
+                        <h4 id="milestone-title">シミュレーション結果</h4>
+                        <p id="milestone-desc">お楽しみに！</p>
+                    </div>
+                </div>
+
+                <!-- 💳 アフィリエイトオファーカード (人が思わず押したくなる仕掛け) -->
+                <div class="affiliate-banner-box" id="affiliate-banner">
+                    <div class="banner-badge" id="banner-badge-text">🏆 おすすめ口座開設</div>
+                    <div class="banner-main">
+                        <div class="banner-text">
+                            <h4 id="banner-title">複利運用を今すぐ始めよう</h4>
+                            <p id="banner-desc">浮いたお金を放置するのはもったいない！まずは人気証券会社で口座開設（無料）</p>
+                        </div>
+                        <a href="https://example.com/affiliate-link" target="_blank" rel="noopener noreferrer" class="banner-action-btn" id="banner-link">
+                            口座を開く 🚀
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             🍀 タブ3: ライフ (Life) データ（時間・健康）
+             ========================================== -->
+        <div id="tab-content-life" class="tab-content">
+            <div class="glass-card">
+                <h2 class="card-title">🍀 やめて得られるライフデータ</h2>
+                
+                <div class="life-grid">
+                    <!-- ⏰ 浮く時間 (合算) -->
+                    <div class="life-card">
+                        <div class="life-card-header">
+                            <span class="emoji">⏳</span>
+                            <span>新しく手に入る「時間」</span>
+                        </div>
+                        <div class="life-card-val" id="life-time">---</div>
+                        <div class="life-card-desc" id="life-time-desc">準備中</div>
+                    </div>
+
+                    <!-- 各習慣ごとの健康・メンタルのカード -->
+                    
+                    <!-- 🚭 タバコのメリット -->
+                    <div class="life-card" id="life-card-tobacco" style="display:none;">
+                        <div class="life-card-header">
+                            <span class="emoji">🚭</span>
+                            <span>禁煙による健康効果</span>
+                        </div>
+                        <div class="life-card-val" id="life-tobacco-health" style="color: var(--neon-green);">---</div>
+                        <div class="life-card-desc" id="life-tobacco-desc">準備中</div>
+                    </div>
+
+                    <!-- 🍺 お酒のメリット -->
+                    <div class="life-card" id="life-card-beer" style="display:none;">
+                        <div class="life-card-header">
+                            <span class="emoji">🍺</span>
+                            <span>禁酒・節酒による減量＆肝臓保護</span>
+                        </div>
+                        <div class="life-card-val" id="life-beer-health" style="color: var(--neon-green);">---</div>
+                        <div class="life-card-desc" id="life-beer-desc">準備中</div>
+                    </div>
+
+                    <!-- 📱 サブスクのメリット -->
+                    <div class="life-card" id="life-card-sub" style="display:none;">
+                        <div class="life-card-header">
+                            <span class="emoji">📱</span>
+                            <span>デジタルデトックス効果</span>
+                        </div>
+                        <div class="life-card-val" id="life-sub-val" style="color: var(--neon-primary);">---</div>
+                        <div class="life-card-desc" id="life-sub-desc">準備中</div>
+                    </div>
+
+                    <!-- 🎮 ガチャのメリット -->
+                    <div class="life-card" id="life-card-gacha" style="display:none;">
+                        <div class="life-card-header">
+                            <span class="emoji">🎮</span>
+                            <span>ドーパミンの正常化</span>
+                        </div>
+                        <div class="life-card-val" id="life-gacha-val" style="color: var(--neon-primary);">---</div>
+                        <div class="life-card-desc" id="life-gacha-desc">準備中</div>
+                    </div>
+
+                    <!-- 何も選んでない場合 -->
+                    <div class="life-card" id="life-card-empty" style="text-align: center; padding: 20px;">
+                        <div class="life-card-desc">「習慣」タブで習慣を選択してください。ここに時間や健康の改善データが合算されます。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔮 占い ✕ 統計予測カード -->
+            <div class="glass-card" style="margin-top: 14px; background: linear-gradient(135deg, rgba(217, 70, 239, 0.04) 0%, rgba(14, 165, 233, 0.04) 100%); border-color: rgba(217, 70, 239, 0.2);">
+                <h2 class="card-title" style="color: var(--neon-secondary);">🔮 習慣化占い ✕ 統計予測</h2>
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <span id="fortune-badge" style="background: linear-gradient(135deg, var(--neon-secondary) 0%, var(--neon-primary) 100%); color: white; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; box-shadow: 0 4px 10px rgba(219, 39, 119, 0.2);">今日の習慣化運勢：???</span>
+                </div>
+                <div class="fortune-content" style="font-size: 0.75rem; color: var(--text-main); line-height: 1.5; display: flex; flex-direction: column; gap: 8px;">
+                    <p id="fortune-text-1" style="background: rgba(120, 120, 120, 0.05); padding: 10px; border-radius: 12px; border-left: 3.5px solid var(--neon-secondary);"></p>
+                    <p id="fortune-text-2" style="background: rgba(120, 120, 120, 0.05); padding: 10px; border-radius: 12px; border-left: 3.5px solid var(--neon-primary);"></p>
+                </div>
+            </div>
+
+            <!-- ⏳ 時間経過によるロードマップ -->
+            <div class="glass-card" style="margin-top: 14px;">
+                <h2 class="card-title" style="color: var(--neon-green);">⏳ 時間経過で起こる劇的変化 (統計データ)</h2>
+                <div class="timeline-container" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px; position: relative; padding-left: 20px;">
+                    <!-- 縦線 -->
+                    <div style="position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: rgba(22, 163, 74, 0.25);"></div>
+                    
+                    <div class="timeline-item" style="position: relative;">
+                        <div style="position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green);"></div>
+                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 2px;">1日後：体内環境のリセット開始</h4>
+                        <p style="font-size: 0.7rem; color: var(--text-sub); line-height: 1.45;" id="timeline-1day"></p>
+                    </div>
+                    
+                    <div class="timeline-item" style="position: relative;">
+                        <div style="position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green);"></div>
+                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 2px;">3日後：五感と神経系の回復</h4>
+                        <p style="font-size: 0.7rem; color: var(--text-sub); line-height: 1.45;" id="timeline-3days"></p>
+                    </div>
+
+                    <div class="timeline-item" style="position: relative;">
+                        <div style="position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 8px var(--neon-primary);"></div>
+                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 2px;">1週間後：外見と睡眠の劇的変化</h4>
+                        <p style="font-size: 0.7rem; color: var(--text-sub); line-height: 1.45;" id="timeline-1week"></p>
+                    </div>
+
+                    <div class="timeline-item" style="position: relative;">
+                        <div style="position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-secondary); box-shadow: 0 0 8px var(--neon-secondary);"></div>
+                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-secondary); margin-bottom: 2px;">1ヶ月後：メンタル＆体質の完全変革</h4>
+                        <p style="font-size: 0.7rem; color: var(--text-sub); line-height: 1.45;" id="timeline-1month"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🚪 設定モーダルウィンドウ -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>👤 プロフィール設定</h3>
+                <button id="modal-close" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="profile-name">ニックネーム</label>
+                    <input type="text" id="profile-name" value="よへ" placeholder="ニックネームを入力">
+                </div>
+                <div class="form-group">
+                    <label for="profile-hobby">あなたの趣味 (夢の使い道)</label>
+                    <select id="profile-hobby">
+                        <option value="car">🚗 車・ドライブ</option>
+                        <option value="travel">✈️ 旅行・アドベンチャー</option>
+                        <option value="gadget" selected>💻 ガジェット・PC環境</option>
+                        <option value="gourmet">🍣 グルメ・美味しいもの</option>
+                        <option value="invest">📈 投資・資産運用</option>
+                        <option value="gaming">🎮 ゲーム・趣味部屋</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="profile-age">年齢</label>
+                    <select id="profile-age">
+                        <option value="20">20代</option>
+                        <option value="30" selected>30代</option>
+                        <option value="40">40代</option>
+                        <option value="50">50代以上</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="profile-gender">性別</label>
+                    <select id="profile-gender">
+                        <option value="male" selected>男性</option>
+                        <option value="female">女性</option>
+                        <option value="other">その他</option>
+                    </select>
+                </div>
+
+                <!-- 🔐 アカウント同期 -->
+                <div class="auth-sync-section">
+                    <div class="auth-title">🔒 アカウント連携 (将来共有用)</div>
+                    <div class="auth-grid">
+                        <button class="auth-btn coming-soon">📧 メール</button>
+                        <button class="auth-btn coming-soon">🌐 Google</button>
+                        <button class="auth-btn coming-soon">💬 LINE</button>
+                        <button class="auth-btn coming-soon">🍏 Apple</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 🗑️ オールリセットボタン -->
+            <button id="modal-reset" class="modal-btn-reset">🗑️ 設定とデータを完全に初期化する</button>
+            <button id="modal-save" class="modal-btn">設定を保存して適用</button>
+        </div>
+    </div>
+
+    <!-- ⚠️ リセット確認モーダル -->
+    <div id="reset-confirm-modal" class="modal-overlay" style="z-index: 1100;">
+        <div class="modal-card" style="max-width: 320px; border-color: var(--neon-secondary); text-align: center;">
+            <div style="font-size: 2.2rem; margin-bottom: 10px; animation: bounce 2s infinite;">⚠️</div>
+            <h3 style="color: var(--neon-secondary); font-size: 1.05rem; font-weight: 700; margin-bottom: 8px;">データを完全に初期化しますか？</h3>
+            <p style="font-size: 0.75rem; color: var(--text-sub); line-height: 1.45; margin-bottom: 18px; text-align: left; padding: 0 4px;">
+                これまでのニックネーム、選択した習慣、カスタマイズした数値はすべて消去され、初期状態に戻ります。この操作は取り消せません。
+            </p>
+            <div style="display: flex; gap: 8px;">
+                <button id="reset-cancel" class="modal-btn-reset" style="border-color: var(--text-sub); color: var(--text-sub); margin-top: 0; padding: 8px;">キャンセル</button>
+                <button id="reset-execute" class="modal-btn" style="background: var(--neon-secondary); box-shadow: 0 4px 12px rgba(219, 39, 119, 0.2); margin-top: 0; padding: 8px;">初期化する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📱 ボトムナビ -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="habits">
+            <span class="icon">📋</span>
+            <span>習慣</span>
+        </button>
+        <button class="nav-item" data-tab="assets">
+            <span class="icon">📈</span>
+            <span>資産</span>
+        </button>
+        <button class="nav-item" data-tab="life">
+            <span class="icon">🍀</span>
+            <span>ライフ</span>
+        </button>
+    </nav>
+
+    <!-- アプリ制御ロジック -->
+    <script>
+        // DOM要素の取得
+        const themeToggle = document.getElementById('theme-toggle');
+        const settingsToggle = document.getElementById('settings-toggle');
+        const settingsModal = document.getElementById('settings-modal');
+        const modalClose = document.getElementById('modal-close');
+        const modalSave = document.getElementById('modal-save');
+        const modalReset = document.getElementById('modal-reset');
+
+        const profileName = document.getElementById('profile-name');
+        const profileHobby = document.getElementById('profile-hobby');
+        const profileAge = document.getElementById('profile-age');
+        const profileGender = document.getElementById('profile-gender');
+
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        const inputCustomPrice = document.getElementById('input-custom-price');
+        const priceMinus = document.getElementById('price-minus');
+        const pricePlus = document.getElementById('price-plus');
+        const customFreqBadge = document.getElementById('custom-freq-badge');
+        const sliderYield = document.getElementById('slider-yield');
+        const yieldBadge = document.getElementById('yield-badge');
+        const sliderYears = document.getElementById('slider-years');
+        const yearsBadge = document.getElementById('years-badge');
+
+        // タバコ・お酒の詳細スライダー
+        const panelTobacco = document.getElementById('panel-tobacco');
+        const tobaccoPackPrice = document.getElementById('tobacco-pack-price');
+        const tobaccoPriceBadge = document.getElementById('tobacco-price-badge');
+        const tobaccoPacksPerDay = document.getElementById('tobacco-packs-per-day');
+        const tobaccoCountBadge = document.getElementById('tobacco-count-badge');
+        const btnDescTobacco = document.getElementById('btn-desc-tobacco');
+
+        const panelBeer = document.getElementById('panel-beer');
+        const beerUnitPrice = document.getElementById('beer-unit-price');
+        const beerPriceBadge = document.getElementById('beer-price-badge');
+        const beerUnitsPerDay = document.getElementById('beer-units-per-day');
+        const beerCountBadge = document.getElementById('beer-count-badge');
+        const btnDescBeer = document.getElementById('btn-desc-beer');
+
+        // サブスクの詳細スライダー
+        const panelSub = document.getElementById('panel-sub');
+        const subUnitPrice = document.getElementById('sub-unit-price');
+        const subPriceBadge = document.getElementById('sub-price-badge');
+        const subCount = document.getElementById('sub-count');
+        const subCountBadge = document.getElementById('sub-count-badge');
+        const btnDescSub = document.getElementById('btn-desc-sub');
+
+        // ガチャの詳細スライダー
+        const panelGacha = document.getElementById('panel-gacha');
+        const gachaUnitPrice = document.getElementById('gacha-unit-price');
+        const gachaPriceBadge = document.getElementById('gacha-price-badge');
+        const gachaCount = document.getElementById('gacha-count');
+        const gachaCountBadge = document.getElementById('gacha-count-badge');
+        const btnDescGacha = document.getElementById('btn-desc-gacha');
+
+        const valSaving = document.getElementById('val-saving');
+        const valYieldInfo = document.getElementById('val-yield-info');
+        const valTotal = document.getElementById('val-total');
+        const valBonus = document.getElementById('val-bonus');
+
+        const milestoneEmoji = document.getElementById('milestone-emoji');
+        const milestoneTitle = document.getElementById('milestone-title');
+        const milestoneDesc = document.getElementById('milestone-desc');
+
+        // 🍀 ライフ関連
+        const lifeTime = document.getElementById('life-time');
+        const lifeTimeDesc = document.getElementById('life-time-desc');
+        
+        const lifeCardTobacco = document.getElementById('life-card-tobacco');
+        const lifeTobaccoHealth = document.getElementById('life-tobacco-health');
+        const lifeTobaccoDesc = document.getElementById('life-tobacco-desc');
+        
+        const lifeCardBeer = document.getElementById('life-card-beer');
+        const lifeBeerHealth = document.getElementById('life-beer-health');
+        const lifeBeerDesc = document.getElementById('life-beer-desc');
+
+        const lifeCardSub = document.getElementById('life-card-sub');
+        const lifeSubVal = document.getElementById('life-sub-val');
+        const lifeSubDesc = document.getElementById('life-sub-desc');
+
+        const lifeCardGacha = document.getElementById('life-card-gacha');
+        const lifeGachaVal = document.getElementById('life-gacha-val');
+        const lifeGachaDesc = document.getElementById('life-gacha-desc');
+
+        const lifeCardEmpty = document.getElementById('life-card-empty');
+
+        // ボトムナビ
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        let chart = null;
+        
+        // 🚨 複数習慣のON/OFF状態管理オブジェクト
+        let activeHabits = {
+            tobacco: true, 
+            beer: false,
+            sub: false,
+            gacha: false
+        };
+
+        // 🌗 テーマ切り替え
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('theme-dark');
+            const isDark = document.body.classList.contains('theme-dark');
+            themeToggle.innerText = isDark ? '🌙' : '☀️';
+            saveSettings();
+            calculate();
+        });
+
+        // ⚙️ モーダルの開閉
+        settingsToggle.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
+
+        const closeModal = () => {
+            settingsModal.classList.remove('active');
+            saveSettings();
+            calculate();
+        };
+
+        modalClose.addEventListener('click', closeModal);
+        modalSave.addEventListener('click', closeModal);
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) closeModal();
+        });
+
+        // 🗑️ オールリセット処理の実装
+        const resetConfirmModal = document.getElementById('reset-confirm-modal');
+        const resetCancel = document.getElementById('reset-cancel');
+        const resetExecute = document.getElementById('reset-execute');
+
+        modalReset.addEventListener('click', () => {
+            resetConfirmModal.classList.add('active');
+        });
+
+        resetCancel.addEventListener('click', () => {
+            resetConfirmModal.classList.remove('active');
+        });
+
+        resetConfirmModal.addEventListener('click', (e) => {
+            if (e.target === resetConfirmModal) {
+                resetConfirmModal.classList.remove('active');
+            }
+        });
+
+        resetExecute.addEventListener('click', () => {
+            // 1. ローカルストレージ削除
+            localStorage.removeItem('habitvest_settings');
+
+            // 2. テーマをライトモードに戻す
+            document.body.classList.remove('theme-dark');
+            themeToggle.innerText = '☀️';
+
+            // 3. プロフィール初期値
+            profileName.value = "よへ";
+            profileHobby.value = "gadget";
+            profileAge.value = "30";
+            profileGender.value = "male";
+
+            // 4. 習慣ON/OFF初期値 (タバコのみON)
+            activeHabits = {
+                tobacco: true,
+                beer: false,
+                sub: false,
+                gacha: false
+            };
+
+            presetBtns.forEach(btn => {
+                const name = btn.dataset.name;
+                if (activeHabits[name]) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            // 5. スライダー・入力欄のデフォルト値の復元
+            tobaccoPackPrice.value = 600;
+            tobaccoPacksPerDay.value = 1.0;
+
+            beerUnitPrice.value = 250;
+            beerUnitsPerDay.value = 2.0;
+
+            subUnitPrice.value = 1000;
+            subCount.value = 1;
+
+            gachaUnitPrice.value = 3000;
+            gachaCount.value = 1;
+
+            sliderYield.value = 7;
+            yieldBadge.innerText = "7%";
+
+            sliderYears.value = 20;
+            yearsBadge.innerText = "20年";
+
+            // 6. 表示と詳細の同期
+            updateDetailsPanels();
+            updateTobaccoSaving();
+            updateBeerSaving();
+            updateSubSaving();
+            updateGachaSaving();
+
+            // 7. 再計算とローカルストレージの上書き保存
+            saveSettings();
+            calculate();
+            
+            // モーダルを閉じる
+            resetConfirmModal.classList.remove('active');
+            settingsModal.classList.remove('active');
+        });
+
+        // 📱 ボトムナビ切り替え
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                const tabName = item.dataset.tab;
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === `tab-content-${tabName}`) {
+                        content.classList.add('active');
+                    }
+                });
+
+                if (tabName === 'assets' && chart) {
+                    setTimeout(() => { chart.resize(); }, 50);
+                }
+            });
+        });
+
+        // 🚨 習慣選択（チェックボックス式トグル）
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const habitName = btn.dataset.name;
+                
+                activeHabits[habitName] = !activeHabits[habitName];
+                
+                if (activeHabits[habitName]) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+
+                updateDetailsPanels();
+                updateSavingsTotal();
+                saveSettings();
+                calculate();
+            });
+        });
+
+        // 🚭 タバコスライダー
+        function updateTobaccoSaving() {
+            const price = parseInt(tobaccoPackPrice.value, 10);
+            const count = parseFloat(tobaccoPacksPerDay.value);
+            tobaccoPriceBadge.innerText = `${price}円`;
+            tobaccoCountBadge.innerText = `${count.toFixed(1)}箱`;
+
+            const dailyCost = Math.round(price * count);
+            btnDescTobacco.innerText = `${dailyCost}円 / 日`;
+            
+            updateSavingsTotal();
+        }
+
+        // 🍺 お酒スライダー
+        function updateBeerSaving() {
+            const price = parseInt(beerUnitPrice.value, 10);
+            const count = parseFloat(beerUnitsPerDay.value);
+            beerPriceBadge.innerText = `${price}円`;
+            beerCountBadge.innerText = `${count.toFixed(1)}本`;
+
+            const dailyCost = Math.round(price * count);
+            btnDescBeer.innerText = `${dailyCost}円 / 日`;
+            
+            updateSavingsTotal();
+        }
+
+        // 📱 サブスクスライダー
+        function updateSubSaving() {
+            const price = parseInt(subUnitPrice.value, 10);
+            const count = parseInt(subCount.value, 10);
+            subPriceBadge.innerText = `${price}円`;
+            subCountBadge.innerText = `${count}個`;
+
+            const monthlyCost = price * count;
+            btnDescSub.innerText = `${monthlyCost.toLocaleString()}円 / 月`;
+            
+            updateSavingsTotal();
+        }
+
+        // 🎮 ガチャスライダー
+        function updateGachaSaving() {
+            const price = parseInt(gachaUnitPrice.value, 10);
+            const count = parseInt(gachaCount.value, 10);
+            gachaPriceBadge.innerText = `${price.toLocaleString()}円`;
+            gachaCountBadge.innerText = `${count}回`;
+
+            const monthlyCost = price * count;
+            btnDescGacha.innerText = `${monthlyCost.toLocaleString()}円 / 月`;
+            
+            updateSavingsTotal();
+        }
+
+        // スライダー変更イベント登録
+        [tobaccoPackPrice, tobaccoPacksPerDay].forEach(el => {
+            el.addEventListener('input', () => { updateTobaccoSaving(); saveSettings(); calculate(); });
+        });
+
+        [beerUnitPrice, beerUnitsPerDay].forEach(el => {
+            el.addEventListener('input', () => { updateBeerSaving(); saveSettings(); calculate(); });
+        });
+
+        [subUnitPrice, subCount].forEach(el => {
+            el.addEventListener('input', () => { updateSubSaving(); saveSettings(); calculate(); });
+        });
+
+        [gachaUnitPrice, gachaCount].forEach(el => {
+            el.addEventListener('input', () => { updateGachaSaving(); saveSettings(); calculate(); });
+        });
+
+        // 💰 合計額の自動計算
+        function updateSavingsTotal() {
+            let total = 0;
+            if (activeHabits.tobacco) {
+                const price = parseInt(tobaccoPackPrice.value, 10);
+                const count = parseFloat(tobaccoPacksPerDay.value);
+                total += Math.round(price * count) * 30;
+            }
+            if (activeHabits.beer) {
+                const price = parseInt(beerUnitPrice.value, 10);
+                const count = parseFloat(beerUnitsPerDay.value);
+                total += Math.round(price * count) * 30;
+            }
+            if (activeHabits.sub) {
+                const price = parseInt(subUnitPrice.value, 10);
+                const count = parseInt(subCount.value, 10);
+                total += price * count;
+            }
+            if (activeHabits.gacha) {
+                const price = parseInt(gachaUnitPrice.value, 10);
+                const count = parseInt(gachaCount.value, 10);
+                total += price * count;
+            }
+
+            inputCustomPrice.value = total;
+            customFreqBadge.innerText = "自動合算";
+        }
+
+        // 手入力カスタム
+        inputCustomPrice.addEventListener('input', () => {
+            customFreqBadge.innerText = "手入力";
+            calculate();
+            saveSettings();
+        });
+
+        priceMinus.addEventListener('click', () => {
+            let val = parseInt(inputCustomPrice.value, 10) || 0;
+            // 1,000円単位で切り下げて減らす
+            val = Math.max(0, Math.floor((val - 1) / 1000) * 1000);
+            inputCustomPrice.value = val;
+            customFreqBadge.innerText = "手入力";
+            calculate();
+            saveSettings();
+        });
+
+        pricePlus.addEventListener('click', () => {
+            let val = parseInt(inputCustomPrice.value, 10) || 0;
+            // 1,000円単位で切り上げて増やす
+            val = Math.ceil((val + 1) / 1000) * 1000;
+            inputCustomPrice.value = val;
+            customFreqBadge.innerText = "手入力";
+            calculate();
+            saveSettings();
+        });
+
+        sliderYield.addEventListener('input', () => {
+            yieldBadge.innerText = `${sliderYield.value}%`;
+            calculate();
+            saveSettings();
+        });
+
+        sliderYears.addEventListener('input', () => {
+            yearsBadge.innerText = `${sliderYears.value}年`;
+            calculate();
+            saveSettings();
+        });
+
+        // 詳細設定パネル表示制御
+        function updateDetailsPanels() {
+            if (activeHabits.tobacco) panelTobacco.classList.add('active');
+            else panelTobacco.classList.remove('active');
+
+            if (activeHabits.beer) panelBeer.classList.add('active');
+            else panelBeer.classList.remove('active');
+
+            if (activeHabits.sub) panelSub.classList.add('active');
+            else panelSub.classList.remove('active');
+
+            if (activeHabits.gacha) panelGacha.classList.add('active');
+            else panelGacha.classList.remove('active');
+        }
+
+        // 💾 データのローカル保存
+        function saveSettings() {
+            const settings = {
+                themeDark: document.body.classList.contains('theme-dark'),
+                profile: {
+                    name: profileName.value,
+                    hobby: profileHobby.value,
+                    age: profileAge.value,
+                    gender: profileGender.value
+                },
+                activeHabits: activeHabits,
+                tobacco: {
+                    price: tobaccoPackPrice.value,
+                    count: tobaccoPacksPerDay.value
+                },
+                beer: {
+                    price: beerUnitPrice.value,
+                    count: beerUnitsPerDay.value
+                },
+                sub: {
+                    price: subUnitPrice.value,
+                    count: subCount.value
+                },
+                gacha: {
+                    price: gachaUnitPrice.value,
+                    count: gachaCount.value
+                },
+                yield: sliderYield.value,
+                years: sliderYears.value,
+                customPrice: inputCustomPrice.value
+            };
+            localStorage.setItem('habitvest_settings', JSON.stringify(settings));
+        }
+
+        // 📂 データのローカル読み込み
+        function loadSettings() {
+            const dataStr = localStorage.getItem('habitvest_settings');
+            if (!dataStr) return;
+
+            try {
+                const data = JSON.parse(dataStr);
+                
+                if (data.themeDark) {
+                    document.body.classList.add('theme-dark');
+                    themeToggle.innerText = '🌙';
+                } else {
+                    document.body.classList.remove('theme-dark');
+                    themeToggle.innerText = '☀️';
+                }
+
+                if (data.profile) {
+                    profileName.value = data.profile.name || "よへ";
+                    profileHobby.value = data.profile.hobby || "gadget";
+                    profileAge.value = data.profile.age || "30";
+                    profileGender.value = data.profile.gender || "male";
+                }
+
+                if (data.activeHabits) {
+                    activeHabits = data.activeHabits;
+                    presetBtns.forEach(btn => {
+                        const name = btn.dataset.name;
+                        if (activeHabits[name]) btn.classList.add('active');
+                        else btn.classList.remove('active');
+                    });
+                }
+
+                if (data.tobacco) {
+                    tobaccoPackPrice.value = data.tobacco.price;
+                    tobaccoPacksPerDay.value = data.tobacco.count;
+                }
+                if (data.beer) {
+                    beerUnitPrice.value = data.beer.price;
+                    beerUnitsPerDay.value = data.beer.count;
+                }
+                if (data.sub) {
+                    subUnitPrice.value = data.sub.price;
+                    subCount.value = data.sub.count;
+                }
+                if (data.gacha) {
+                    gachaUnitPrice.value = data.gacha.price;
+                    gachaCount.value = data.gacha.count;
+                }
+
+                if (data.yield) {
+                    sliderYield.value = data.yield;
+                    yieldBadge.innerText = `${data.yield}%`;
+                }
+                if (data.years) {
+                    sliderYears.value = data.years;
+                    yearsBadge.innerText = `${data.years}年`;
+                }
+
+                updateDetailsPanels();
+                updateTobaccoSaving();
+                updateBeerSaving();
+                updateSubSaving();
+                updateGachaSaving();
+
+                if (data.customPrice) {
+                    inputCustomPrice.value = data.customPrice;
+                }
+            } catch (e) {
+                console.error("Failed to load settings:", e);
+            }
+        }
+
+        // 🔮 複利計算
+        function calculate() {
+            const annualYield = parseFloat(sliderYield.value) / 100;
+            const years = parseInt(sliderYears.value, 10);
+            const targetSaving = parseInt(inputCustomPrice.value, 10) || 0;
+
+            let labels = [];
+            let savingData = [];
+            let investData = [];
+
+            let totalSaving = 0;
+            let totalInvest = 0;
+            const monthlyRate = annualYield / 12;
+
+            for (let y = 1; y <= years; y++) {
+                labels.push(`${y}年`);
+                
+                totalSaving = targetSaving * 12 * y;
+                savingData.push(totalSaving);
+
+                const months = y * 12;
+                if (monthlyRate > 0) {
+                    totalInvest = targetSaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                } else {
+                    totalInvest = totalSaving;
+                }
+                investData.push(Math.round(totalInvest));
+            }
+
+            const finalSaving = savingData[savingData.length - 1];
+            const finalInvest = investData[investData.length - 1];
+            const finalBonus = finalInvest - finalSaving;
+
+            valSaving.innerText = formatCurrency(finalSaving);
+            valTotal.innerText = formatCurrency(finalInvest);
+            valBonus.innerText = formatCurrency(finalBonus);
+            valYieldInfo.innerText = `${sliderYield.value}%`;
+
+            updateMilestone(finalInvest);
+            updateLifeData(years);
+            updateAffiliateBanner(finalInvest, targetSaving);
+            updateChart(labels, savingData, investData);
+        }
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(num);
+        }
+
+        // 🍀 ライフデータ更新
+        function updateLifeData(years) {
+            const name = profileName.value.trim() || "よへ";
+            const days = years * 365;
+            let totalMinutes = 0;
+
+            let selectedAny = false;
+            
+            // 1. タバコ
+            if (activeHabits.tobacco) {
+                lifeCardTobacco.style.display = 'flex';
+                selectedAny = true;
+
+                const countPerDay = parseFloat(tobaccoPacksPerDay.value) * 20;
+                const totalCigarettes = countPerDay * days;
+                
+                totalMinutes += totalCigarettes * 5; 
+
+                const totalLifeSavedMinutes = totalCigarettes * 11; 
+                const lifeSavedDays = (totalLifeSavedMinutes / 60 / 24).toFixed(0);
+                const totalTarG = (totalCigarettes * 10) / 1000; 
+
+                lifeTobaccoHealth.innerText = `+ ${parseInt(lifeSavedDays).toLocaleString()} 日`;
+                lifeTobaccoDesc.innerText = `肺への吸入を回避できたタール総量は約 ${totalTarG.toFixed(1)} g。健康寿命が ${lifeSavedDays} 日伸びる計算です。`;
+            } else {
+                lifeCardTobacco.style.display = 'none';
+            }
+
+            // 2. お酒
+            if (activeHabits.beer) {
+                lifeCardBeer.style.display = 'flex';
+                selectedAny = true;
+
+                const cupsPerDay = parseFloat(beerUnitsPerDay.value);
+                const totalCups = cupsPerDay * days;
+
+                totalMinutes += totalCups * 60; 
+
+                const dailyKcal = Math.round(cupsPerDay * 150);
+                const onigiriEquivalent = (dailyKcal / 180).toFixed(1); // おにぎり1個180kcal換算
+                
+                const totalKcal = totalCups * 150; 
+                const weightLossKg = (totalKcal / 7200).toFixed(1);
+                // 年間の減量ペース
+                const yearlyWeightLossKg = ((cupsPerDay * 150 * 365) / 7200).toFixed(1);
+                const totalAlcoholKg = (totalCups * 20) / 1000; 
+
+                lifeBeerHealth.innerText = `おにぎり 🍙 約 ${onigiriEquivalent} 個分 / 日`;
+                lifeBeerDesc.innerText = `1日あたり約 ${dailyKcal} kcal（おにぎり約 ${onigiriEquivalent} 個分）の摂取を回避。体脂肪換算で年間約 ${yearlyWeightLossKg} kg（${years}年で計 ${parseFloat(weightLossKg).toLocaleString()} kg相当）の減量効果があり、肝臓が処理を免れた純アルコールは計 ${totalAlcoholKg.toFixed(1)} kg です。`;
+            } else {
+                lifeCardBeer.style.display = 'none';
+            }
+
+            // 3. サブスク
+            if (activeHabits.sub) {
+                lifeCardSub.style.display = 'flex';
+                selectedAny = true;
+
+                const count = parseInt(subCount.value, 10);
+                const monthlyHours = count * 15; 
+                const totalHours = monthlyHours * 12 * years;
+
+                totalMinutes += totalHours * 60;
+
+                lifeSubVal.innerText = "睡眠の質 爆上がり";
+                lifeSubDesc.innerText = `${count}個のサブスク視聴（計 ${totalHours.toLocaleString()} 時間相当）の代わりに脳を休めることで、メラトニン分泌が正常化し朝の目覚めがスッキリします。`;
+            } else {
+                lifeCardSub.style.display = 'none';
+            }
+
+            // 4. ガチャ
+            if (activeHabits.gacha) {
+                lifeCardGacha.style.display = 'flex';
+                selectedAny = true;
+
+                const count = parseInt(gachaCount.value, 10);
+                const monthlyHours = count * 30; 
+                const totalHours = monthlyHours * 12 * years;
+
+                totalMinutes += totalHours * 60;
+
+                lifeGachaVal.innerText = "ドーパミン正常化";
+                lifeGachaDesc.innerText = `異常な脳刺激（計 ${totalHours.toLocaleString()} 時間相当）から解放され、本来の穏やかな集中力が回復し、首や目の疲労もスッキリ軽減されます。`;
+            } else {
+                lifeCardGacha.style.display = 'none';
+            }
+
+            // 合算
+            if (selectedAny) {
+                lifeCardEmpty.style.display = 'none';
+                
+                const hours = Math.floor(totalMinutes / 60);
+                const dayUnits = (hours / 24).toFixed(1);
+                lifeTime.innerText = `${hours.toLocaleString()} 時間`;
+                lifeTimeDesc.innerText = `（約 ${dayUnits} 日間分）の無駄な時間を、自己投資や大切な人との時間、あるいは本当の休息にあてることができます！`;
+            } else {
+                lifeCardEmpty.style.display = 'block';
+                lifeTime.innerText = "0 時間";
+                lifeTimeDesc.innerText = "習慣を選択すると、浮いた合計時間がここに表示されます。";
+            }
+
+            // 🔮 習慣化占い・統計予測の生成
+            const fortuneBadge = document.getElementById('fortune-badge');
+            const fortuneText1 = document.getElementById('fortune-text-1');
+            const fortuneText2 = document.getElementById('fortune-text-2');
+
+            // 運勢リスト
+            const fortunes = ["超大吉 🌟", "昇龍運 🐉", "黄金期 🪙", "精神超越 🧠", "健康大吉 🍀", "大開運 ✨"];
+            // ニックネームの文字コードや今日の日付をシード値にして毎日違う運勢にする（擬似ランダム）
+            const dayCode = new Date().getDate();
+            const nameCode = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const seed = (dayCode + nameCode) % fortunes.length;
+            fortuneBadge.innerText = `今日の習慣化運勢：${fortunes[seed]}`;
+
+            // 占いメッセージの作成
+            let selectedHabitNames = [];
+            if (activeHabits.tobacco) selectedHabitNames.push("禁煙");
+            if (activeHabits.beer) selectedHabitNames.push("禁酒");
+            if (activeHabits.sub) selectedHabitNames.push("デジタルデトックス");
+            if (activeHabits.gacha) selectedHabitNames.push("ドーパミン制御");
+
+            if (selectedHabitNames.length === 0) {
+                fortuneText1.innerText = "「習慣」タブでやめる習慣を選択してください。あなたの未来の運勢と統計予測がここに開示されます。";
+                fortuneText2.innerText = "習慣を手放す決意をした瞬間、運命の歯車が回り始めます。";
+            } else {
+                fortuneText1.innerText = `🔮 【統計的運命】 ${name}さんが「${selectedHabitNames.join('・')}」に踏み切ったことで、統計的に3ヶ月以内に脳のクリアネス（集中力）が最大1.4倍に向上。仕事の意思決定精度が上がり、臨時収入や新しいチャンスを引き寄せる確率が 78.4% 上昇しています。`;
+                
+                let hobbyTarget = "";
+                let hobbyBenefit = "";
+                switch (profileHobby.value) {
+                    case 'car': hobbyTarget = "憧れの車 🚗"; hobbyBenefit = "ドライブで訪れる新しい景色が、あなたの直感力とリフレッシュ度をさらに高めます。"; break;
+                    case 'travel': hobbyTarget = "最高の旅 ✈️"; hobbyBenefit = "旅先での偶然の出会いやインスピレーションが、今後の人生を大きく変えるきっかけになります。"; break;
+                    case 'gadget': hobbyTarget = "最高のデスク環境 💻"; hobbyBenefit = "生産性の極限化により、インプットとアウトプットの質が劇的に向上。自己成長スピードが2倍になります。"; break;
+                    case 'gourmet': hobbyTarget = "至高のグルメ 🍣"; hobbyBenefit = "味覚の鋭敏化により、食事の一口一口から得られる幸福物質（エンドルフィン）が従来の2倍に増加します。"; break;
+                    case 'invest': hobbyTarget = "経済的自由 📈"; hobbyBenefit = "複利の数字が伸びるたび、あなたの精神的余裕と『選べる選択肢の広さ』が統計的に拡張していきます。"; break;
+                    case 'gaming': hobbyTarget = "究極のホビールーム 🎮"; hobbyBenefit = "自分だけの聖域で過ごす集中時間が、最高の精神安定剤となり、対人運を底上げします。"; break;
+                    default: hobbyTarget = "豊かな将来 🗽"; hobbyBenefit = "精神的かつ時間的余裕が、新しい幸福をもたらします。";
+                }
+                fortuneText2.innerText = `✨ 【引き寄せの暗示】 浮いたお金が「${hobbyTarget}」へと形を変えるロードマップが確立されました。悪い習慣を手放した空白には、統計的に『本当にあなたが必要とする良縁やアイデア』が舞い込みます。 ${hobbyBenefit}`;
+            }
+
+            // ⏳ 時間経過ロードマップの生成
+            const tl1Day = document.getElementById('timeline-1day');
+            const tl3Days = document.getElementById('timeline-3days');
+            const tl1Week = document.getElementById('timeline-1week');
+            const tl1Month = document.getElementById('timeline-1month');
+
+            let tlData = {
+                '1day': ["体内環境がリセットされ、血液循環がスムーズになり始めます。"],
+                '3days': ["睡眠が深くなり、朝スッキリ目覚められるように。胃腸の疲労感も取れてきます。"],
+                '1week': ["脳のドーパミン受容体のリセットが進行。イライラが減り、集中力が持続しやすくなります。"],
+                '1month': ["体脂肪や血圧などの健康数値が大幅に改善。自己コントロール感による自信が満ち溢れます。"]
+            };
+
+            if (activeHabits.tobacco) {
+                tlData['1day'].push("血中酸素濃度と血圧が正常化。一酸化炭素が体内から完全に消え去ります。");
+                tlData['3days'].push("気管支が弛緩し、呼吸が劇的に楽になります。味覚や嗅覚が驚くほど鋭敏に。");
+                tlData['1week'].push("肺の繊毛運動が回復し、溜まっていた有害物質の排出が本格化します。");
+                tlData['1month'].push("肺機能が最大30%回復。咳や息切れが消え、肌の血色が格段に良くなります。");
+            }
+            if (activeHabits.beer) {
+                tlData['1day'].push("肝臓のアルコール分解が終了し、脂肪燃焼プロセスが再開されます。");
+                tlData['3days'].push("アルコールによる脱水が解消し、肌のキメとハリが戻り始めます。");
+                tlData['1week'].push("深い睡眠（レム睡眠）の割合が2倍になり、脳の疲労が完璧に解消されます。");
+                tlData['1month'].push("肝機能（γ-GTP等）が正常値へ。むくみが完全に取れ、体重の減少が目に見えて現れます。");
+            }
+            if (activeHabits.sub || activeHabits.gacha) {
+                tlData['1day'].push("ブルーライト削減により、睡眠誘導ホルモンであるメラトニンの分泌が正常化。");
+                tlData['3days'].push("スマホ脳特有のマルチタスク疲労が抜け、1つの物事への深い集中力が戻り始めます。");
+                tlData['1week'].push("異常な快感刺激から解放され、散歩や読書などの穏やかな行動に強い幸福感を感じるように。");
+                tlData['1month'].push("時間の余裕が統計的に約30〜60時間増加。自己投資や趣味に熱中でき、幸福度が最大化します。");
+            }
+
+            tl1Day.innerHTML = tlData['1day'].join('<br>➕ ');
+            tl3Days.innerHTML = tlData['3days'].join('<br>➕ ');
+            tl1Week.innerHTML = tlData['1week'].join('<br>➕ ');
+            tl1Month.innerHTML = tlData['1month'].join('<br>➕ ');
+        }
+
+        // 🎁 マイルストーン更新 (趣味連動)
+        function updateMilestone(total) {
+            const name = profileName.value.trim() || "よへ";
+            const hobby = profileHobby.value;
+            const ageGroup = profileAge.value;
+
+            const recommendations = {
+                car: [
+                    { min: 0, max: 150000, emoji: "🔧", title: "本格高級洗車キット & コーティング！", desc: `${name}さんの愛車をピカピカにするプレミアム洗車セットや、プロのガラスコーティングを施工できます！` },
+                    { min: 150000, max: 500000, emoji: "🛞", title: "一流メーカーのプレミアムタイヤ交換！", desc: "ミシュランやブリヂストンなどの最高峰タイヤに交換可能。愛車の乗り心地と安全性が激変します！" },
+                    { min: 500000, max: 1500000, emoji: "🛣️", title: "日本一周グランドドライブツアー！", desc: "ガソリン代や各地の極上温泉宿の宿泊費をフルカバー。絶景を巡る至高のドライブに出かけられます！" },
+                    { min: 1500000, max: 4000000, emoji: "🚗", title: "憧れの新車（スポーツ・SUV）購入！", desc: "人気国産SUVや、憧れのスポーツカーの頭金（あるいは良質な中古車）をキャッシュで丸ごと払えます！" },
+                    { min: 4000000, max: Infinity, emoji: "🏎️", title: "高級輸入車やスーパーハイスペック車！", desc: "BMWやベンツ、ポルシェなど憧れの輸入プレミアムカーが射程圏内。人生のギアが一段上がります！" }
+                ],
+                travel: [
+                    { min: 0, max: 150000, emoji: "🏨", title: "星野リゾートで極上の1泊2日！", desc: `${name}さん、日々の習慣をやめるだけで、最高峰のおもてなしと露天風呂で心身を癒す贅沢旅にいけます！` },
+                    { min: 150000, max: 500000, emoji: "✈️", title: "ビジネスクラスで行くアジア極上紀行！", desc: "フルフラットシートでのフライトと、現地の5つ星ホテルステイを完璧にカバーした優雅な旅が可能です。" },
+                    { min: 500000, max: 1500000, emoji: "🏄", title: "ハワイ・極上のバカンス長期滞在！", desc: "ワイキキビーチを望むコンドミニアムに2週間以上滞在し、ゆったりとした時間を過ごす一生の思い出が作れます。" },
+                    { min: 1500000, max: 4000000, emoji: "🌍", title: "世界一周ファーストクラスの旅！", desc: "ファーストクラスで世界の名だたる大都市や歴史遺産を巡る、究極の世界一周旅行が実現します！" },
+                    { min: 4000000, max: Infinity, emoji: "🏰", title: "世界最高峰リゾートの年間パスポート！", desc: "旅の制限は一切なし。世界中の秘境や超高級プライベートアイランドへいつでも飛び立てる自由を手に入れます。" }
+                ],
+                gadget: [
+                    { min: 0, max: 150000, emoji: "🎧", title: "音響・デスク周り最強セット！", desc: `${name}さんのデスクに、高級ノイズキャンセリングヘッドホンやメカニカルキーボードを導入して生産性を極限へ。` },
+                    { min: 150000, max: 500000, emoji: "💻", title: "最強のモンスターデスクトップPC！", desc: "最新のグラボ(RTX 4070以上)や、高リフレッシュレートの湾曲大画面モニターを備えた夢のゲーミング/開発環境が完成！" },
+                    { min: 500000, max: 1500000, emoji: "👓", title: "Apple Vision Pro & VRフルセット！", desc: "最先端の空間コンピューティングや、最高峰のスマート家電を家中に張り巡らせる未来のサイバーハウスが構築できます。" },
+                    { min: 1500000, max: 4000000, emoji: "🖥️", title: "超ハイスペック自宅サーバー & オフィス！", desc: "超大容量の個人クラウドサーバーの構築から、電動エルゴノミクスデスク、スチールケースの高級チェア等、最強の書斎が完成。" },
+                    { min: 4000000, max: Infinity, emoji: "🚀", title: "宇宙体験や夢の研究開発ラボ！", desc: "最先端機材を取り揃えたプライベート開発ラボの設立や、3Dプリンター、レーザー加工機を備えた最強の秘密基地を作れます！" }
+                ],
+                gourmet: [
+                    { min: 0, max: 150000, emoji: "🍣", title: "銀座の超一流すしで記念日会食！", desc: `紹介制や予約困難な高級鮨店で、最高峰の「おまかせ」を大切な人と存分に味わえる体験が生まれます。` },
+                    { min: 150000, max: 500000, emoji: "🍷", title: "高級ワインセラー & ビンテージワイン！", desc: "自宅に本格的なセラーを導入し、憧れのシャトーやロマネコンティなどの高級ワインをストックする趣味が楽しめます。" },
+                    { min: 500000, max: 1500000, emoji: "🍖", title: "三ツ星フレンチ全国巡礼ツアー！", desc: "ミシュラン三ツ星に輝く極上の名店を日本全国、あるいは本場フランスまで巡る究極の美食の旅に出かけられます。" },
+                    { min: 1500000, max: 4000000, emoji: "🍾", title: "プライベートシェフの専属雇用！", desc: "自宅に超一流の出張シェフを毎週末招いて、オーダーメイドのフルコースディナーを堪能する生活が可能です。" },
+                    { min: 4000000, max: Infinity, emoji: "🏰", title: "世界最高峰リゾートの贅沢・美食の自由！", desc: "世界中の美食を追い求める。キャビアやトリュフ、高級シャンパンを日常として嗜む優雅な食生活の極みです。" }
+                ],
+                invest: [
+                    { min: 0, max: 150000, emoji: "🪙", title: "高配当個別株でプチ配当金！", desc: "やめたお金で配当を生む資産を買い、年間数千円〜数万円の不労所得（自動マネーマシン）が回り始めます。" },
+                    { min: 150000, max: 500000, emoji: "📈", title: "インデックス投資のコア資産！", desc: "S&P500やオルカンへの積立額が分厚くなり、経済的自立(FIRE)へのロードマップが劇的に加速します。" },
+                    { min: 500000, max: 1500000, emoji: "🏛️", title: "不動産クラウドファンディング投資！", desc: "実物不動産への投資や、オルタナティブ投資に資金を分散。強固な資産ポートフォリオが完成します。" },
+                    { min: 1500000, max: 4000000, emoji: "🏢", title: "経済的自立(FIRE)の基礎完了！", desc: "資産から生み出される配当が、生活費や固定費の一部を恒久的に賄ってくれる「自由の盾」となります。" },
+                    { min: 4000000, max: Infinity, emoji: "🗽", title: "完全なる経済的自由と自立！", desc: "これ以上お金のために働く必要性をなくし、人生の時間を100%自分の好きな活動だけに捧げる本当の自由が手に入ります。" }
+                ],
+                gaming: [
+                    { min: 0, max: 150000, emoji: "🎮", title: "最新ゲーム機 & VRデバイス！", desc: "PlayStation 5 や Meta Quest 3 などの最新機材と、話題のゲームソフトを全部入りで購入できます！" },
+                    { min: 150000, max: 500000, emoji: "🛋️", title: "極上のシアター・ゲーミングルーム！", desc: "高音質なサラウンドシステム、包み込まれるようなゲーミングチェアで、完璧な没入体験空間が仕上がります。" },
+                    { min: 500000, max: 1500000, emoji: "📺", title: "85インチ超大画面有機EL壁掛けシアター！", desc: "映画館さながらの大迫力スクリーンをリビングに導入。極上の映画鑑賞・ゲームライフが約束されます。" },
+                    { min: 1500000, max: 4000000, emoji: "🕹️", title: "自宅を完全なゲームセンター化！", desc: "レトロアケコンの筐体導入から、防音ゲーミングルームの施工まで、誰もが憧れる大人のホビールームを構築可能。" },
+                    { min: 4000000, max: Infinity, emoji: "🏰", title: "ゲーム・エンタメへの無制限投資！", desc: "インディーゲーム of パトロン(投資家)になることや、好きなエンタメ作品に無制限に支援・コミットできる圧倒的コレクター生活。" }
+                ]
+            };
+
+            const userRecs = recommendations[hobby] || recommendations.invest;
+            const matched = userRecs.find(r => total >= r.min && total < r.max) || userRecs[userRecs.length - 1];
+
+            milestoneEmoji.innerText = matched.emoji;
+            milestoneTitle.innerText = matched.title;
+            
+            let ageMessage = "";
+            if (ageGroup === "20") ageMessage = "20代のうちにこの資産を築くのは、将来の複利の期間（時間）を最も有効活用できる最強の選択です！";
+            if (ageGroup === "30") ageMessage = "30代の今、ライフプランの幅を大きく広げるための非常に賢明で価値のある資産です。";
+            if (ageGroup === "40") ageMessage = "40代からの人生の後半戦を、精神的な余裕と豊かな選択肢をもって迎えるための最高のご褒美になります。";
+            if (ageGroup === "50") ageMessage = "セカンドライフを自分らしく、何にも縛られずにアクティブに楽しむための最高の軍資金になります！";
+
+            milestoneDesc.innerText = `${matched.desc}\n(${ageMessage})`;
+        }
+
+        // 💳 アフィリエイトバナーの更新 (動的パーソナライズ)
+        function updateAffiliateBanner(totalInvest, monthlySaving) {
+            const name = profileName.value.trim() || "よへ";
+            const hobby = profileHobby.value;
+            
+            const bannerTitle = document.getElementById('banner-title');
+            const bannerDesc = document.getElementById('banner-desc');
+            const bannerBadge = document.getElementById('banner-badge-text');
+            const bannerLink = document.getElementById('banner-link');
+
+            const totalStr = formatCurrency(totalInvest);
+            const monthlyStr = monthlySaving.toLocaleString();
+
+            if (monthlySaving <= 0) {
+                bannerTitle.innerText = "複利運用を今すぐ始めよう";
+                bannerDesc.innerText = "やめた習慣のお金で資産運用をスタート！まずは人気証券会社で口座開設（無料）";
+                bannerLink.innerText = "口座を開く 🚀";
+                return;
+            }
+
+            bannerTitle.innerText = `${name}さんの「月 ${monthlyStr} 円」を複利運用へ！`;
+
+            // 趣味に合わせた具体的なアプローチで心理的ハードルを下げる
+            let hobbyTarget = "";
+            let linkText = "口座を開設する 🚀";
+            switch (hobby) {
+                case 'car':
+                    hobbyTarget = "憧れのマイカー購入資金";
+                    linkText = "投資で愛車を手に入れる 🚗";
+                    break;
+                case 'travel':
+                    hobbyTarget = "極上の旅行・アドベンチャー";
+                    linkText = "旅の軍資金を作る ✈️";
+                    break;
+                case 'gadget':
+                    hobbyTarget = "最強のデスク・PC環境";
+                    linkText = "ガジェット資金を増やす 💻";
+                    break;
+                case 'gourmet':
+                    hobbyTarget = "極上の美食巡り";
+                    linkText = "美食の軍資金を作る 🍣";
+                    break;
+                case 'invest':
+                    hobbyTarget = "経済的自立（FIRE）";
+                    linkText = "FIREの第一歩を踏み出す 🗽";
+                    break;
+                case 'gaming':
+                    hobbyTarget = "夢のゲーミング/趣味部屋";
+                    linkText = "趣味部屋を構築する 🎮";
+                    break;
+                default:
+                    hobbyTarget = "豊かな将来の資産";
+                    linkText = "口座を開設する 🚀";
+            }
+
+            bannerDesc.innerText = `浮いたお金を放置するのは機会損失！月 ${monthlyStr} 円の積立は、将来 ${totalStr} に化ける力を持っています。まずは人気証券会社で無料口座開設。`;
+            bannerLink.innerText = linkText;
+            
+            // デモ用の遷移先（アフィリエイトASPリンクなどをここに設定）
+            bannerLink.href = "https://example.com/sec-account-promotion?user=" + encodeURIComponent(name) + "&hobby=" + hobby + "&target=" + encodeURIComponent(hobbyTarget);
+        }
+
+        // 📈 グラフ
+        function updateChart(labels, savingData, investData) {
+            const ctx = document.getElementById('yieldChart').getContext('2d');
+            const isDark = document.body.classList.contains('theme-dark');
+
+            if (chart) chart.destroy();
+
+            const lineCompColor = isDark ? '#00f3ff' : '#0284c7';
+            const lineCompBg = isDark ? 'rgba(0, 243, 255, 0.08)' : 'rgba(2, 132, 199, 0.08)';
+            const lineSaveColor = isDark ? '#ff007f' : '#db2777';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(15, 23, 42, 0.05)';
+            const tickColor = isDark ? '#94a3b8' : '#475569';
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '積立投資 (複利あり)',
+                            data: investData,
+                            borderColor: lineCompColor,
+                            backgroundColor: lineCompBg,
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 1.5,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'ただ貯めた場合',
+                            data: savingData,
+                            borderColor: lineSaveColor,
+                            backgroundColor: 'transparent',
+                            borderWidth: 1.5,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { color: tickColor, font: { size: 9, family: 'Outfit' } }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) label += formatCurrency(context.parsed.y);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor, font: { size: 9 } }
+                        },
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: {
+                                color: tickColor,
+                                font: { size: 9 },
+                                callback: function(value) {
+                                    if (value >= 100000000) return (value / 100000000).toFixed(1) + '億円';
+                                    if (value >= 10000) return (value / 10000).toFixed(0) + '万円';
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 🚀 起動初期化
+        window.addEventListener('load', () => {
+            loadSettings(); 
+            const hasData = localStorage.getItem('habitvest_settings');
+            if (!hasData) {
+                subUnitPrice.value = 1000;
+                subCount.value = 1;
+                gachaUnitPrice.value = 3000;
+                gachaCount.value = 1;
+                
+                updateDetailsPanels();
+                updateTobaccoSaving();
+                updateBeerSaving();
+                updateSubSaving();
+                updateGachaSaving();
+            }
+            calculate();
+        });
+    </script>
+</body>
+</html>
