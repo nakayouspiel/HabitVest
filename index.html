@@ -825,7 +825,7 @@
         <header>
             <div class="header-title">
                 <h1>HabitVest</h1>
-                <p>やめた習慣を複利に変える <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.3.0 (2026.06.05)</span></p>
+                <p>やめた習慣を複利に変える <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.3.1 (2026.06.05)</span></p>
             </div>
             <div class="header-controls">
                 <button id="settings-toggle" class="control-btn" title="設定を開く">⚙️</button>
@@ -1006,7 +1006,7 @@
                 </div>
 
                 <!-- 🎁 パーソナライズ・マイルストーン -->
-                <div class="milestone-box">
+                <div class="milestone-box" id="milestone-box">
                     <div class="icon" id="milestone-emoji">💡</div>
                     <div class="milestone-content">
                         <h4 id="milestone-title">シミュレーション結果</h4>
@@ -1098,7 +1098,7 @@
             </div>
 
             <!-- 🔮 占い ✕ 統計予測カード -->
-            <div class="glass-card" style="margin-top: 14px; background: linear-gradient(135deg, rgba(217, 70, 239, 0.04) 0%, rgba(14, 165, 233, 0.04) 100%); border-color: rgba(217, 70, 239, 0.2);">
+            <div class="glass-card" id="fortune-card" style="margin-top: 14px; background: linear-gradient(135deg, rgba(217, 70, 239, 0.04) 0%, rgba(14, 165, 233, 0.04) 100%); border-color: rgba(217, 70, 239, 0.2);">
                 <h2 class="card-title" style="color: var(--neon-secondary);">🔮 習慣化占い ✕ 統計予測</h2>
                 <div style="text-align: center; margin-bottom: 12px;">
                     <span id="fortune-badge" style="background: linear-gradient(135deg, var(--neon-secondary) 0%, var(--neon-primary) 100%); color: white; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; box-shadow: 0 4px 10px rgba(219, 39, 119, 0.2);">今日の習慣化運勢：???</span>
@@ -1110,7 +1110,7 @@
             </div>
 
             <!-- ⏳ 時間経過によるロードマップ -->
-            <div class="glass-card" style="margin-top: 14px;">
+            <div class="glass-card" id="timeline-card" style="margin-top: 14px;">
                 <h2 class="card-title" style="color: var(--neon-green);">⏳ 時間経過で起こる劇的変化 (統計データ)</h2>
                 <div class="timeline-container" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px; position: relative; padding-left: 20px;">
                     <!-- 縦線 -->
@@ -1320,6 +1320,10 @@
         const lifeGachaDesc = document.getElementById('life-gacha-desc');
 
         const lifeCardEmpty = document.getElementById('life-card-empty');
+        const milestoneBox = document.getElementById('milestone-box');
+        const affiliateBanner = document.getElementById('affiliate-banner');
+        const fortuneCard = document.getElementById('fortune-card');
+        const timelineCard = document.getElementById('timeline-card');
 
         // ボトムナビ
         const navItems = document.querySelectorAll('.nav-item');
@@ -1781,6 +1785,15 @@
             updateMilestone(finalInvest);
             updateLifeData(years);
             updateAffiliateBanner(finalInvest, targetSaving);
+            
+            if (targetSaving <= 0) {
+                milestoneBox.style.display = 'none';
+                affiliateBanner.style.display = 'none';
+            } else {
+                milestoneBox.style.display = 'flex';
+                affiliateBanner.style.display = 'flex';
+            }
+
             updateChart(labels, savingData, investData);
         }
 
@@ -1875,44 +1888,37 @@
                 lifeCardGacha.style.display = 'none';
             }
 
-            // 合算
+            // 合算と表示制御
             if (selectedAny) {
                 lifeCardEmpty.style.display = 'none';
+                fortuneCard.style.display = 'block';
+                timelineCard.style.display = 'block';
                 
                 const hours = Math.floor(totalMinutes / 60);
                 const dayUnits = (hours / 24).toFixed(1);
                 lifeTime.innerText = `${hours.toLocaleString()} 時間`;
                 lifeTimeDesc.innerText = `（約 ${dayUnits} 日間分）の無駄な時間を、自己投資や大切な人との時間、あるいは本当の休息にあてることができます！`;
-            } else {
-                lifeCardEmpty.style.display = 'block';
-                lifeTime.innerText = "0 時間";
-                lifeTimeDesc.innerText = "習慣を選択すると、浮いた合計時間がここに表示されます。";
-            }
 
-            // 🔮 習慣化占い・統計予測の生成
-            const fortuneBadge = document.getElementById('fortune-badge');
-            const fortuneText1 = document.getElementById('fortune-text-1');
-            const fortuneText2 = document.getElementById('fortune-text-2');
+                // 🔮 習慣化占い・統計予測の生成
+                const fortuneBadge = document.getElementById('fortune-badge');
+                const fortuneText1 = document.getElementById('fortune-text-1');
+                const fortuneText2 = document.getElementById('fortune-text-2');
 
-            // 運勢リスト
-            const fortunes = ["超大吉 🌟", "昇龍運 🐉", "黄金期 🪙", "精神超越 🧠", "健康大吉 🍀", "大開運 ✨"];
-            // ニックネームの文字コードや今日の日付をシード値にして毎日違う運勢にする（擬似ランダム）
-            const dayCode = new Date().getDate();
-            const nameCode = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const seed = (dayCode + nameCode) % fortunes.length;
-            fortuneBadge.innerText = `今日の習慣化運勢：${fortunes[seed]}`;
+                // 運勢リスト
+                const fortunes = ["超大吉 🌟", "昇龍運 🐉", "黄金期 🪙", "精神超越 🧠", "健康大吉 🍀", "大開運 ✨"];
+                // ニックネームの文字コードや今日の日付をシード値にして毎日違う運勢にする（擬似ランダム）
+                const dayCode = new Date().getDate();
+                const nameCode = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                const seed = (dayCode + nameCode) % fortunes.length;
+                fortuneBadge.innerText = `今日の習慣化運勢：${fortunes[seed]}`;
 
-            // 占いメッセージの作成
-            let selectedHabitNames = [];
-            if (activeHabits.tobacco) selectedHabitNames.push("禁煙");
-            if (activeHabits.beer) selectedHabitNames.push("禁酒");
-            if (activeHabits.sub) selectedHabitNames.push("デジタルデトックス");
-            if (activeHabits.gacha) selectedHabitNames.push("ドーパミン制御");
+                // 占いメッセージの作成
+                let selectedHabitNames = [];
+                if (activeHabits.tobacco) selectedHabitNames.push("禁煙");
+                if (activeHabits.beer) selectedHabitNames.push("禁酒");
+                if (activeHabits.sub) selectedHabitNames.push("デジタルデトックス");
+                if (activeHabits.gacha) selectedHabitNames.push("ドーパミン制御");
 
-            if (selectedHabitNames.length === 0) {
-                fortuneText1.innerText = "「習慣」タブでやめる習慣を選択してください。あなたの未来の運勢と統計予測がここに開示されます。";
-                fortuneText2.innerText = "習慣を手放す決意をした瞬間、運命の歯車が回り始めます。";
-            } else {
                 fortuneText1.innerText = `🔮 【統計的運命】 ${name}さんが「${selectedHabitNames.join('・')}」に踏み切ったことで、統計的に3ヶ月以内に脳のクリアネス（集中力）が最大1.4倍に向上。仕事の意思決定精度が上がり、臨時収入や新しいチャンスを引き寄せる確率が 78.4% 上昇しています。`;
                 
                 let hobbyTarget = "";
@@ -1927,44 +1933,50 @@
                     default: hobbyTarget = "豊かな将来 🗽"; hobbyBenefit = "精神的かつ時間的余裕が、新しい幸福をもたらします。";
                 }
                 fortuneText2.innerText = `✨ 【引き寄せの暗示】 浮いたお金が「${hobbyTarget}」へと形を変えるロードマップが確立されました。悪い習慣を手放した空白には、統計的に『本当にあなたが必要とする良縁やアイデア』が舞い込みます。 ${hobbyBenefit}`;
-            }
 
-            // ⏳ 時間経過ロードマップの生成
-            const tl1Day = document.getElementById('timeline-1day');
-            const tl3Days = document.getElementById('timeline-3days');
-            const tl1Week = document.getElementById('timeline-1week');
-            const tl1Month = document.getElementById('timeline-1month');
+                // ⏳ 時間経過ロードマップの生成
+                const tl1Day = document.getElementById('timeline-1day');
+                const tl3Days = document.getElementById('timeline-3days');
+                const tl1Week = document.getElementById('timeline-1week');
+                const tl1Month = document.getElementById('timeline-1month');
 
-            let tlData = {
-                '1day': ["体内環境がリセットされ、血液循環がスムーズになり始めます。"],
-                '3days': ["睡眠が深くなり、朝スッキリ目覚められるように。胃腸の疲労感も取れてきます。"],
-                '1week': ["脳のドーパミン受容体のリセットが進行。イライラが減り、集中力が持続しやすくなります。"],
-                '1month': ["体脂肪や血圧などの健康数値が大幅に改善。自己コントロール感による自信が満ち溢れます。"]
-            };
+                let tlData = {
+                    '1day': ["体内環境がリセットされ、血液循環がスムーズになり始めます。"],
+                    '3days': ["睡眠が深くなり、朝スッキリ目覚められるように。胃腸の疲労感も取れてきます。"],
+                    '1week': ["脳のドーパミン受容体のリセットが進行。イライラが減り、集中力が持続しやすくなります。"],
+                    '1month': ["体脂肪や血圧などの健康数値が大幅に改善。自己コントロール感による自信が満ち溢れます。"]
+                };
 
-            if (activeHabits.tobacco) {
-                tlData['1day'].push("血中酸素濃度と血圧が正常化。一酸化炭素が体内から完全に消え去ります。");
-                tlData['3days'].push("気管支が弛緩し、呼吸が劇的に楽になります。味覚や嗅覚が驚くほど鋭敏に。");
-                tlData['1week'].push("肺の繊毛運動が回復し、溜まっていた有害物質の排出が本格化します。");
-                tlData['1month'].push("肺機能が最大30%回復。咳や息切れが消え、肌の血色が格段に良くなります。");
-            }
-            if (activeHabits.beer) {
-                tlData['1day'].push("肝臓のアルコール分解が終了し、脂肪燃焼プロセスが再開されます。");
-                tlData['3days'].push("アルコールによる脱水が解消し、肌のキメとハリが戻り始めます。");
-                tlData['1week'].push("深い睡眠（レム睡眠）の割合が2倍になり、脳の疲労が完璧に解消されます。");
-                tlData['1month'].push("肝機能（γ-GTP等）が正常値へ。むくみが完全に取れ、体重の減少が目に見えて現れます。");
-            }
-            if (activeHabits.sub || activeHabits.gacha) {
-                tlData['1day'].push("ブルーライト削減により、睡眠誘導ホルモンであるメラトニンの分泌が正常化。");
-                tlData['3days'].push("スマホ脳特有のマルチタスク疲労が抜け、1つの物事への深い集中力が戻り始めます。");
-                tlData['1week'].push("異常な快感刺激から解放され、散歩や読書などの穏やかな行動に強い幸福感を感じるように。");
-                tlData['1month'].push("時間の余裕が統計的に約30〜60時間増加。自己投資や趣味に熱中でき、幸福度が最大化します。");
-            }
+                if (activeHabits.tobacco) {
+                    tlData['1day'].push("血中酸素濃度と血圧が正常化。一酸化炭素が体内から完全に消え去ります。");
+                    tlData['3days'].push("気管支が弛緩し、呼吸が劇的に楽になります。味覚や嗅覚が驚くほど鋭敏に。");
+                    tlData['1week'].push("肺の繊毛運動が回復し、溜まっていた有害物質の排出が本格化します。");
+                    tlData['1month'].push("肺機能が最大30%回復。咳や息切れが消え、肌の血色が格段に良くなります。");
+                }
+                if (activeHabits.beer) {
+                    tlData['1day'].push("肝臓 of アルコール分解が終了し、脂肪燃焼プロセスが再開されます。");
+                    tlData['3days'].push("アルコールによる脱水が解消し、肌のキメとハリが戻り始めます。");
+                    tlData['1week'].push("深い睡眠（レム睡眠）の割合が2倍になり、脳の疲労が完璧に解消されます。");
+                    tlData['1month'].push("肝機能（γ-GTP等）が正常値へ。むくみが完全に取れ、体重の減少が目に見えて現れます。");
+                }
+                if (activeHabits.sub || activeHabits.gacha) {
+                    tlData['1day'].push("ブルーライト削減により、睡眠誘導ホルモンであるメラトニンの分泌が正常化。");
+                    tlData['3days'].push("スマホ脳特有のマルチタスク疲労が抜け、1つの物事への深い集中力が戻り始めます。");
+                    tlData['1week'].push("異常な快感刺激から解放され、散歩や読書などの穏やかな行動に強い幸福感を感じるように。");
+                    tlData['1month'].push("時間の余裕が統計的に約30〜60時間増加。自己投資や趣味に熱中でき、幸福度が最大化します。");
+                }
 
-            tl1Day.innerHTML = tlData['1day'].join('<br>➕ ');
-            tl3Days.innerHTML = tlData['3days'].join('<br>➕ ');
-            tl1Week.innerHTML = tlData['1week'].join('<br>➕ ');
-            tl1Month.innerHTML = tlData['1month'].join('<br>➕ ');
+                tl1Day.innerHTML = tlData['1day'].join('<br>➕ ');
+                tl3Days.innerHTML = tlData['3days'].join('<br>➕ ');
+                tl1Week.innerHTML = tlData['1week'].join('<br>➕ ');
+                tl1Month.innerHTML = tlData['1month'].join('<br>➕ ');
+            } else {
+                lifeCardEmpty.style.display = 'block';
+                fortuneCard.style.display = 'none';
+                timelineCard.style.display = 'none';
+                lifeTime.innerText = "0 時間";
+                lifeTimeDesc.innerText = "習慣を選択すると、浮いた合計時間がここに表示されます。";
+            }
         }
 
         // 🎁 マイルストーン更新 (趣味連動)
