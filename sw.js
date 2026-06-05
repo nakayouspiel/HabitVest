@@ -1,10 +1,10 @@
-const CACHE_NAME = 'habitvest-v1';
+const CACHE_NAME = 'habitvest-v2';
 const ASSETS = [
+  '/',
   'index.html',
   'manifest.json',
   'icon-192.png',
-  'icon-512.png',
-  'https://cdn.jsdelivr.net/npm/chart.js'
+  'icon-512.png'
 ];
 
 // インストール時にリソースをキャッシュ

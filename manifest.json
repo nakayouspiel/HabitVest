@@ -1,7 +1,7 @@
 {
   "name": "HabitVest",
   "short_name": "HabitVest",
-  "start_url": "index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#060913",
   "theme_color": "#0284c7",
