@@ -1090,9 +1090,15 @@
              ========================================== -->
         <div id="tab-content-habits" class="tab-content active">
             <!-- 💸 本日浮いたお金 -->
-            <div class="saving-today-card">
-                <div style="font-size: 0.75rem; color: var(--text-sub); font-weight: 600;">本日の節約実績 (浮いたお金)</div>
-                <div class="saving-today-val" id="val-saving-today">0 円</div>
+            <div class="saving-today-card" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 20px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">本日の節約実績 (日次)</div>
+                    <div class="saving-today-val" id="val-saving-today" style="font-size: 1.8rem; font-weight: 800; color: var(--neon-secondary); margin-top: 4px;">0 円</div>
+                </div>
+                <div style="text-align: right; border-left: 1px solid var(--border-glass); padding-left: 20px; min-width: 120px;">
+                    <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">我慢中の固定費 (月次)</div>
+                    <div id="val-saving-monthly" style="font-size: 1.25rem; font-weight: 800; color: var(--neon-primary); margin-top: 4px;">0 円</div>
+                </div>
             </div>
 
             <div class="glass-card">
@@ -1423,9 +1429,10 @@
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="slider-yield">想定年間利回り (投資先)</label>
-                            <span class="val-badge" id="yield-badge">7%</span>
+                            <span class="val-badge" id="yield-badge">8%</span>
                         </div>
-                        <input type="range" id="slider-yield" min="1" max="15" step="0.5" value="7">
+                        <input type="range" id="slider-yield" min="1" max="15" step="0.5" value="8">
+                        <div id="yield-advice" style="font-size: 0.72rem; margin-top: 6px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); line-height: 1.4; color: var(--text-muted); text-align: left; min-height: 40px;"></div>
                     </div>
 
                     <!-- ⏳ 期間スライダー -->
@@ -1474,14 +1481,15 @@
                 </p>
                 <div class="form-group">
                     <label for="onboard-name">ニックネーム</label>
-                    <input type="text" id="onboard-name" placeholder="例: よへ">
+                    <input type="text" id="onboard-name" placeholder="ニックネームを入力">
                 </div>
                 <div class="form-group">
                     <label for="onboard-hobby">あなたの趣味・夢の使い道</label>
-                    <select id="onboard-hobby">
+                    <select id="onboard-hobby" required>
+                        <option value="" disabled selected>選択してください</option>
                         <option value="car">🚗 車・ドライブ</option>
                         <option value="travel">✈️ 旅行・アドベンチャー</option>
-                        <option value="gadget" selected>💻 ガジェット・PC環境</option>
+                        <option value="gadget">💻 ガジェット・PC環境</option>
                         <option value="gourmet">🍣 グルメ・美味しいもの</option>
                         <option value="invest">📈 投資・資産運用</option>
                         <option value="gaming">🎮 ゲーム・趣味部屋</option>
@@ -1490,17 +1498,19 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div class="form-group">
                         <label for="onboard-age">年齢</label>
-                        <select id="onboard-age">
+                        <select id="onboard-age" required>
+                            <option value="" disabled selected>選択してください</option>
                             <option value="20">20代</option>
-                            <option value="30" selected>30代</option>
+                            <option value="30">30代</option>
                             <option value="40">40代</option>
                             <option value="50">50代以上</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="onboard-gender">性別</label>
-                        <select id="onboard-gender">
-                            <option value="male" selected>男性</option>
+                        <select id="onboard-gender" required>
+                            <option value="" disabled selected>選択してください</option>
+                            <option value="male">男性</option>
                             <option value="female">女性</option>
                             <option value="other">その他</option>
                         </select>
@@ -1587,16 +1597,17 @@
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="ob-slider-yield">期待利回り (年利)</label>
-                            <span class="val-badge" id="ob-yield-badge">5.0%</span>
+                            <span class="val-badge" id="ob-yield-badge">8.0%</span>
                         </div>
-                        <input type="range" id="ob-slider-yield" min="0" max="15" step="0.1" value="5.0">
+                        <input type="range" id="ob-slider-yield" min="0" max="15" step="0.5" value="8.0">
+                        <div id="ob-yield-advice" style="font-size: 0.72rem; margin-top: 6px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); line-height: 1.4; color: var(--text-muted); text-align: left; min-height: 40px;"></div>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="ob-slider-years">積立期間 (年数)</label>
-                            <span class="val-badge" id="ob-years-badge">30年</span>
+                            <span class="val-badge" id="ob-years-badge">20年</span>
                         </div>
-                        <input type="range" id="ob-slider-years" min="1" max="50" step="1" value="30">
+                        <input type="range" id="ob-slider-years" min="1" max="50" step="1" value="20">
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px;">
@@ -1662,6 +1673,7 @@
 
         const sliderYield = document.getElementById('slider-yield');
         const yieldBadge = document.getElementById('yield-badge');
+        const yieldAdvice = document.getElementById('yield-advice'); // 設定モードルのアドバイス
         const sliderYears = document.getElementById('slider-years');
         const yearsBadge = document.getElementById('years-badge');
 
@@ -1703,6 +1715,7 @@
 
         // 🆕 習慣タブ（今日チェックイン）用のボタンと表示
         const valSavingToday = document.getElementById('val-saving-today');
+        const valSavingMonthly = document.getElementById('val-saving-monthly'); // 月次の節約表示
         const checkinBtnTobacco = document.getElementById('checkin-btn-tobacco');
         const checkinBtnBeer = document.getElementById('checkin-btn-beer');
         const checkinBtnSub = document.getElementById('checkin-btn-sub');
@@ -1730,6 +1743,7 @@
         const obGachaPriceBadge = document.getElementById('ob-gacha-price-badge');
         const obSliderYield = document.getElementById('ob-slider-yield');
         const obYieldBadge = document.getElementById('ob-yield-badge');
+        const obYieldAdvice = document.getElementById('ob-yield-advice'); // オンボーディングのアドバイス
         const obSliderYears = document.getElementById('ob-slider-years');
         const obYearsBadge = document.getElementById('ob-years-badge');
 
@@ -1767,7 +1781,7 @@
         };
 
         let simulationSettings = {
-            yield: 7.0,
+            yield: 8.0,
             years: 20
         };
 
@@ -1874,6 +1888,26 @@
             });
         });
 
+        // 📈 期待利回りに応じた初心者向けアドバイスを生成する関数
+        function getYieldAdvice(val) {
+            const num = parseFloat(val);
+            if (num === 0) {
+                return "ただの貯金です。インフレ（物価上昇）リスクに注意！💸";
+            } else if (num <= 3.0) {
+                return "【堅実】平均3%程度。国債や債券ファンドなど手堅く増やす、現実的で手堅い運用です 💼";
+            } else if (num <= 5.0) {
+                return "【王道】年利3〜5%程度。全世界株（オルカン）やS&P500などのインデックス投資でよく目指される王道の目標です 📈";
+            } else if (num <= 8.0) {
+                return "【目標】年利5〜8%程度。過去の米国株長期平均に近い、非常に優秀で資産形成を加速させる理想的な利回りです ✨";
+            } else if (num <= 12.0) {
+                return "【アクティブ】年利8〜12%程度。一部の高配当株や米国個別株など、多少のリスクをとってリターンを追求する水準です 🚀";
+            } else if (num <= 20.0) {
+                return "【神様級】年利15〜20%！あの投資の神様ウォーレン・バフェットと同等の天才的なパフォーマンスです 🗽";
+            } else {
+                return "【超ハイリスク】年利20%超！仮想通貨やレバレッジ取引など、元本を失うリスクの高い投機的な世界です ⚠️";
+            }
+        }
+
         // 🚭 設定モーダル内のスライダー連動
         function setupSettingsSliders() {
             tobaccoPackPrice.addEventListener('input', () => {
@@ -1902,10 +1936,14 @@
             });
             sliderYield.addEventListener('input', () => {
                 yieldBadge.innerText = `${sliderYield.value}%`;
+                if (yieldAdvice) yieldAdvice.innerText = getYieldAdvice(sliderYield.value);
             });
             sliderYears.addEventListener('input', () => {
                 yearsBadge.innerText = `${sliderYears.value}年`;
             });
+
+            // 初期アドバイス設定
+            if (yieldAdvice) yieldAdvice.innerText = getYieldAdvice(sliderYield.value);
         }
         setupSettingsSliders();
 
@@ -1925,10 +1963,14 @@
             });
             obSliderYield.addEventListener('input', () => {
                 obYieldBadge.innerText = `${obSliderYield.value}%`;
+                if (obYieldAdvice) obYieldAdvice.innerText = getYieldAdvice(obSliderYield.value);
             });
             obSliderYears.addEventListener('input', () => {
                 obYearsBadge.innerText = `${obSliderYears.value}年`;
             });
+
+            // 初期アドバイス設定
+            if (obYieldAdvice) obYieldAdvice.innerText = getYieldAdvice(obSliderYield.value);
 
             // チェックボックス連動でスライダーをグレーアウト
             const toggleRange = (chk, range) => {
@@ -1945,10 +1987,27 @@
         // 🆕 オンボーディングステップ制御
         onboardNext1.addEventListener('click', () => {
             const name = obName.value.trim();
+            const hobby = obHobby.value;
+            const age = obAge.value;
+            const gender = obGender.value;
+
             if (!name) {
                 alert("ニックネームを入力してください。");
                 return;
             }
+            if (!hobby) {
+                alert("趣味・夢の使い道を選択してください。");
+                return;
+            }
+            if (!age) {
+                alert("年齢を選択してください。");
+                return;
+            }
+            if (!gender) {
+                alert("性別を選択してください。");
+                return;
+            }
+            
             document.getElementById('onboard-step-1').classList.remove('active');
             document.getElementById('onboard-step-2').classList.add('active');
         });
@@ -2043,6 +2102,7 @@
 
             sliderYield.value = simulationSettings.yield;
             yieldBadge.innerText = `${simulationSettings.yield}%`;
+            if (yieldAdvice) yieldAdvice.innerText = getYieldAdvice(simulationSettings.yield); // 設定モーダルの初期アドバイス
             sliderYears.value = simulationSettings.years;
             yearsBadge.innerText = `${simulationSettings.years}年`;
 
@@ -2250,10 +2310,31 @@
                 onboardingModal.classList.add('active');
                 // 初期化状態で開くために、フォームの内容を真っさらにする
                 obName.value = "";
+                obHobby.value = "";
+                obAge.value = "";
+                obGender.value = "";
+                
+                // 利回りと期間の初期値 (8%, 20年)
+                obSliderYield.value = 8.0;
+                obYieldBadge.innerText = "8.0%";
+                if (obYieldAdvice) obYieldAdvice.innerText = getYieldAdvice(8.0);
+                obSliderYears.value = 20;
+                obYearsBadge.innerText = "20年";
+
                 obChkTobacco.checked = true;
                 obChkBeer.checked = false;
                 obChkSub.checked = false;
                 obChkGacha.checked = false;
+
+                // スライダー有効・無効スタイル初期化
+                obTobaccoPackPrice.disabled = false;
+                obTobaccoPackPrice.style.opacity = "1";
+                obBeerUnitPrice.disabled = true;
+                obBeerUnitPrice.style.opacity = "0.4";
+                obSubUnitPrice.disabled = true;
+                obSubUnitPrice.style.opacity = "0.4";
+                obGachaUnitPrice.disabled = true;
+                obGachaUnitPrice.style.opacity = "0.4";
             }
 
             renderHistoryList();
@@ -2340,6 +2421,7 @@
             }));
 
             // 1. 本日浮いたお金の計算
+            // 日次項目（タバコ、ビール）のみを本日の節約実績（日次）に積算
             let todaySaving = 0;
             if (activeHabits.tobacco) {
                 todaySaving += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
@@ -2347,14 +2429,19 @@
             if (activeHabits.beer) {
                 todaySaving += Math.round(habitPrices.beerPrice * habitPrices.beerCount);
             }
-            // サブスクとソシャゲも日割りで本日の浮いた分として加算表示する
+            valSavingToday.innerText = `${todaySaving.toLocaleString()} 円`;
+
+            // 月次項目（サブスク、ソシャゲ）は別途、我慢中の固定費（月次）として表示
+            let monthlyFixedSaving = 0;
             if (activeHabits.sub) {
-                todaySaving += Math.round((habitPrices.subPrice * habitPrices.subCount) / 30);
+                monthlyFixedSaving += Math.round(habitPrices.subPrice * habitPrices.subCount);
             }
             if (activeHabits.gacha) {
-                todaySaving += Math.round((habitPrices.gachaPrice * habitPrices.gachaCount) / 30);
+                monthlyFixedSaving += Math.round(habitPrices.gachaPrice * habitPrices.gachaCount);
             }
-            valSavingToday.innerText = `${todaySaving.toLocaleString()} 円`;
+            if (valSavingMonthly) {
+                valSavingMonthly.innerText = `${monthlyFixedSaving.toLocaleString()} 円`;
+            }
 
             // 2. 将来予測シミュレーションの月間元本（targetSaving）の計算
             // 「現在チェックインされている習慣」を「毎日(毎月)やめ続ける」と仮定した月額合計
