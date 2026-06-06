@@ -668,11 +668,11 @@
         /* 🔘 セカンダリボタン (コントラスト改善) */
         .modal-btn-secondary {
             width: 100%;
-            background: rgba(0, 0, 0, 0.05);
-            border: 1.5px solid var(--border-glass);
+            background: #cbd5e1; /* 視認性の良い明るい灰色 */
+            border: 1px solid #94a3b8;
             border-radius: 12px;
             padding: 10px;
-            color: var(--text-main);
+            color: #000000; /* 文字色は黒でコントラスト最大化 */
             font-family: var(--font-ui);
             font-size: 0.8rem;
             font-weight: 700;
@@ -683,17 +683,18 @@
         }
 
         .theme-dark .modal-btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
+            background: #1e293b; /* 暗いスレート */
             border-color: rgba(255, 255, 255, 0.15);
-            color: #f8fafc;
+            color: #ffffff; /* ダークモード時は白文字 */
         }
 
         .modal-btn-secondary:active {
-            background: rgba(0, 0, 0, 0.1);
+            background: #b91c1c; /* ホバー・アクティブ時のフィードバック */
+            opacity: 0.85;
         }
 
         .theme-dark .modal-btn-secondary:active {
-            background: rgba(255, 255, 255, 0.1);
+            background: #334155;
         }
 
         .bottom-nav {
@@ -1159,12 +1160,16 @@
                 </div>
             </div>
 
+            <!-- 📅 カレンダー表示エリア -->
+            <div class="glass-card" style="padding: 14px; text-align: center;">
+                <button id="btn-open-calendar" class="modal-btn" style="margin-top: 0; padding: 12px; font-size: 0.85rem; font-weight: 700; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+                    📅 記録カレンダーを表示する
+                </button>
+            </div>
+
             <!-- 📜 これまでの履歴 -->
             <div class="glass-card history-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h2 class="card-title" style="margin-bottom: 0;">📜 これまでのやめた履歴</h2>
-                    <button id="btn-open-calendar" class="modal-btn" style="margin-top: 0; padding: 6px 12px; font-size: 0.75rem; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--border-glass); border-radius: 12px; cursor: pointer;">📅 カレンダーで見る</button>
-                </div>
+                <h2 class="card-title" style="margin-bottom: 12px;">📜 これまでのやめた履歴</h2>
                 <div class="history-list" id="history-list-container">
                     <div style="text-align: center; color: var(--text-sub); font-size: 0.72rem; padding: 20px;">
                         履歴がありません。上のボタンから「今日やめた！」を記録しましょう。
