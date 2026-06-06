@@ -1,4 +1,4 @@
-const CACHE_NAME = 'habitvest-v8';
+const CACHE_NAME = 'habitvest-v9';
 const ASSETS = [
   '/',
   'index.html',
@@ -31,17 +31,26 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// キャッシュファースト（オフライン対応）またはネットワークフォールバック
+// ローカルホスト開発時はキャッシュをバイパスし、通常はキャッシュファースト
 self.addEventListener('fetch', (e) => {
+  const isLocal = e.request.url.includes('localhost') || e.request.url.includes('127.0.0.1') || e.request.url.startsWith('file:///');
+  
+  if (isLocal) {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
       return fetch(e.request).then((response) => {
-        // 必要に応じてキャッシュに追加するロジックも追加可能
         return response;
       });
     })
   );
 });
+
