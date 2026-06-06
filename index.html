@@ -153,7 +153,19 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             box-shadow: var(--card-shadow);
-            transition: background-color 0.4s, border-color 0.4s;
+            transition: background-color 0.4s, border-color 0.4s, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .interactive-card {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .interactive-card:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 243, 255, 0.05);
+            transform: translateY(-2px);
         }
 
         .card-title {
@@ -1281,8 +1293,11 @@
             </div>
 
             <!-- 📊 累計セーブの実績数値 -->
-            <div class="glass-card" style="margin-bottom: 16px;">
-                <h2 class="card-title">📊 習慣セーブ成果</h2>
+            <div class="glass-card interactive-card" style="margin-bottom: 16px;" id="life-achievements-card">
+                <h2 class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span>📊 習慣セーブ成果</span>
+                    <span id="life-achievements-chevron" style="font-size: 0.7rem; color: var(--text-muted); transition: transform 0.3s; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 12px; font-weight: 500;">▼ 詳細データ</span>
+                </h2>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <!-- 累計やめた日数 -->
                     <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; text-align: center;">
@@ -1309,6 +1324,12 @@
                             <div>セーブした本数: <span id="life-stats-beer-count" style="font-weight:700; color:var(--text-sub);">0本</span></div>
                             <div>カットしたカロリー: <span id="life-stats-beer-cal" style="font-weight:700; color:var(--text-sub);">0 kcal</span></div>
                         </div>
+                    </div>
+                </div>
+                <!-- 🔽 折りたたみ詳細データエリア -->
+                <div id="life-achievements-details" style="max-height: 0px; overflow: hidden; transition: max-height 0.4s ease-out; margin-top: 0px;">
+                    <div style="border-top: 1px solid var(--border-glass); padding-top: 16px; margin-top: 16px; display: flex; flex-direction: column; gap: 12px;" id="life-achievements-extended-container">
+                        <!-- JSで動的生成 -->
                     </div>
                 </div>
             </div>
@@ -5935,6 +5956,153 @@
 
                 rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める（${Math.round(totalSavingGoal).toLocaleString()}円）よりも <strong>${Math.round(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${Math.round(totalInvestGoal).toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、「<strong>${hobbyTarget}</strong>」を実現し、何にも縛られない自由な人生を手に入れることができます！`;
             }
+
+            // 🆕 動的詳細データの生成
+            const extendedContainer = document.getElementById('life-achievements-extended-container');
+            const achievementsDetails = document.getElementById('life-achievements-details');
+            if (extendedContainer) {
+                let html = '';
+
+                // 1. タバコ詳細
+                if (counts.tobacco > 0) {
+                    const cigarettes = Math.round(counts.tobacco * 20);
+                    const nicotine = (counts.tobacco * 20 * 0.8).toFixed(1);
+                    const tar = Math.round(counts.tobacco * 20 * 10);
+                    const savedTimeMin = Math.round(cigarettes * 5); // 1本5分
+                    let savedTimeStr = `${savedTimeMin}分`;
+                    if (savedTimeMin >= 60) {
+                        const h = Math.floor(savedTimeMin / 60);
+                        const m = savedTimeMin % 60;
+                        savedTimeStr = `${h}時間 ${m}分`;
+                    }
+                    
+                    // 肺の状態メッセージ
+                    let lungMsg = '肺の繊毛運動が回復し、毒素の排出機能が正常化しています！';
+                    if (totalStatsDays >= 30) {
+                        lungMsg = '気管支の働きが大きく改善し、呼吸が非常に浅く楽になっています。運動能力も向上中！';
+                    } else if (totalStatsDays >= 90) {
+                        lungMsg = '肺胞の機能が大幅に修復され、肺がん等の疾患リスクが確実に低下しています！🌟';
+                    }
+
+                    html += `
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px;">
+                        <div style="font-weight: 700; font-size: 0.78rem; color: var(--neon-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🚭 タバコセーブ詳細</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.7rem; line-height: 1.4;">
+                            <div>ニコチン低減: <span style="font-weight:700; color:var(--text-sub);">${nicotine} mg</span></div>
+                            <div>タール低減: <span style="font-weight:700; color:var(--text-sub);">${tar.toLocaleString()} mg</span></div>
+                            <div style="grid-column: span 2;">浮いた喫煙時間: <span style="font-weight:700; color:var(--text-sub);">${savedTimeStr}</span></div>
+                            <div style="grid-column: span 2; color: var(--neon-secondary); font-size: 0.65rem; line-height: 1.3; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 4px;">❤️ 肺の回復度: ${lungMsg}</div>
+                        </div>
+                    </div>
+                    `;
+                }
+
+                // 2. お酒詳細
+                if (counts.beer > 0) {
+                    const pureAlcohol = Math.round(counts.beer * 14); // 350ml 5% = 14g
+                    const calories = Math.round(counts.beer * 140);
+                    
+                    // 肝臓の健康状態メッセージ
+                    let liverMsg = 'アルコールの代謝負担が減り、肝臓の脂肪化リスクが低下しています！';
+                    if (totalStatsDays >= 3) {
+                        liverMsg = '肝細胞の再生プロセスが進行し、脂質代謝機能が向上し始めています！';
+                    }
+                    if (totalStatsDays >= 30) {
+                        liverMsg = '肝臓の炎症数値（AST/ALT）が安定し、睡眠の質が飛躍的に高まっています！💤';
+                    }
+
+                    html += `
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px;">
+                        <div style="font-weight: 700; font-size: 0.78rem; color: var(--neon-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🍺 お酒セーブ詳細</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.7rem; line-height: 1.4;">
+                            <div>純アルコール低減: <span style="font-weight:700; color:var(--text-sub);">${pureAlcohol} g</span></div>
+                            <div>カットカロリー: <span style="font-weight:700; color:var(--text-sub);">${calories.toLocaleString()} kcal</span></div>
+                            <div style="grid-column: span 2; color: var(--neon-primary); font-size: 0.65rem; line-height: 1.3; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 4px;">💪 肝臓のいたわり度: ${liverMsg}</div>
+                        </div>
+                    </div>
+                    `;
+                }
+
+                // 3. 固定費（サブスク・ガチャ）運用シミュレーション
+                const subSaved = history.filter(item => item.type === 'sub').reduce((sum, item) => sum + item.amount, 0);
+                const gachaSaved = history.filter(item => item.type === 'gacha').reduce((sum, item) => sum + item.amount, 0);
+                const totalFixedSaved = subSaved + gachaSaved;
+
+                let monthlySubGachaSaving = 0;
+                if (activeHabits.sub) {
+                    monthlySubGachaSaving += habitPrices.subPrice * habitPrices.subCount;
+                }
+                if (activeHabits.gacha) {
+                    monthlySubGachaSaving += habitPrices.gachaPrice * habitPrices.gachaCount;
+                }
+
+                if (totalFixedSaved > 0 || monthlySubGachaSaving > 0) {
+                    const annualYield = simulationSettings.yield / 100;
+                    const r = annualYield / 12;
+                    
+                    const calcFutureValue = (P_fixed, PMT_fixed, months) => {
+                        if (r > 0) {
+                            return P_fixed * Math.pow(1 + r, months) + PMT_fixed * ((Math.pow(1 + r, months) - 1) / r);
+                        } else {
+                            return P_fixed + (PMT_fixed * months);
+                        }
+                    };
+
+                    const invest5Fixed = Math.round(calcFutureValue(totalFixedSaved, monthlySubGachaSaving, 60));
+                    const invest10Fixed = Math.round(calcFutureValue(totalFixedSaved, monthlySubGachaSaving, 120));
+
+                    html += `
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; grid-column: span 2;">
+                        <div style="font-weight: 700; font-size: 0.78rem; color: var(--neon-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">📈 固定費・ガチャ セーブ複利予測</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+                            これまでにセーブした費用（計 ${totalFixedSaved.toLocaleString()}円）と、今後のセーブ分（月 ${monthlySubGachaSaving.toLocaleString()}円）を年利 ${simulationSettings.yield}% で運用した場合の予測です：
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.7rem;">
+                            <div style="background: rgba(255,255,255,0.01); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                                <div style="color: var(--text-muted); font-size: 0.65rem;">5年後の運用価値</div>
+                                <div style="font-weight: 800; font-size: 0.85rem; color: var(--neon-primary); margin-top: 2px; font-family: 'Outfit';">${invest5Fixed.toLocaleString()} 円</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.01); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                                <div style="color: var(--text-muted); font-size: 0.65rem;">10年後の運用価値</div>
+                                <div style="font-weight: 800; font-size: 0.85rem; color: var(--neon-secondary); margin-top: 2px; font-family: 'Outfit';">${invest10Fixed.toLocaleString()} 円</div>
+                            </div>
+                        </div>
+                        <div style="color: var(--text-muted); font-size: 0.65rem; margin-top: 8px; line-height: 1.3;">
+                            💡 何気なく支払っていた固定費やガチャ代も、複利の運用に回すだけでこれほど強力な自己投資原資に生まれ変わります！
+                        </div>
+                    </div>
+                    `;
+                }
+
+                // 4. 全体集計＆モチベーションメッセージ
+                const avgDailySaved = Math.round(totalEarned / Math.max(totalStatsDays, 1));
+                
+                let motivationMessage = `このペースを維持すれば、1年後には<strong>新たに ${(dailySaving * 365).toLocaleString()}円</strong> の資産が積み上がります！この数字をキープして、複利の未来を手に入れましょう！💪`;
+                if (dailySaving <= 0) {
+                    motivationMessage = `記録タブからセーブ項目を登録して、最初の一歩を踏み出しましょう！この数字を増やしていく実感がモチベーションになります！🚀`;
+                } else if (streak >= 3) {
+                    motivationMessage = `現在 <strong>${streak}日連続セーブ中！</strong> この調子です！今日を乗り越えれば、明日さらに <strong>${dailySaving.toLocaleString()}円</strong> の資産と健康メリットがプラスされ、自制のループがさらに強化されます！🔥`;
+                }
+
+                html += `
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; border-left: 4px solid var(--neon-secondary); grid-column: span 2;">
+                    <div style="font-weight: 700; font-size: 0.78rem; color: var(--text-sub); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">💡 習慣改善サマリー</div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.7rem; line-height: 1.4;">
+                        <div>1日平均セーブ額: <span style="font-weight:700; color:var(--neon-secondary); font-family: 'Outfit';">${avgDailySaved.toLocaleString()} 円 / 日</span></div>
+                        <div style="color: var(--text-sub); font-size: 0.68rem; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; line-height: 1.4;">
+                            ${motivationMessage}
+                        </div>
+                    </div>
+                </div>
+                `;
+
+                extendedContainer.innerHTML = html;
+
+                // すでに開いている場合は高さを再調整する
+                if (achievementsDetails && achievementsDetails.style.maxHeight !== '0px' && achievementsDetails.style.maxHeight) {
+                    achievementsDetails.style.maxHeight = achievementsDetails.scrollHeight + 'px';
+                }
+            }
         }
 
         function updateMilestone(total) {
@@ -6181,6 +6349,26 @@
                     }
                 });
                 statusDetails.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
+            // 習慣セーブ成果カードの開閉イベント
+            const achievementsCard = document.getElementById('life-achievements-card');
+            const achievementsDetails = document.getElementById('life-achievements-details');
+            const achievementsChevron = document.getElementById('life-achievements-chevron');
+
+            if (achievementsCard && achievementsDetails && achievementsChevron) {
+                achievementsCard.addEventListener('click', () => {
+                    if (achievementsDetails.style.maxHeight === '0px' || !achievementsDetails.style.maxHeight) {
+                        achievementsDetails.style.maxHeight = achievementsDetails.scrollHeight + 'px';
+                        achievementsChevron.innerText = '▲ 詳細を閉じる';
+                    } else {
+                        achievementsDetails.style.maxHeight = '0px';
+                        achievementsChevron.innerText = '▼ 詳細データ';
+                    }
+                });
+                achievementsDetails.addEventListener('click', (e) => {
                     e.stopPropagation();
                 });
             }
