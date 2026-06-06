@@ -2756,13 +2756,16 @@
             const dateStr = getTodayStr();
             let amount = 0;
             let label = "";
+            let quantity = 1;
 
             if (type === 'tobacco') {
                 amount = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
                 label = "タバコを我慢！ 🚫";
+                quantity = habitPrices.tobaccoCount; // 1日の消費箱数
             } else if (type === 'beer') {
                 amount = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
                 label = "ビールを我慢！ 🍻";
+                quantity = habitPrices.beerCount; // 1日の消費本数
             }
 
             const item = {
@@ -2770,7 +2773,8 @@
                 date: dateStr,
                 type: type,
                 label: label,
-                amount: amount
+                amount: amount,
+                quantity: quantity
             };
 
             history.unshift(item); // 先頭に追加
@@ -3109,10 +3113,22 @@
             
             history.forEach(item => {
                 totalEarned += item.amount;
-                if (item.type === 'tobacco') counts.tobacco++;
-                if (item.type === 'beer') counts.beer++;
-                if (item.type === 'sub') counts.sub++;
-                if (item.type === 'gacha') counts.gacha++;
+                
+                // 過去の数量（quantity）を取得。無ければ現在の設定値やデフォルト値で補完
+                let q = 1;
+                if (item.type === 'tobacco') {
+                    q = (item.quantity !== undefined) ? item.quantity : (habitPrices.tobaccoCount || 1.0);
+                    counts.tobacco += q;
+                } else if (item.type === 'beer') {
+                    q = (item.quantity !== undefined) ? item.quantity : (habitPrices.beerCount || 2.0);
+                    counts.beer += q;
+                } else if (item.type === 'sub') {
+                    q = (item.quantity !== undefined) ? item.quantity : (habitPrices.subCount || 1);
+                    counts.sub += q;
+                } else if (item.type === 'gacha') {
+                    q = (item.quantity !== undefined) ? item.quantity : (habitPrices.gachaCount || 1);
+                    counts.gacha += q;
+                }
             });
 
             const uniqueDates = new Set(history.map(item => item.date));
@@ -3145,9 +3161,9 @@
             if (statsTobaccoCard) {
                 if (counts.tobacco > 0) {
                     statsTobaccoCard.style.display = 'block';
-                    // 1回のチェックイン＝1箱（20本）とする
-                    const tobaccoCountVal = counts.tobacco * 20;
-                    const lifeRecoveredMin = counts.tobacco * 110; // 1箱110分寿命回復
+                    // counts.tobacco は累計箱数。1箱＝20本で換算
+                    const tobaccoCountVal = Math.round(counts.tobacco * 20);
+                    const lifeRecoveredMin = Math.round(counts.tobacco * 110); // 1箱で110分寿命回復
                     
                     let lifeRecoveredStr = `${lifeRecoveredMin} 分`;
                     if (lifeRecoveredMin >= 60) {
@@ -3167,8 +3183,9 @@
             if (statsBeerCard) {
                 if (counts.beer > 0) {
                     statsBeerCard.style.display = 'block';
-                    const beerCountVal = counts.beer; // 1回1本
-                    const calCutVal = counts.beer * 140; // 1缶140kcal
+                    // counts.beer は累計消費本数（小数は四捨五入/適切にフォーマット）
+                    const beerCountVal = parseFloat(counts.beer.toFixed(1));
+                    const calCutVal = Math.round(counts.beer * 140); // 1缶140kcal
 
                     statsBeerCount.innerText = `${beerCountVal} 本`;
                     statsBeerCal.innerText = `${calCutVal.toLocaleString()} kcal`;
