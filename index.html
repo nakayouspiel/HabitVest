@@ -335,16 +335,17 @@
         }
 
         .input-box input[type="number"] {
-            padding-right: 48px;
-            text-align: right;
+            text-align: center;
+            flex: 1;
+            padding: 8px;
         }
 
         .input-box span {
-            position: absolute;
-            right: 12px;
             font-size: 0.78rem;
             color: var(--text-sub);
-            pointer-events: none; /* テキストをクリックしても背後の入力欄に届くようにする */
+            white-space: nowrap;
+            min-width: 28px;
+            text-align: left;
         }
 
         input[type="range"] {
@@ -662,6 +663,37 @@
 
         .modal-btn-reset:active {
             background: rgba(219, 39, 119, 0.1);
+        }
+
+        /* 🔘 セカンダリボタン (コントラスト改善) */
+        .modal-btn-secondary {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 10px;
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            outline: none;
+            text-align: center;
+        }
+
+        .theme-dark .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+        }
+
+        .modal-btn-secondary:active {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-dark .modal-btn-secondary:active {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .bottom-nav {
@@ -1280,7 +1312,7 @@
                         <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 1日後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
                             節約額: <span id="rm-day-money" style="font-weight: 700;">0</span>円<br>
-                            <span style="color: var(--text-muted);">【変化】ジュースやカフェ代1回分が浮きました。悪い習慣に流されず、「自分の人生を自分でコントロールしている」という自尊心が芽生える最高の一歩です ☕</span>
+                            <span style="color: var(--text-muted);" id="rm-day-desc">【変化】ジュースやカフェ代1回分が浮きました。悪い習慣に流されず、「自分の人生を自分でコントロールしている」という自尊心が芽生える最高の一歩です ☕</span>
                         </div>
                     </div>
 
@@ -1290,7 +1322,7 @@
                         <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 1週間後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
                             節約額: <span id="rm-week-money" style="font-weight: 700;">0</span>円<br>
-                            <span style="color: var(--text-muted);">【変化】プチ贅沢なディナーができる額に！体内から毒素が抜け始め、睡眠の質が徐々に改善。朝の目覚めがすっきり軽やかになるのを体感できます 🥩</span>
+                            <span style="color: var(--text-muted);" id="rm-week-desc">【変化】プチ贅沢なディナーができる額に！体内から毒素が抜け始め、睡眠の質が徐々に改善。朝の目覚めがすっきり軽やかになるのを体感できます 🥩</span>
                         </div>
                     </div>
 
@@ -1300,7 +1332,7 @@
                         <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 1ヶ月後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
                             節約額: <span id="rm-month-money" style="font-weight: 700;">0</span>円<br>
-                            <span style="color: var(--text-muted);">【変化】欲しかった服や人気ゲームソフトが買える額！脳内のドーパミン受容体が正常化し、イライラ感が減少。呼吸機能の向上や胃腸の調子の良さをハッキリと実感できます 🧠</span>
+                            <span style="color: var(--text-muted);" id="rm-month-desc">【変化】欲しかった服や人気ゲームソフトが買える額！脳内のドーパミン受容体が正常化し、イライラ感が減少。呼吸機能の向上や胃腸 of 調子の良さをハッキリと実感できます 🧠</span>
                         </div>
                     </div>
 
@@ -1310,7 +1342,7 @@
                         <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 1年後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
                             節約額: <span id="rm-year-money" style="font-weight: 700;">0</span>円<br>
-                            <span style="color: var(--text-muted);">【変化】最新の高級スマホ購入や旅行に行ける大金に！肌ツヤが劇的に若返り、生活習慣病やガン、心臓病の将来的な発症リスクが大きく低下します ✈️</span>
+                            <span style="color: var(--text-muted);" id="rm-year-desc">【変化】最新の高級スマホ購入や旅行に行ける大金に！肌ツヤが劇的に若返り、生活習慣病やガン、心臓病の将来的な発症リスクが大きく低下します ✈️</span>
                         </div>
                     </div>
 
@@ -1387,14 +1419,24 @@
                             <label for="tobacco-pack-price">🚭 タバコ 1箱の価格</label>
                             <span class="val-badge" id="tobacco-price-badge">600円</span>
                         </div>
-                        <input type="range" id="tobacco-pack-price" min="400" max="800" step="10" value="600">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="tobacco-pack-price">-</button>
+                            <input type="number" id="tobacco-pack-price" min="400" max="800" step="10" value="600">
+                            <button type="button" class="spin-btn inc-btn" data-target="tobacco-pack-price">+</button>
+                            <span>円</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="tobacco-packs-per-day">1日あたりの消費量</label>
                             <span class="val-badge" id="tobacco-count-badge">1.0箱</span>
                         </div>
-                        <input type="range" id="tobacco-packs-per-day" min="0.1" max="3.0" step="0.1" value="1.0">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="tobacco-packs-per-day">-</button>
+                            <input type="number" id="tobacco-packs-per-day" min="0.1" max="3.0" step="0.1" value="1.0">
+                            <button type="button" class="spin-btn inc-btn" data-target="tobacco-packs-per-day">+</button>
+                            <span>箱</span>
+                        </div>
                     </div>
 
                     <!-- 🍺 お酒 -->
@@ -1403,14 +1445,24 @@
                             <label for="beer-unit-price">🍺 お酒 1本/1杯の価格</label>
                             <span class="val-badge" id="beer-price-badge">250円</span>
                         </div>
-                        <input type="range" id="beer-unit-price" min="100" max="800" step="10" value="250">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="beer-unit-price">-</button>
+                            <input type="number" id="beer-unit-price" min="100" max="800" step="10" value="250">
+                            <button type="button" class="spin-btn inc-btn" data-target="beer-unit-price">+</button>
+                            <span>円</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="beer-units-per-day">1日あたりの本数/杯数</label>
                             <span class="val-badge" id="beer-count-badge">2.0本</span>
                         </div>
-                        <input type="range" id="beer-units-per-day" min="0.5" max="8.0" step="0.5" value="2.0">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="beer-units-per-day">-</button>
+                            <input type="number" id="beer-units-per-day" min="0.5" max="8.0" step="0.5" value="2.0">
+                            <button type="button" class="spin-btn inc-btn" data-target="beer-units-per-day">+</button>
+                            <span>本</span>
+                        </div>
                     </div>
 
                     <!-- 📱 サブスク -->
@@ -1419,14 +1471,24 @@
                             <label for="sub-unit-price">📱 サブスク 1契約の月額</label>
                             <span class="val-badge" id="sub-price-badge">1,000円</span>
                         </div>
-                        <input type="range" id="sub-unit-price" min="500" max="3000" step="100" value="1000">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="sub-unit-price">-</button>
+                            <input type="number" id="sub-unit-price" min="500" max="3000" step="100" value="1000">
+                            <button type="button" class="spin-btn inc-btn" data-target="sub-unit-price">+</button>
+                            <span>円</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="sub-count">契約数</label>
                             <span class="val-badge" id="sub-count-badge">1個</span>
                         </div>
-                        <input type="range" id="sub-count" min="1" max="5" step="1" value="1">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="sub-count">-</button>
+                            <input type="number" id="sub-count" min="1" max="5" step="1" value="1">
+                            <button type="button" class="spin-btn inc-btn" data-target="sub-count">+</button>
+                            <span>個</span>
+                        </div>
                     </div>
 
                     <!-- 🎮 ソシャゲ課金 -->
@@ -1435,37 +1497,57 @@
                             <label for="gacha-unit-price">🎮 ソシャゲ 1回/月額</label>
                             <span class="val-badge" id="gacha-price-badge">3,000円</span>
                         </div>
-                        <input type="range" id="gacha-unit-price" min="1000" max="10000" step="500" value="3000">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="gacha-unit-price">-</button>
+                            <input type="number" id="gacha-unit-price" min="1000" max="10000" step="500" value="3000">
+                            <button type="button" class="spin-btn inc-btn" data-target="gacha-unit-price">+</button>
+                            <span>円</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="gacha-count">1ヶ月あたりの回数</label>
                             <span class="val-badge" id="gacha-count-badge">1回</span>
                         </div>
-                        <input type="range" id="gacha-count" min="1" max="10" step="1" value="1">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="gacha-count">-</button>
+                            <input type="number" id="gacha-count" min="1" max="10" step="1" value="1">
+                            <button type="button" class="spin-btn inc-btn" data-target="gacha-count">+</button>
+                            <span>回</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- 📈 資産シミュレーションの設定 -->
                 <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
                     <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 10px;">📈 シミュレーション予測設定</h4>
-                    <!-- 📈 利回りスライダー -->
+                    <!-- 📈 利回り -->
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="slider-yield">想定年間利回り (投資先)</label>
                             <span class="val-badge" id="yield-badge">8%</span>
                         </div>
-                        <input type="range" id="slider-yield" min="1" max="15" step="0.5" value="8">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="slider-yield">-</button>
+                            <input type="number" id="slider-yield" min="0" max="25" step="0.5" value="8">
+                            <button type="button" class="spin-btn inc-btn" data-target="slider-yield">+</button>
+                            <span>％</span>
+                        </div>
                         <div id="yield-advice" style="font-size: 0.72rem; margin-top: 6px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); line-height: 1.4; color: var(--text-muted); text-align: left; min-height: 40px;"></div>
                     </div>
 
-                    <!-- ⏳ 期間スライダー -->
+                    <!-- ⏳ 期間 -->
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="slider-years">シミュレーション期間</label>
                             <span class="val-badge" id="years-badge">20年</span>
                         </div>
-                        <input type="range" id="slider-years" min="1" max="30" step="1" value="20">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="slider-years">-</button>
+                            <input type="number" id="slider-years" min="1" max="50" step="1" value="20">
+                            <button type="button" class="spin-btn inc-btn" data-target="slider-years">+</button>
+                            <span>年</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1564,7 +1646,12 @@
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
                             <div class="label-wrapper"><label>1箱の価格</label><span class="val-badge" id="ob-tobacco-price-badge">600円</span></div>
-                            <input type="range" id="ob-tobacco-pack-price" min="400" max="800" step="10" value="600">
+                            <div class="input-box">
+                                <button type="button" class="spin-btn dec-btn" data-target="ob-tobacco-pack-price">-</button>
+                                <input type="number" id="ob-tobacco-pack-price" min="400" max="800" step="10" value="600">
+                                <button type="button" class="spin-btn inc-btn" data-target="ob-tobacco-pack-price">+</button>
+                                <span>円</span>
+                            </div>
                         </div>
                     </div>
                     <!-- ビール -->
@@ -1574,7 +1661,12 @@
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
                             <div class="label-wrapper"><label>1本の価格</label><span class="val-badge" id="ob-beer-price-badge">250円</span></div>
-                            <input type="range" id="ob-beer-unit-price" min="100" max="800" step="10" value="250">
+                            <div class="input-box">
+                                <button type="button" class="spin-btn dec-btn" data-target="ob-beer-unit-price">-</button>
+                                <input type="number" id="ob-beer-unit-price" min="100" max="800" step="10" value="250">
+                                <button type="button" class="spin-btn inc-btn" data-target="ob-beer-unit-price">+</button>
+                                <span>円</span>
+                            </div>
                         </div>
                     </div>
                     <!-- サブスク -->
@@ -1584,7 +1676,12 @@
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
                             <div class="label-wrapper"><label>月額契約料</label><span class="val-badge" id="ob-sub-price-badge">1,000円</span></div>
-                            <input type="range" id="ob-sub-unit-price" min="500" max="3000" step="100" value="1000">
+                            <div class="input-box">
+                                <button type="button" class="spin-btn dec-btn" data-target="ob-sub-unit-price">-</button>
+                                <input type="number" id="ob-sub-unit-price" min="500" max="3000" step="100" value="1000">
+                                <button type="button" class="spin-btn inc-btn" data-target="ob-sub-unit-price">+</button>
+                                <span>円</span>
+                            </div>
                         </div>
                     </div>
                     <!-- ソシャゲ -->
@@ -1594,12 +1691,17 @@
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
                             <div class="label-wrapper"><label>1回あたりの額</label><span class="val-badge" id="ob-gacha-price-badge">3,000円</span></div>
-                            <input type="range" id="ob-gacha-unit-price" min="1000" max="10000" step="500" value="3000">
+                            <div class="input-box">
+                                <button type="button" class="spin-btn dec-btn" data-target="ob-gacha-unit-price">-</button>
+                                <input type="number" id="ob-gacha-unit-price" min="1000" max="10000" step="500" value="3000">
+                                <button type="button" class="spin-btn inc-btn" data-target="ob-gacha-unit-price">+</button>
+                                <span>円</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px;">
-                    <button type="button" class="modal-btn-reset" id="onboard-back-2">戻る</button>
+                    <button type="button" class="modal-btn-secondary" id="onboard-back-2">戻る</button>
                     <button type="button" class="modal-btn" id="onboard-next-2" style="margin-top:0;">次へ進む ➔</button>
                 </div>
             </div>
@@ -1623,7 +1725,12 @@
                             <label for="ob-slider-yield">期待利回り (年利)</label>
                             <span class="val-badge" id="ob-yield-badge">8.0%</span>
                         </div>
-                        <input type="range" id="ob-slider-yield" min="0" max="15" step="0.5" value="8.0">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="ob-slider-yield">-</button>
+                            <input type="number" id="ob-slider-yield" min="0" max="25" step="0.5" value="8.0">
+                            <button type="button" class="spin-btn inc-btn" data-target="ob-slider-yield">+</button>
+                            <span>％</span>
+                        </div>
                         <div id="ob-yield-advice" style="font-size: 0.72rem; margin-top: 6px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); line-height: 1.4; color: var(--text-muted); text-align: left; min-height: 40px;"></div>
                     </div>
                     <div class="form-group">
@@ -1631,11 +1738,16 @@
                             <label for="ob-slider-years">積立期間 (年数)</label>
                             <span class="val-badge" id="ob-years-badge">20年</span>
                         </div>
-                        <input type="range" id="ob-slider-years" min="1" max="50" step="1" value="20">
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="ob-slider-years">-</button>
+                            <input type="number" id="ob-slider-years" min="1" max="50" step="1" value="20">
+                            <button type="button" class="spin-btn inc-btn" data-target="ob-slider-years">+</button>
+                            <span>年</span>
+                        </div>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px;">
-                    <button type="button" class="modal-btn-reset" id="onboard-back-3">戻る</button>
+                    <button type="button" class="modal-btn-secondary" id="onboard-back-3">戻る</button>
                     <button type="button" class="modal-btn" id="onboard-finish" style="margin-top:0;">設定を完了して始める 🚀</button>
                 </div>
             </div>
@@ -1650,11 +1762,11 @@
             </div>
             <div class="modal-body">
                 <p style="font-size: 14px; line-height: 1.6; margin-bottom: 20px; color: var(--text-muted);">
-                    これまでのチェックイン履歴、設定された習慣の単価、プロフィールデータなど、すべての情報が完全に消去されます。この操作は取り消せません。本当に初期化しますか？
+                    これまでのチェックイン履歴、設定された習慣の単価、プロフィールデータなど、すべての情報が完全に消去されます。この操作は取り消せるません。本当に初期化しますか？
                 </p>
             </div>
             <div class="modal-footer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
-                <button id="reset-cancel" class="modal-btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); margin-top: 0;">キャンセル</button>
+                <button id="reset-cancel" class="modal-btn-secondary" style="margin-top: 0;">キャンセル</button>
                 <button id="reset-execute" class="modal-btn" style="background: var(--accent-pink); color: white; border: none; margin-top: 0;">完全に初期化する</button>
             </div>
         </div>
@@ -1669,9 +1781,9 @@
             </div>
             <div class="modal-body" style="padding: 10px 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 10px;">
-                    <button id="cal-prev-month" class="modal-btn" style="margin-top: 0; padding: 4px 10px; font-size: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); cursor: pointer;">&lt;</button>
+                    <button id="cal-prev-month" class="modal-btn-secondary" style="margin-top: 0; padding: 6px 12px; width: auto; min-width: 44px;">&lt;</button>
                     <span id="cal-month-title" style="font-weight: 700; font-size: 1.1rem; color: var(--neon-primary);">2026年 6月</span>
-                    <button id="cal-next-month" class="modal-btn" style="margin-top: 0; padding: 4px 10px; font-size: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); cursor: pointer;">&gt;</button>
+                    <button id="cal-next-month" class="modal-btn-secondary" style="margin-top: 0; padding: 6px 12px; width: auto; min-width: 44px;">&gt;</button>
                 </div>
                 
                 <!-- 曜日見出し -->
@@ -1688,6 +1800,16 @@
                 <!-- カレンダーグリッド -->
                 <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center;">
                     <!-- JSで動的にセルを挿入 -->
+                </div>
+
+                <!-- 🔮 未来シミュレーションプレビューエリア (カレンダーでその日に飛ぶ機能) -->
+                <div id="calendar-sim-preview" style="margin-top: 16px; padding: 12px; border-radius: 16px; background: rgba(14, 165, 233, 0.05); border: 1.5px dashed var(--border-glass); text-align: left; font-size: 0.75rem; display: block;">
+                    <div style="font-weight: 700; color: var(--neon-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                        🔮 未来シミュレーション & 記録プレビュー
+                    </div>
+                    <div id="cal-sim-content" style="line-height: 1.5; color: var(--text-sub);">
+                        カレンダーの日付をタップすると、その日の記録や、その日（未来）まで我慢を継続した場合のシミュレーションが表示されます。
+                    </div>
                 </div>
             </div>
         </div>
@@ -2054,7 +2176,7 @@
             });
         }
 
-        function renderCalendar() {
+                function renderCalendar() {
             if (!calendarGrid) return;
             calendarGrid.innerHTML = "";
             const year = currentCalDate.getFullYear();
@@ -2089,12 +2211,13 @@
             const todayStr = getTodayStr();
 
             for (let day = 1; day <= totalDays; day++) {
-                const cellDateStr = `${year}-\m-${String(day).padStart(2, '0')}`.replace('\\m', String(month + 1).padStart(2, '0'));
+                const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const cellDate = new Date(year, month, day);
                 
                 const cell = document.createElement('div');
                 cell.style.position = 'relative';
                 cell.style.padding = '4px 0';
-                cell.style.minHeight = '45px';
+                cell.style.minHeight = '48px';
                 cell.style.borderRadius = '8px';
                 cell.style.background = 'rgba(255, 255, 255, 0.03)';
                 cell.style.border = '1px solid rgba(255, 255, 255, 0.05)';
@@ -2103,28 +2226,60 @@
                 cell.style.alignItems = 'center';
                 cell.style.justifyContent = 'space-between';
                 cell.style.fontSize = '0.75rem';
+                cell.style.cursor = 'pointer';
+                cell.style.transition = 'all 0.2s';
+
+                // ホバー効果
+                cell.addEventListener('mouseenter', () => {
+                    cell.style.background = 'rgba(2, 132, 199, 0.15)';
+                    cell.style.borderColor = 'var(--neon-primary)';
+                });
+                cell.addEventListener('mouseleave', () => {
+                    if (cellDateStr === todayStr) {
+                        cell.style.background = 'transparent';
+                        cell.style.borderColor = 'var(--neon-secondary)';
+                    } else if (recordsByDate[cellDateStr]) {
+                        cell.style.background = 'rgba(2, 132, 199, 0.1)';
+                        cell.style.borderColor = 'rgba(2, 132, 199, 0.25)';
+                    } else {
+                        cell.style.background = 'rgba(255, 255, 255, 0.03)';
+                        cell.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                    }
+                });
+
+                // クリックして未来または過去のシミュレーションへ飛ぶ
+                cell.addEventListener('click', () => {
+                    const allCells = calendarGrid.querySelectorAll('div');
+                    allCells.forEach(c => {
+                        if (c.style.cursor === 'pointer') {
+                            c.style.boxShadow = 'none';
+                        }
+                    });
+                    cell.style.boxShadow = '0 0 8px var(--neon-primary)';
+                    showCalendarDaySimulation(cellDate, cellDateStr);
+                });
 
                 if (cellDateStr === todayStr) {
                     cell.style.border = '1px solid var(--neon-secondary)';
-                    cell.style.boxShadow = '0 0 6px rgba(0, 243, 255, 0.3)';
+                    cell.style.boxShadow = '0 0 6px rgba(219, 39, 119, 0.3)';
                 }
 
                 const dateNum = document.createElement('span');
                 dateNum.innerText = day;
-                dateNum.style.fontWeight = '600';
+                dateNum.style.fontWeight = '700';
                 
                 const dayOfWeek = new Date(year, month, day).getDay();
                 if (dayOfWeek === 0) dateNum.style.color = 'var(--accent-pink)';
-                else if (dayOfWeek === 6) dateNum.style.color = 'var(--neon-secondary)';
+                else if (dayOfWeek === 6) dateNum.style.color = 'var(--neon-primary)';
 
                 cell.appendChild(dateNum);
 
                 if (recordsByDate[cellDateStr]) {
-                    cell.style.background = 'rgba(0, 243, 255, 0.08)';
-                    cell.style.borderColor = 'rgba(0, 243, 255, 0.2)';
+                    cell.style.background = 'rgba(2, 132, 199, 0.1)';
+                    cell.style.borderColor = 'rgba(2, 132, 199, 0.25)';
                     
                     const emojiContainer = document.createElement('div');
-                    emojiContainer.style.fontSize = '0.62rem';
+                    emojiContainer.style.fontSize = '0.65rem';
                     emojiContainer.style.display = 'flex';
                     emojiContainer.style.gap = '2px';
                     emojiContainer.style.marginTop = '2px';
@@ -2152,8 +2307,180 @@
         }
 
 
+        // 🔮 未来シミュレーション補助関数 (趣味別アイテムマッピング)
+        function getHobbyItemForAmount(hobby, amount) {
+            const items = {
+                car: [
+                    { min: 0, max: 5000, emoji: "🧼", title: "高級洗車用クロス", desc: "愛車を優しく拭き上げるマイクロファイバークロスを購入できます。" },
+                    { min: 5000, max: 15000, emoji: "⛽", title: "満タンのガソリン代", desc: "愛車とお気に入りのドライブルートへ出発する燃料を満タンにできます。" },
+                    { min: 15000, max: 50000, emoji: "🛢️", title: "高性能エンジンオイル交換", desc: "エンジンの吹け上がりが滑らかになり、燃費も向上する極上オイルへ交換できます。" },
+                    { min: 50000, max: 150000, emoji: "📹", title: "高画質前後ドライブレコーダー", desc: "万が一の時の備えも万全に。愛車の安全性を高める最新機材を導入できます。" },
+                    { min: 150000, max: 500000, emoji: "🛞", title: "プレミアムスポーツタイヤ4本", desc: "路面への食いつきと乗り心地が別次元に進化する一流タイヤに交換できます。" },
+                    { min: 500000, max: 1500005, emoji: "🛣️", title: "極上温泉旅館を巡る日本一周ドライブ", desc: "長距離ドライブの疲れを各地の温泉と美食で癒やす極上の旅を楽しめます。" },
+                    { min: 1500005, max: Infinity, emoji: "🚗", title: "憧れのスポーツカー・SUV", desc: "キャッシュで車両を購入するか、輸入車の頭金を一括で支払える大金です！" }
+                ],
+                travel: [
+                    { min: 0, max: 5000, emoji: "🎒", title: "旅用トラベルポーチセット", desc: "荷物をスッキリ整理してパッキング効率を上げる便利グッズが買えます。" },
+                    { min: 5000, max: 15000, emoji: "🎫", title: "日帰り温泉&極上ランチプラン", desc: "少し足を伸ばして、日頃の疲れを癒やすプチ温泉旅行を楽しめます。" },
+                    { min: 15000, max: 50000, emoji: "🚅", title: "新幹線で行く国内観光1泊旅行", desc: "地方の名所を訪ね、地元の美味しい郷土料理を味わう旅へ出発できます。" },
+                    { min: 50000, max: 150000, emoji: "🏨", title: "憧れの星野リゾート宿泊", desc: "最高峰のおもてなしと贅沢な空間で、一生記憶に残る素晴らしい週末を過ごせます。" },
+                    { min: 150000, max: 500000, emoji: "✈️", title: "ビジネスクラスで行くアジア旅行", desc: "長時間のフライトもフルフラットシートで極上の快適さに。贅沢な海外旅行が実現します。" },
+                    { min: 500000, max: 1500005, emoji: "🏖️", title: "ハワイ・南国コンドミニアム長期滞在", desc: "時間を忘れて青い海を眺めながら暮らすように旅をする夢の生活へ。" },
+                    { min: 1500005, max: Infinity, emoji: "🌍", title: "ファーストクラス世界一周の旅", desc: "すべてのフライトを最上の空間で。地球上の行きたい場所へ自由に旅立てます！" }
+                ],
+                gadget: [
+                    { min: 0, max: 5000, emoji: "🔌", title: "高品質編み込みUSB-Cケーブル", desc: "断線しにくくデスクの美観を損ねないプレミアムなケーブルが買えます。" },
+                    { min: 5000, max: 15000, emoji: "🔋", title: "超急速充電対応モバイルバッテリー", desc: "スマホやノートPCをどこでも高速充電できる頼もしい相棒を手に入れられます。" },
+                    { min: 15000, max: 50000, emoji: "⌨️", title: "高級メカニカルキーボード", desc: "打鍵感が極上でタイピングが楽しくなり、日々の作業効率が劇的に向上します。" },
+                    { min: 50000, max: 150000, emoji: "🎧", title: "高音質ノイズキャンセリングヘッドホン", desc: "一瞬で静寂を作り出し、大好きな音楽や作業に極限まで没頭できる空間を作れます。" },
+                    { min: 150000, max: 500000, emoji: "💻", title: "MacBook Pro または最強自作PC", desc: "あらゆるクリエイティブワークや重い処理も一瞬でこなす最高の機材が手に入ります。" },
+                    { min: 500000, max: 1500005, emoji: "🖥️", title: "電動デスク&ウルトラワイド湾曲モニター", desc: "エルゴノミクスに基づいた、ガジェット好き誰もが憧れる究極のホームオフィスが完成します。" },
+                    { min: 1500005, max: Infinity, emoji: "🚀", title: "空間コンピューティング&サイバーベース", desc: "最先端機材とスマート家電に囲まれた、未来のコックピットのような書斎を作れます！" }
+                ],
+                gourmet: [
+                    { min: 0, max: 5000, emoji: "🍫", title: "プレミアムBean to Barチョコレート", desc: "カカオ豆の産地にこだわった、濃厚で芳醇な高級スイーツを堪能できます。" },
+                    { min: 5000, max: 15000, emoji: "🍜", title: "老舗料亭の贅沢ランチコース", desc: "伝統ある名店の味を、まずは気軽なランチでお得に贅沢に味わえます。" },
+                    { min: 15000, max: 50000, emoji: "🥩", title: "特選ブランド牛ステーキディナー", desc: "口の中でとろける最高峰の和牛を、シェフが目の前で焼き上げる鉄板焼きで楽しめます。" },
+                    { min: 50000, max: 150000, emoji: "🍣", title: "予約困難な銀座の超高級すし", desc: "一流の職人が握る、極上のネタとシャリが織りなす至高の鮨体験を味わえます。" },
+                    { min: 150000, max: 500000, emoji: "🍷", title: "本格ワインセラー&ビンテージワイン", desc: "銘醸地のビンテージワインを自宅で最高の状態で熟成させ、贅沢に抜栓できます。" },
+                    { min: 500000, max: 1500005, emoji: "🇫🇷", title: "パリのミシュラン三ツ星巡礼旅", desc: "美食の本場フランスへ飛び、世界最高峰のガストロノミーを体験する旅へ。" },
+                    { min: 1500005, max: Infinity, emoji: "🏰", title: "日常を美食で満たすプライベートシェフ", desc: "いつでも最上の料理を楽しめる、食の贅を尽くした極上のライフスタイルが実現します。" }
+                ],
+                invest: [
+                    { min: 0, max: 5000, emoji: "🪙", title: "高配当米国個別株 1株", desc: "小さくても確実に配当金（不労所得）を生み出し続ける資産の種を蒔けます。" },
+                    { min: 5000, max: 15000, emoji: "📈", title: "インデックスファンドのスポット買付", desc: "世界経済の成長の果実を享受する投資信託を買い増し、複利のスピードを上げます。" },
+                    { min: 15000, max: 50000, emoji: "💸", title: "毎月のつみたて投資の増額原資", desc: "投資元本を厚くすることで、将来の資産形成のゴールを何年も前倒しできます。" },
+                    { min: 50000, max: 150000, emoji: "🏦", title: "年間数万円の分配金を生むポートフォリオ", desc: "毎年勝手にお金が入ってくる仕組みが育ち、精神的な安定感が得られます。" },
+                    { min: 150000, max: 500000, emoji: "🏛️", title: "不動産クラウドファンディングへの分散", desc: "株式以外の資産にも手を広げ、より堅固で安定したインカムゲインを構築できます。" },
+                    { min: 500000, max: 1500005, emoji: "💼", title: "生活費の半分を賄う「自由の盾」", desc: "配当や運用益が生活の一部を支え、労働に対するプレッシャーが劇的に減少し始めます。" },
+                    { min: 1500005, max: Infinity, emoji: "🗽", title: "完全なる経済的独立 (FIRE)", desc: "お金のために働く必要性をなくし、人生の時間を100%自分のために使える真の自由です！" }
+                ],
+                gaming: [
+                    { min: 0, max: 5000, emoji: "🎮", title: "インディーゲームの傑作 1本", desc: "Steamやコンソールで高評価の、時間を忘れて遊べる名作ゲームを購入できます。" },
+                    { min: 5000, max: 15000, emoji: "🖱️", title: "超軽量ワイヤレスゲーミングマウス", desc: "ミリ秒を争うエイム精度と操作性を極限まで高める最新デバイスを導入できます。" },
+                    { min: 15000, max: 50000, emoji: "🕹️", title: "最新コンソールゲーム機 (PS5/Switch)", desc: "話題の最新大作タイトルや、独占タイトルを最高のパフォーマンスで遊べます。" },
+                    { min: 50000, max: 150000, emoji: "👓", title: "最新VRヘッドセット (Meta Quest 3)", desc: "バーチャル空間へダイブし、別次元の没入感でゲームや映像を楽しめます。" },
+                    { min: 150000, max: 500000, emoji: "🛋️", title: "最高級エルゴノミクスゲーミングチェア", desc: "長時間座っても疲れない、ハーマンミラー等の最高峰チェアでプレイ環境を極上化します。" },
+                    { min: 500000, max: 1500005, emoji: "🕹️", title: "防音施工＆100インチ超大画面シアター", desc: "音漏れを気にせず、大迫力の映像と重低音サラウンドでゲーム世界に没頭できる部屋が完成します。" },
+                    { min: 1500005, max: Infinity, emoji: "🏰", title: "ゲーム・エンタメへの無制限投資！", desc: "インディーゲームのパトロン(投資家)になることや、好きなエンタメ作品に無制限に支援・コミットできる圧倒的コレクター生活。" }
+                ]
+            };
+            const list = items[hobby] || items.invest;
+            return list.find(i => amount >= i.min && amount < i.max) || list[list.length - 1];
+        }
+
+        // 🔮 カレンダー日付選択未来シミュレーション表示関数 (まだ来ぬ日を試す機能)
+        function showCalendarDaySimulation(targetDate, dateStr) {
+            const previewArea = document.getElementById('calendar-sim-preview');
+            const previewContent = document.getElementById('cal-sim-content');
+            if (!previewArea || !previewContent) return;
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            targetDate.setHours(0,0,0,0);
+
+            previewArea.style.display = 'block';
+
+            // もし選択されたのが今日以前の場合
+            if (targetDate <= today) {
+                const dayRecords = history.filter(item => item.date === dateStr);
+                let recordText = "";
+                if (dayRecords.length > 0) {
+                    recordText = dayRecords.map(item => `・${item.label} (+${item.amount.toLocaleString()}円)`).join('<br>');
+                } else {
+                    recordText = "この日の我慢記録はありません。";
+                }
+                previewContent.innerHTML = `
+                    <strong>選択日:</strong> ${dateStr} (過去または本日)<br>
+                    <strong>この日の記録:</strong><br>${recordText}
+                `;
+                return;
+            }
+
+            // 未来の日付の場合
+            const diffTime = targetDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            let monthlySaving = 0;
+            if (activeHabits.tobacco) {
+                monthlySaving += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
+            }
+            if (activeHabits.beer) {
+                monthlySaving += Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
+            }
+            if (activeHabits.sub) {
+                monthlySaving += habitPrices.subPrice * habitPrices.subCount;
+            }
+            if (activeHabits.gacha) {
+                monthlySaving += habitPrices.gachaPrice * habitPrices.gachaCount;
+            }
+
+            const dailySaving = Math.round(monthlySaving / 30);
+            const totalSaving = dailySaving * diffDays;
+
+            // 複利の計算 (年利適用、日割り換算)
+            const annualYield = simulationSettings.yield / 100;
+            let totalInvest = 0;
+            if (annualYield > 0) {
+                const dailyRate = annualYield / 365;
+                totalInvest = (monthlySaving / 30) * ((Math.pow(1 + dailyRate, diffDays) - 1) / dailyRate);
+            } else {
+                totalInvest = totalSaving;
+            }
+
+            const investVal = Math.round(totalInvest);
+            const bonusVal = Math.max(0, investVal - totalSaving);
+
+            const hobby = profile.hobby || 'invest';
+            const matchedItem = getHobbyItemForAmount(hobby, investVal);
+
+            previewContent.innerHTML = `
+                <div style="font-size: 0.85rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 6px;">📅 ${dateStr} まで我慢を継続した場合 (${diffDays}日後)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <div>・我慢日数: <strong style="color: var(--text-main);">${diffDays} 日間</strong></div>
+                    <div>・節約額 (元本): <strong>${totalSaving.toLocaleString()} 円</strong></div>
+                    <div style="grid-column: span 2;">・複利運用後の期待値: <strong style="color: var(--neon-secondary); font-size: 0.9rem;">${investVal.toLocaleString()} 円</strong> <span style="font-size: 0.65rem; color: var(--text-muted);">(利回り ${simulationSettings.yield}%)</span></div>
+                    ${bonusVal > 0 ? `<div style="grid-column: span 2; color: var(--neon-green); font-weight: 700;">✨ 複利ボーナス: +${bonusVal.toLocaleString()} 円</div>` : ''}
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); padding: 8px; border-radius: 8px; margin-top: 4px;">
+                    <span style="font-size: 1.1rem; margin-right: 4px;">${matchedItem.emoji}</span><strong>${matchedItem.title}</strong><br>
+                    <span style="color: var(--text-muted); font-size: 0.7rem; line-height: 1.3; display: inline-block; margin-top: 2px;">${matchedItem.desc}</span>
+                </div>
+            `;
+        }
+
         // 🚭 設定モーダル内のスライダー連動
         function setupSettingsSliders() {
+            // プラスマイナスボタン共通処理の登録
+            document.querySelectorAll('.dec-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.dataset.target;
+                    const input = document.getElementById(targetId);
+                    if (!input) return;
+                    const min = parseFloat(input.min) || 0;
+                    const step = parseFloat(input.step) || 1;
+                    let val = parseFloat(input.value) || 0;
+                    val = Math.max(min, val - step);
+                    input.value = parseFloat(val.toFixed(2));
+                    input.dispatchEvent(new Event('input'));
+                    input.dispatchEvent(new Event('change'));
+                });
+            });
+
+            document.querySelectorAll('.inc-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.dataset.target;
+                    const input = document.getElementById(targetId);
+                    if (!input) return;
+                    const max = parseFloat(input.max) || Infinity;
+                    const step = parseFloat(input.step) || 1;
+                    let val = parseFloat(input.value) || 0;
+                    val = Math.min(max, val + step);
+                    input.value = parseFloat(val.toFixed(2));
+                    input.dispatchEvent(new Event('input'));
+                    input.dispatchEvent(new Event('change'));
+                });
+            });
             tobaccoPackPrice.addEventListener('input', () => {
                 tobaccoPriceBadge.innerText = `${tobaccoPackPrice.value}円`;
             });
@@ -2216,10 +2543,19 @@
             // 初期アドバイス設定
             if (obYieldAdvice) obYieldAdvice.innerText = getYieldAdvice(obSliderYield.value);
 
-            // チェックボックス連動でスライダーをグレーアウト
+            // チェックボックス連動でスライダー (入力エリア・ボタン) をグレーアウト
             const toggleRange = (chk, range) => {
                 range.disabled = !chk.checked;
-                range.style.opacity = chk.checked ? "1" : "0.4";
+                const container = range.closest('.input-box');
+                if (container) {
+                    container.style.opacity = chk.checked ? "1" : "0.4";
+                    container.querySelectorAll('button').forEach(btn => {
+                        btn.disabled = !chk.checked;
+                        btn.style.pointerEvents = chk.checked ? "auto" : "none";
+                    });
+                } else {
+                    range.style.opacity = chk.checked ? "1" : "0.4";
+                }
             };
             obChkTobacco.addEventListener('change', () => toggleRange(obChkTobacco, obTobaccoPackPrice));
             obChkBeer.addEventListener('change', () => toggleRange(obChkBeer, obBeerUnitPrice));
@@ -2887,6 +3223,41 @@
 
             const dailySaving = Math.round(monthlySaving / 30);
             
+            // 0円時にロードマップを非表示にしてプレースホルダーを表示する処理
+            const timelineContainer = document.querySelector('.timeline-container');
+            let placeholder = document.getElementById('life-roadmap-placeholder');
+            
+            if (monthlySaving <= 0) {
+                if (timelineContainer) timelineContainer.style.display = 'none';
+                if (lifeRoadmapMonthlyVal) lifeRoadmapMonthlyVal.parentNode.style.display = 'none';
+                
+                if (!placeholder) {
+                    placeholder = document.createElement('div');
+                    placeholder.id = 'life-roadmap-placeholder';
+                    placeholder.style.background = 'rgba(255, 255, 255, 0.02)';
+                    placeholder.style.border = '1px dashed var(--border-glass)';
+                    placeholder.style.borderRadius = '16px';
+                    placeholder.style.padding = '24px 16px';
+                    placeholder.style.textAlign = 'center';
+                    placeholder.style.color = 'var(--text-sub)';
+                    placeholder.style.fontSize = '0.75rem';
+                    placeholder.style.lineHeight = '1.6';
+                    placeholder.innerHTML = `
+                        <span style="font-size: 2.2rem; display: block; margin-bottom: 10px;">🔒</span>
+                        <strong>未来のロードマップがロックされています</strong><br>
+                        記録タブで今日やめた習慣を記録するか、設定で習慣の単価を設定してください。<br>
+                        我慢を始めると、ここに健康と資産の未来予測タイムラインがアンロックされます！🚀
+                    `;
+                    timelineContainer.parentNode.appendChild(placeholder);
+                } else {
+                    placeholder.style.display = 'block';
+                }
+            } else {
+                if (timelineContainer) timelineContainer.style.display = 'flex';
+                if (lifeRoadmapMonthlyVal) lifeRoadmapMonthlyVal.parentNode.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            }
+
             // 各期間の節約額表示
             const rmDayMoney = document.getElementById('rm-day-money');
             const rmWeekMoney = document.getElementById('rm-week-money');
@@ -2917,9 +3288,34 @@
             if (rmGoalSaving) rmGoalSaving.innerText = Math.round(totalSavingGoal).toLocaleString();
             if (rmGoalInvest) rmGoalInvest.innerText = Math.round(totalInvestGoal).toLocaleString();
 
+            // 金額と趣味に応じた文章の動的差し替え
+            const rmDayDesc = document.getElementById('rm-day-desc');
+            const rmWeekDesc = document.getElementById('rm-week-desc');
+            const rmMonthDesc = document.getElementById('rm-month-desc');
+            const rmYearDesc = document.getElementById('rm-year-desc');
+            const hobby = profile.hobby || 'invest';
+
+            if (monthlySaving > 0) {
+                if (rmDayDesc) {
+                    const item = getHobbyItemForAmount(hobby, dailySaving);
+                    rmDayDesc.innerHTML = `【変化】<strong>${item.title}</strong>相当（${dailySaving.toLocaleString()}円）が浮きました！${item.desc} ${item.emoji}`;
+                }
+                if (rmWeekDesc) {
+                    const item = getHobbyItemForAmount(hobby, dailySaving * 7);
+                    rmWeekDesc.innerHTML = `【変化】<strong>${item.title}</strong>（${(dailySaving * 7).toLocaleString()}円相当）が浮きました！${item.desc} 体内から毒素が抜け始め、睡眠の質が改善します。 ${item.emoji}`;
+                }
+                if (rmMonthDesc) {
+                    const item = getHobbyItemForAmount(hobby, monthlySaving);
+                    rmMonthDesc.innerHTML = `【変化】欲しかった<strong>${item.title}</strong>（${monthlySaving.toLocaleString()}円相当）を購入できます！${item.desc} 脳内ドーパミンの受容体が正常化していきます。 ${item.emoji}`;
+                }
+                if (rmYearDesc) {
+                    const item = getHobbyItemForAmount(hobby, monthlySaving * 12);
+                    rmYearDesc.innerHTML = `【変化】なんと<strong>${item.title}</strong>（${(monthlySaving * 12).toLocaleString()}円相当）を実現！${item.desc} 生活習慣病やがんのリスクが大きく低下します。 ${item.emoji}`;
+                }
+            }
+
             // 趣味に合わせた具体的なメッセージをゴールに表示
             if (rmGoalDesc) {
-                const hobby = profile.hobby || 'invest';
                 let hobbyTarget = "資産形成";
                 switch (hobby) {
                     case 'car': hobbyTarget = "憧れの車 🚗"; break;
@@ -2930,7 +3326,7 @@
                     case 'gaming': hobbyTarget = "夢のゲーミング/ホビールーム構築 🎮"; break;
                 }
 
-                rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める（${Math.round(totalSavingGoal).toLocaleString()}円）よりも <strong>${Math.round(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${Math.round(totalInvestGoal).toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、「${hobbyTarget}」を実現し、何にも縛られない自由な人生を手に入れることができます！`;
+                rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める（${Math.round(totalSavingGoal).toLocaleString()}円）よりも <strong>${Math.round(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${Math.round(totalInvestGoal).toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、「<strong>${hobbyTarget}</strong>」を実現し、何にも縛られない自由な人生を手に入れることができます！`;
             }
         }
 
