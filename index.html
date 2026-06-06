@@ -2293,68 +2293,75 @@
 
 
         // 🔮 未来シミュレーション補助関数 (趣味別アイテムマッピング)
+        const HOBBY_ITEMS = {
+            car: [
+                { min: 0, max: 5000, emoji: "💡", title: "サイバーRGB車内イルミネーション", desc: "車内を近未来的なネオンで演出し、コックピットのような高揚感を味わえます。" },
+                { min: 5000, max: 15000, emoji: "🧼", title: "高級ガラス繊維ボディコーティング剤", desc: "プロ級の鏡面ボディと超撥水パワーを与え、新車のような輝きを取り戻せます。" },
+                { min: 15000, max: 50000, emoji: "🔑", title: "アルミ削り出し本革スマートキーケース", desc: "持つたびに手馴染みの良さと重厚さに惚れ込む、最高峰のスマートキーケース。" },
+                { min: 50000, max: 150000, emoji: "📹", title: "3カメラ搭載高画質ドライブレコーダー", desc: "夜間や駐車中も360度逃さず監視し、愛車の絶対的な安全を確保します。" },
+                { min: 150000, max: 500000, emoji: "🛞", title: "プレミアム低ノイズスポーツタイヤ4本", desc: "路面を吸い付くようにグリップし、走りの快適性と静粛性を極限まで高めます。" },
+                { min: 500000, max: 1500005, emoji: "🛣️", title: "名湯温泉スイートを巡る日本一周ドライブ旅", desc: "ガソリン代や高速代、各地の極上温泉ホテルの宿泊費を完全にカバーする夢の旅行。" },
+                { min: 1500005, max: Infinity, emoji: "🚗", title: "憧れのプレミアムスポーツカー・SUV", desc: "キャッシュで車両を購入するか、輸入プレミアムカーの頭金を一括で支払える大金です！" }
+            ],
+            travel: [
+                { min: 0, max: 5000, emoji: "🏷️", title: "スマホ連携スマートトラベルタグ", desc: "ロストバゲージを防ぎ、荷物の位置を常に世界中から把握できる安心の旅ギア。" },
+                { min: 5000, max: 15000, emoji: "🚅", title: "グリーン車で行く日帰り新幹線温泉グルメ旅", desc: "新幹線グリーン車で地方へ飛び、その土地で一番の極上郷土料理を楽しむプチ旅。" },
+                { min: 15000, max: 50000, emoji: "🎒", title: "人間工学プレミアム多機能バックパック", desc: "大容量かつ驚くほど軽く感じられ、旅の移動や散策を100%快適にする一流バッグ。" },
+                { min: 50000, max: 150000, emoji: "🏨", title: "高級旅館・外資系ホテルの週末スイート宿泊", desc: "最高峰のおもてなしと贅沢なビューバスで心身を完璧にリフレッシュするひととき。" },
+                { min: 150000, max: 500000, emoji: "✈️", title: "ビジネスクラスで行く極上ハワイ長期滞在", desc: "フライトから極上の空間で。ワイキキビーチを望むコンドミニアムに暮らすように旅します。" },
+                { min: 500000, max: 1500005, emoji: "🌎", title: "プライベートガイドで行く秘境世界遺産の旅", desc: "個人旅行では難しい絶景の秘境を、快適な送迎とプロのガイド付きで安心に巡る夢の旅程。" },
+                { min: 1500005, max: Infinity, emoji: "🌍", title: "ファーストクラス無制限世界一周の旅", desc: "すべてのフライトを最高峰のスイートシートで。地球上のどこへでも思い立ったら旅立てる自由！" }
+            ],
+            gadget: [
+                { min: 0, max: 5000, emoji: "🌌", title: "サイバーネオンRGBデスクマット", desc: "デスク全体を未来的なRGB LEDで彩り、すべてのガジェット of 所有欲を刺激します。" },
+                { min: 5000, max: 15000, emoji: "🔌", title: "透明スケルトン＆スマート表示付き急速充電器", desc: "リアルタイムで充電W数がデジタル表示される、未来的な透明デザインの充電器。" },
+                { min: 15000, max: 50000, emoji: "⌨️", title: "極上コトコト打鍵音カスタムキーボード", desc: "心地よい打鍵音が癖になり、タイピング効率と日々の作業への楽しさを爆上げする一生モノ。" },
+                { min: 50000, max: 150000, emoji: "🎧", title: "空間オーディオ対応最強ヘッドホン＆スタンド", desc: "一瞬で完璧な静寂を作り出し、極上の音響体験と映画の世界に浸れる環境を作ります。" },
+                { min: 150000, max: 500000, emoji: "💻", title: "モンスター仕様MacBook Pro or 自作PC", desc: "動画編集、AI開発、あらゆる重いタスクを一瞬で完了させる無音の最強マシン。" },
+                { min: 500000, max: 1500005, emoji: "🖥️", title: "湾曲大画面液晶＆電動昇降コックピットデスク", desc: "理想の姿勢を記憶するデスクと巨大モニターに囲まれた、誰もが振り返る夢の仕事場。" },
+                { min: 1500005, max: Infinity, emoji: "🚀", title: "スマート空間コンピューティング＆サイバーベース", desc: "スマート家電と仮想モニターが空中に浮遊する、未来のSF映画そのままのデスク基地！" }
+            ],
+            gourmet: [
+                { min: 0, max: 5000, emoji: "🍮", title: "金箔煌めく極上Bean to Barプリンセット", desc: "1個数千円する、厳選カカオと高級卵で作られた極上濃厚スイーツを堪能。" },
+                { min: 5000, max: 15000, emoji: "🍣", title: "名店老舗料亭での極上ディナーコース", desc: "洗練された和の個室で、季節の最高峰食材を用いた匠の懐石料理に舌鼓。" },
+                { min: 15000, max: 50000, emoji: "🥩", title: "A5特選神戸牛サーロイン鉄板焼きディナー", desc: "熟練のシェフが目の前で豪快に焼き上げ、一口でとろける芳醇な肉汁の極みを満喫。" },
+                { min: 50000, max: 150000, emoji: "🍣", title: "予約半年待ちの銀座の超高級鮨カウンター", desc: "職人が目の前で握る究極のシャリとネタが絡み合う、一生忘れない極上の寿司体験。" },
+                { min: 150000, max: 500000, emoji: "🍷", title: "本格高級ワインセラー＆ビンテージワイン", desc: "憧れの格付けワインを自宅で完璧に管理し、特別な日に仲間と極上の抜栓を楽しむ大人の趣味。" },
+                { min: 500000, max: 1500005, emoji: "🇫🇷", title: "パリのミシュラン三ツ星レストラン巡り旅", desc: "フランスへ直接飛び、世界の美食家が集う超一流フレンチの真髄を体験する極上の旅。" },
+                { min: 1500005, max: Infinity, emoji: "🏰", title: "プライベートシェフ無制限雇用の贅沢ライフ", desc: "世界中の美食を追求する、キャビアやトリュフ、高級ワインに囲まれた圧倒的な日常。" }
+            ],
+            invest: [
+                { min: 0, max: 5000, emoji: "🪙", title: "米国優良高配当株 1株", desc: "小さくても毎期確実に配当金（不労所得）を生み出し続ける、資産運用の記念すべき第一歩。" },
+                { min: 5000, max: 15000, emoji: "📈", title: "インデックスファンドへの追加つみたて", desc: "世界経済の成長の恩恵をフルに活かし、複利のスピードを一気に加速させるブースター。" },
+                { min: 15000, max: 50000, emoji: "💸", title: "毎月配当が振り込まれるポートフォリオ", desc: "毎月お小遣いが入るようになり、労働への依存から抜け出す最初の安心感を得られます。" },
+                { min: 50000, max: 150000, emoji: "🏦", title: "年間数十万円の分配金を生む安定資産", desc: "年間の通信費や光熱費をすべて配当金だけでカバーできるようになる堅固な資産の壁。" },
+                { min: 150000, max: 500000, emoji: "🏛️", title: "不動産クラウドファンディングへの分散投資", desc: "家賃収入と同等の安定利回りを手に入れ、より多様で強固なインカムゲインを構築。" },
+                { min: 500000, max: 1500005, emoji: "💼", title: "生活費の半分を賄うセミリタイアの盾", desc: "働く時間を自分でコントロールできるようになり、人生の自由度が劇的に跳ね上がります。" },
+                { min: 1500005, max: Infinity, emoji: "🗽", title: "完全なる経済的独立 (FIRE達成)", desc: "お金のために働く時間をゼロにし、人生の時間を100%自分の夢に捧げる真の権利！" }
+            ],
+            gaming: [
+                { min: 0, max: 5000, emoji: "🎧", title: "光るサイバーパンクLEDヘッドホンスタンド", desc: "デスクの雰囲気を演出し、愛用ヘッドセットを美しく魅せる近未来ディスプレイ。" },
+                { min: 5000, max: 15000, emoji: "🖱️", title: "世界プロ愛用 超軽量ワイヤレスマウス", desc: "エイムが正確に吸い付き、ゲーム内操作の速度を限界まで高める最新のプロツール。" },
+                { min: 15000, max: 50000, emoji: "🕹️", title: "最新世代コンソールゲーム機 (PS5/Switch)", desc: "大作タイトルや最新のVR/高精細コンテンツを最高品質で余すことなく楽しめます。" },
+                { min: 50000, max: 150000, emoji: "🛋️", title: "最高級エルゴノミクスゲーミングチェア", desc: "何時間連続プレイしても腰が一切疲れず、体に吸い付くようなハーマンミラー等の最高峰座椅子。" },
+                { min: 150000, max: 500000, emoji: "🔊", title: "防音室施工＆120インチ超大画面シアター", desc: "音漏れを気にせず、重低音サラウンドと圧倒的な大画面で完全にゲームの仮想現実へ没頭。" },
+                { min: 500000, max: 1500005, emoji: "👓", title: "全身フルトラッキング＆ハイエンドVR", desc: "アバターと同調し、メタバース世界で第二の人生を最高品質で暮らせる最先端デバイス。" },
+                { min: 1500005, max: Infinity, emoji: "🏰", title: "ゲーム開発支援＆無制限ゲーミングライフ", desc: "好きな作品への出資や、世界中の限定ハード・コレクターズアイテムを買い尽くす圧倒的エンタメ生活。" }
+            ]
+        };
+
         function getHobbyItemForAmount(hobby, amount, index) {
-            const items = {
-                car: [
-                    { min: 0, max: 5000, emoji: "💡", title: "サイバーRGB車内イルミネーション", desc: "車内を近未来的なネオンで演出し、コックピットのような高揚感を味わえます。" },
-                    { min: 5000, max: 15000, emoji: "🧼", title: "高級ガラス繊維ボディコーティング剤", desc: "プロ級の鏡面ボディと超撥水パワーを与え、新車のような輝きを取り戻せます。" },
-                    { min: 15000, max: 50000, emoji: "🔑", title: "アルミ削り出し本革スマートキーケース", desc: "持つたびに手馴染みの良さと重厚さに惚れ込む、最高峰のスマートキーケース。" },
-                    { min: 50000, max: 150000, emoji: "📹", title: "3カメラ搭載高画質ドライブレコーダー", desc: "夜間や駐車中も360度逃さず監視し、愛車の絶対的な安全を確保します。" },
-                    { min: 150000, max: 500000, emoji: "🛞", title: "プレミアム低ノイズスポーツタイヤ4本", desc: "路面を吸い付くようにグリップし、走りの快適性と静粛性を極限まで高めます。" },
-                    { min: 500000, max: 1500005, emoji: "🛣️", title: "名湯温泉スイートを巡る日本一周ドライブ旅", desc: "ガソリン代や高速代、各地の極上温泉ホテルの宿泊費を完全にカバーする夢の旅行。" },
-                    { min: 1500005, max: Infinity, emoji: "🚗", title: "憧れのプレミアムスポーツカー・SUV", desc: "キャッシュで車両を購入するか、輸入プレミアムカーの頭金を一括で支払える大金です！" }
-                ],
-                travel: [
-                    { min: 0, max: 5000, emoji: "🏷️", title: "スマホ連携スマートトラベルタグ", desc: "ロストバゲージを防ぎ、荷物の位置を常に世界中から把握できる安心の旅ギア。" },
-                    { min: 5000, max: 15000, emoji: "🚅", title: "グリーン車で行く日帰り新幹線温泉グルメ旅", desc: "新幹線グリーン車で地方へ飛び、その土地で一番の極上郷土料理を楽しむプチ旅。" },
-                    { min: 15000, max: 50000, emoji: "🎒", title: "人間工学プレミアム多機能バックパック", desc: "大容量かつ驚くほど軽く感じられ、旅の移動や散策を100%快適にする一流バッグ。" },
-                    { min: 50000, max: 150000, emoji: "🏨", title: "高級旅館・外資系ホテルの週末スイート宿泊", desc: "最高峰のおもてなしと贅沢なビューバスで心身を完璧にリフレッシュするひととき。" },
-                    { min: 150000, max: 500000, emoji: "✈️", title: "ビジネスクラスで行く極上ハワイ長期滞在", desc: "フライトから極上の空間で。ワイキキビーチを望むコンドミニアムに暮らすように旅します。" },
-                    { min: 500000, max: 1500005, emoji: "🌎", title: "プライベートガイドで行く秘境世界遺産の旅", desc: "個人旅行では難しい絶景の秘境を、快適な送迎とプロのガイド付きで安心に巡る夢の旅程。" },
-                    { min: 1500005, max: Infinity, emoji: "🌍", title: "ファーストクラス無制限世界一周の旅", desc: "すべてのフライトを最高峰のスイートシートで。地球上のどこへでも思い立ったら旅立てる自由！" }
-                ],
-                gadget: [
-                    { min: 0, max: 5000, emoji: "🌌", title: "サイバーネオンRGBデスクマット", desc: "デスク全体を未来的なRGB LEDで彩り、すべてのガジェットの所有欲を刺激します。" },
-                    { min: 5000, max: 15000, emoji: "🔌", title: "透明スケルトン＆スマート表示付き急速充電器", desc: "リアルタイムで充電W数がデジタル表示される、未来的な透明デザインの充電器。" },
-                    { min: 15000, max: 50000, emoji: "⌨️", title: "極上コトコト打鍵音カスタムキーボード", desc: "心地よい打鍵音が癖になり、タイピング効率と日々の作業への楽しさを爆上げする一生モノ。" },
-                    { min: 50000, max: 150000, emoji: "🎧", title: "空間オーディオ対応最強ヘッドホン＆スタンド", desc: "一瞬で完璧な静寂を作り出し、極上の音響体験と映画の世界に浸れる環境を作ります。" },
-                    { min: 150000, max: 500000, emoji: "💻", title: "モンスター仕様MacBook Pro or 自作PC", desc: "動画編集、AI開発、あらゆる重いタスクを一瞬で完了させる無音の最強マシン。" },
-                    { min: 500000, max: 1500005, emoji: "🖥️", title: "湾曲大画面液晶＆電動昇降コックピットデスク", desc: "理想の姿勢を記憶するデスクと巨大モニターに囲まれた、誰もが振り返る夢の仕事場。" },
-                    { min: 1500005, max: Infinity, emoji: "🚀", title: "スマート空間コンピューティング＆サイバーベース", desc: "スマート家電と仮想モニターが空中に浮遊する、未来のSF映画そのままのデスク基地！" }
-                ],
-                gourmet: [
-                    { min: 0, max: 5000, emoji: "🍮", title: "金箔煌めく極上Bean to Barプリンセット", desc: "1個数千円する、厳選カカオと高級卵で作られた極上濃厚スイーツを堪能。" },
-                    { min: 5000, max: 15000, emoji: "🍣", title: "名店老舗料亭での極上ディナーコース", desc: "洗練された和の個室で、季節の最高峰食材を用いた匠の懐石料理に舌鼓。" },
-                    { min: 15000, max: 50000, emoji: "🥩", title: "A5特選神戸牛サーロイン鉄板焼きディナー", desc: "熟練のシェフが目の前で豪快に焼き上げ、一口でとろける芳醇な肉汁の極みを満喫。" },
-                    { min: 50000, max: 150000, emoji: "🍣", title: "予約半年待ちの銀座の超高級鮨カウンター", desc: "職人が目の前で握る究極のシャリとネタが絡み合う、一生忘れない極上の寿司体験。" },
-                    { min: 150000, max: 500000, emoji: "🍷", title: "本格高級ワインセラー＆ビンテージワイン", desc: "憧れの格付けワインを自宅で完璧に管理し、特別な日に仲間と極上の抜栓を楽しむ大人の趣味。" },
-                    { min: 500000, max: 1500005, emoji: "🇫🇷", title: "パリのミシュラン三ツ星レストラン巡り旅", desc: "フランスへ直接飛び、世界の美食家が集う超一流フレンチの真髄を体験する極上の旅。" },
-                    { min: 1500005, max: Infinity, emoji: "🏰", title: "プライベートシェフ無制限雇用の贅沢ライフ", desc: "世界中の美食を追求する、キャビアやトリュフ、高級ワインに囲まれた圧倒的な日常。" }
-                ],
-                invest: [
-                    { min: 0, max: 5000, emoji: "🪙", title: "米国優良高配当株 1株", desc: "小さくても毎期確実に配当金（不労所得）を生み出し続ける、資産運用の記念すべき第一歩。" },
-                    { min: 5000, max: 15000, emoji: "📈", title: "インデックスファンドへの追加つみたて", desc: "世界経済の成長の恩恵をフルに活かし、複利のスピードを一気に加速させるブースター。" },
-                    { min: 15000, max: 50000, emoji: "💸", title: "毎月配当が振り込まれるポートフォリオ", desc: "毎月お小遣いが入るようになり、労働への依存から抜け出す最初の安心感を得られます。" },
-                    { min: 50000, max: 150000, emoji: "🏦", title: "年間数十万円の分配金を生む安定資産", desc: "年間の通信費や光熱費をすべて配当金だけでカバーできるようになる堅固な資産の壁。" },
-                    { min: 150000, max: 500000, emoji: "🏛️", title: "不動産クラウドファンディングへの分散投資", desc: "家賃収入と同等の安定利回りを手に入れ、より多様で強固なインカムゲインを確立。" },
-                    { min: 500000, max: 1500005, emoji: "💼", title: "生活費の半分を賄うセミリタイアの盾", desc: "働く時間を自分でコントロールできるようになり、人生の自由度が劇的に跳ね上がります。" },
-                    { min: 1500005, max: Infinity, emoji: "🗽", title: "完全なる経済的独立 (FIRE達成)", desc: "お金のために働く時間をゼロにし、人生の時間を100%自分の夢に捧げる真の権利！" }
-                ],
-                gaming: [
-                    { min: 0, max: 5000, emoji: "🎧", title: "光るサイバーパンクLEDヘッドホンスタンド", desc: "デスクの雰囲気を演出し、愛用ヘッドセットを美しく魅せる近未来ディスプレイ。" },
-                    { min: 5000, max: 15000, emoji: "🖱️", title: "世界プロ愛用 超軽量ワイヤレスマウス", desc: "エイムが正確に吸い付き、ゲーム内操作の速度を限界まで高める最新のプロツール。" },
-                    { min: 15000, max: 50000, emoji: "🕹️", title: "最新世代コンソールゲーム機 (PS5/Switch)", desc: "大作タイトルや最新のVR/高精細コンテンツを最高品質で余すことなく楽しめます。" },
-                    { min: 50000, max: 150000, emoji: "🛋️", title: "最高級エルゴノミクスゲーミングチェア", desc: "何時間連続プレイしても腰が一切疲れず、体に吸い付くようなハーマンミラー等の最高峰座椅子。" },
-                    { min: 150000, max: 500000, emoji: "🔊", title: "防音室施工＆120インチ超大画面シアター", desc: "音漏れを気にせず、重低音サラウンドと圧倒的な大画面で完全にゲームの仮想現実へ没頭。" },
-                    { min: 500000, max: 1500005, emoji: "👓", title: "全身フルトラッキング＆ハイエンドVR", desc: "アバターと同調し、メタバース世界で第二の人生を最高品質で暮らせる最先端デバイス。" },
-                    { min: 1500005, max: Infinity, emoji: "🏰", title: "ゲーム開発支援＆無制限ゲーミングライフ", desc: "好きな作品への出資や、世界中の限定ハード・コレクターズアイテムを買い尽くす圧倒的エンタメ生活。" }
-                ]
-            };
-            const list = items[hobby] || items.invest;
+            const list = HOBBY_ITEMS[hobby] || HOBBY_ITEMS.invest;
             if (index !== undefined && index >= 0 && index < list.length) {
                 return list[index];
             }
             return list.find(i => amount >= i.min && amount < i.max) || list[list.length - 1];
+        }
+
+        function getHobbyTierForAmount(hobby, amount) {
+            const list = HOBBY_ITEMS[hobby] || HOBBY_ITEMS.invest;
+            const idx = list.findIndex(i => amount >= i.min && amount < i.max);
+            return idx !== -1 ? idx : list.length - 1;
         }
 
         // 🔮 カレンダー日付選択未来シミュレーション表示関数 (まだ来ぬ日を試す機能)
@@ -3279,12 +3286,19 @@
             if (rmYearMoney) rmYearMoney.innerText = (monthlySaving * 12).toLocaleString();
 
             const annualYield = simulationSettings.yield / 100;
-            let totalSavingGoal = monthlySaving * 12 * years;
-            let totalInvestGoal = 0;
             const monthlyRate = annualYield / 12;
             const months = years * 12;
-            if (monthlyRate > 0) {
-                totalInvestGoal = monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+            
+            // 現在の累計実績 (totalEarned) を初期元本として将来を複利計算
+            const P = totalEarned;
+            const PMT = monthlySaving;
+            const r = monthlyRate;
+            const n = months;
+            
+            let totalSavingGoal = P + (PMT * 12 * years);
+            let totalInvestGoal = 0;
+            if (r > 0) {
+                totalInvestGoal = P * Math.pow(1 + r, n) + PMT * ((Math.pow(1 + r, n) - 1) / r);
             } else {
                 totalInvestGoal = totalSavingGoal;
             }
@@ -3293,28 +3307,46 @@
             if (rmGoalSaving) rmGoalSaving.innerText = Math.round(totalSavingGoal).toLocaleString();
             if (rmGoalInvest) rmGoalInvest.innerText = Math.round(totalInvestGoal).toLocaleString();
 
-            // 金額と趣味に応じた文章の動的差し替え (RPG風レベルアンロック対応 ＆ 重複防止のインデックス指定)
+            // 金額と趣味に応じた文章の動的差し替え (RPG風レベルアンロック対応 ＆ 現在の累計実績からの未来投影)
             const hobby = profile.hobby || 'invest';
 
             if (monthlySaving > 0) {
-                // レベルに基づくインデックスオフセット計算 (5レベルごとに上位アイテムに進化)
-                const lvlOffset = Math.floor((level - 1) / 5);
-                const idxDay = Math.min(3, 0 + lvlOffset);
-                const idxWeek = Math.min(4, 1 + lvlOffset);
-                const idxMonth = Math.min(5, 2 + lvlOffset);
-                const idxYear = Math.min(6, 3 + lvlOffset);
+                // 現在の累計実績 (totalEarned) をベースとした相対的な未来予測金額
+                const cumDay = totalEarned + dailySaving;
+                const cumWeek = totalEarned + dailySaving * 7;
+                const cumMonth = totalEarned + monthlySaving;
+                const cumYear = totalEarned + monthlySaving * 12;
+
+                // 各期間の累積目標金額に対応するベースのアイテム階層（Tier 0〜6）を取得
+                let tierDay = getHobbyTierForAmount(hobby, cumDay);
+                let tierWeek = getHobbyTierForAmount(hobby, cumWeek);
+                if (tierWeek <= tierDay) tierWeek = tierDay + 1;
+                let tierMonth = getHobbyTierForAmount(hobby, cumMonth);
+                if (tierMonth <= tierWeek) tierMonth = tierWeek + 1;
+                let tierYear = getHobbyTierForAmount(hobby, cumYear);
+                if (tierYear <= tierMonth) tierYear = tierMonth + 1;
+
+                // 最大インデックス6に制限
+                const idxDay = Math.min(6, tierDay);
+                const idxWeek = Math.min(6, tierWeek);
+                const idxMonth = Math.min(6, tierMonth);
+                const idxYear = Math.min(6, tierYear);
+
+                const itemDay = getHobbyItemForAmount(hobby, cumDay, idxDay);
+                const itemWeek = getHobbyItemForAmount(hobby, cumWeek, idxWeek);
+                const itemMonth = getHobbyItemForAmount(hobby, cumMonth, idxMonth);
+                const itemYear = getHobbyItemForAmount(hobby, cumYear, idxYear);
 
                 // 1日後 (Lv.1で常に公開)
                 const rmDayContainer = document.getElementById('rm-day-container');
                 if (rmDayContainer) {
-                    const item = getHobbyItemForAmount(hobby, dailySaving, idxDay);
                     rmDayContainer.style.opacity = '1';
                     rmDayContainer.innerHTML = `
                         <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 8px var(--neon-primary);"></div>
-                        <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 1日後</div>
+                        <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 現在から＋1日後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
-                            節約額: <span style="font-weight: 700;">${dailySaving.toLocaleString()}</span>円<br>
-                            <span style="color: var(--text-muted);">【変化】<strong>${item.title}</strong>相当（${dailySaving.toLocaleString()}円）が浮きました！${item.desc} ${item.emoji}</span>
+                            到達目標累計: <span style="font-weight: 700; color: var(--neon-primary);">\${cumDay.toLocaleString()}</span>円 (現在から +\${dailySaving.toLocaleString()}円)<br>
+                            <span style="color: var(--text-muted);">【変化】<strong>\${itemDay.title}</strong>相当が手に入ります！\${itemDay.desc} \${itemDay.emoji}</span>
                         </div>
                     `;
                 }
@@ -3326,20 +3358,19 @@
                         rmWeekContainer.style.opacity = '0.5';
                         rmWeekContainer.innerHTML = `
                             <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-sub); opacity: 0.4;"></div>
-                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-sub);">🔒 1週間後の未来 (Lv.5でアンロック)</div>
+                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-sub);">🔒 ＋1週間後の未来 (Lv.5でアンロック)</div>
                             <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
-                                禁欲を継続し、実績を貯めてレベルアップするとこの未来予測が解放されます。
+                                実績を貯めてレベルアップすると、現在の実績地点からの未来予測が解放されます。
                             </div>
                         `;
                     } else {
-                        const item = getHobbyItemForAmount(hobby, dailySaving * 7, idxWeek);
                         rmWeekContainer.style.opacity = '1';
                         rmWeekContainer.innerHTML = `
                             <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-secondary); box-shadow: 0 0 8px var(--neon-secondary);"></div>
-                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 1週間後</div>
+                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 現在から＋1週間後</div>
                             <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
-                                節約額: <span style="font-weight: 700;">${(dailySaving * 7).toLocaleString()}</span>円<br>
-                                <span style="color: var(--text-muted);">【変化】<strong>${item.title}</strong>（${(dailySaving * 7).toLocaleString()}円相当）が浮きました！${item.desc} 体内から毒素が抜け始め、睡眠の質が改善します。 ${item.emoji}</span>
+                                到達目標累計: <span style="font-weight: 700; color: var(--neon-secondary);">\${cumWeek.toLocaleString()}</span>円 (現在から +\${(dailySaving * 7).toLocaleString()}円)<br>
+                                <span style="color: var(--text-muted);">【変化】<strong>\${itemWeek.title}</strong>相当が手に入ります！\${itemWeek.desc} 体内から毒素が抜け始め、睡眠の質が改善します。 \${itemWeek.emoji}</span>
                             </div>
                         `;
                     }
@@ -3352,20 +3383,19 @@
                         rmMonthContainer.style.opacity = '0.5';
                         rmMonthContainer.innerHTML = `
                             <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-sub); opacity: 0.4;"></div>
-                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-sub);">🔒 1ヶ月後の未来 (Lv.15でアンロック)</div>
+                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-sub);">🔒 ＋1ヶ月後の未来 (Lv.15でアンロック)</div>
                             <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
-                                禁欲を継続し、実績を貯めてレベルアップするとこの未来予測が解放されます。
+                                実績を貯めてレベルアップすると、現在の実績地点からの未来予測が解放されます。
                             </div>
                         `;
                     } else {
-                        const item = getHobbyItemForAmount(hobby, monthlySaving, idxMonth);
                         rmMonthContainer.style.opacity = '1';
                         rmMonthContainer.innerHTML = `
                             <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 8px var(--neon-primary);"></div>
-                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 1ヶ月後</div>
+                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 現在から＋1ヶ月後</div>
                             <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
-                                節約額: <span style="font-weight: 700;">${monthlySaving.toLocaleString()}</span>円<br>
-                                <span style="color: var(--text-muted);">【変化】欲しかった<strong>${item.title}</strong>（${monthlySaving.toLocaleString()}円相当）を購入できます！${item.desc} 脳内ドーパミンの受容体が正常化していきます。 ${item.emoji}</span>
+                                到達目標累計: <span style="font-weight: 700; color: var(--neon-primary);">\${cumMonth.toLocaleString()}</span>円 (現在から +\${monthlySaving.toLocaleString()}円)<br>
+                                <span style="color: var(--text-muted);">【変化】欲しかった<strong>\${itemMonth.title}</strong>が購入できます！\${itemMonth.desc} 脳内ドーパミンの受容体が正常化していきます。 \${itemMonth.emoji}</span>
                             </div>
                         `;
                     }
@@ -3378,20 +3408,19 @@
                         rmYearContainer.style.opacity = '0.5';
                         rmYearContainer.innerHTML = `
                             <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-sub); opacity: 0.4;"></div>
-                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-sub);">🔒 1年後の未来 (Lv.30でアンロック)</div>
+                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-sub);">🔒 ＋1年後の未来 (Lv.30でアンロック)</div>
                             <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
-                                禁欲を継続し、実績を貯めてレベルアップするとこの未来予測が解放されます。
+                                実績を貯めてレベルアップすると、現在の実績地点からの未来予測が解放されます。
                             </div>
                         `;
                     } else {
-                        const item = getHobbyItemForAmount(hobby, monthlySaving * 12, idxYear);
                         rmYearContainer.style.opacity = '1';
                         rmYearContainer.innerHTML = `
                             <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-secondary); box-shadow: 0 0 8px var(--neon-secondary);"></div>
-                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 1年後</div>
+                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 現在から＋1年後</div>
                             <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
-                                節約額: <span style="font-weight: 700;">${(monthlySaving * 12).toLocaleString()}</span>円<br>
-                                <span style="color: var(--text-muted);">【変化】なんと<strong>${item.title}</strong>（${(monthlySaving * 12).toLocaleString()}円相当）を実現！${item.desc} 生活習慣病やがんのリスクが大きく低下します。 ${item.emoji}</span>
+                                到達目標累計: <span style="font-weight: 700; color: var(--neon-secondary);">\${cumYear.toLocaleString()}</span>円 (現在から +\${(monthlySaving * 12).toLocaleString()}円)<br>
+                                <span style="color: var(--text-muted);">【変化】なんと<strong>\${itemYear.title}</strong>相当を実現！\${itemYear.desc} 生活習慣病やがんのリスクが大きく低下します。 \${itemYear.emoji}</span>
                             </div>
                         `;
                     }
