@@ -2181,7 +2181,7 @@
                 calendarGrid.appendChild(emptyCell);
             }
 
-            const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+            const monthPrefix = `${year}/${month + 1}/`;
             
             const recordsByDate = {};
             history.forEach(item => {
@@ -2198,7 +2198,7 @@
             const todayStr = getTodayStr();
 
             for (let day = 1; day <= totalDays; day++) {
-                const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const cellDateStr = `${year}/${month + 1}/${day}`;
                 const cellDate = new Date(year, month, day);
                 
                 const cell = document.createElement('div');
@@ -5111,13 +5111,13 @@
             document.getElementById('checkin-badge-gacha').innerText = `${gachaCost.toLocaleString()}円/月`;
         }
 
-        // 今日の日付文字列 ('YYYY-MM-DD')
+        // 今日の日付文字列 ('YYYY/M/D')
         function getTodayStr() {
             const now = new Date();
             const y = now.getFullYear();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
+            const m = now.getMonth() + 1;
+            const d = now.getDate();
+            return `${y}/${m}/${d}`;
         }
 
         // --- 🆕 チェックインボタンの押下イベント登録 ---
@@ -5266,8 +5266,24 @@
             if (profileStr) profile = JSON.parse(profileStr);
             if (settingsStr) habitPrices = JSON.parse(settingsStr);
             if (statesStr) activeHabits = JSON.parse(statesStr);
-            if (historyStr) history = JSON.parse(historyStr);
-            if (lastSyncStr) lastSyncDate = lastSyncStr;
+            const cleanDateStr = (str) => {
+                if (!str) return str;
+                if (str.includes('-')) {
+                    const parts = str.split('-');
+                    if (parts.length === 3) {
+                        return `${parseInt(parts[0])}/${parseInt(parts[1])}/${parseInt(parts[2])}`;
+                    }
+                }
+                return str;
+            };
+
+            if (historyStr) {
+                history = JSON.parse(historyStr);
+                history.forEach(item => {
+                    if (item.date) item.date = cleanDateStr(item.date);
+                });
+            }
+            if (lastSyncStr) lastSyncDate = cleanDateStr(lastSyncStr);
             if (simStr) simulationSettings = JSON.parse(simStr);
 
             // 今日チェックインされた項目の日付またぎリセット処理
