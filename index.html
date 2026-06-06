@@ -1116,7 +1116,49 @@
         .delete-btn:hover {
             background: rgba(219, 39, 119, 0.1);
         }
-    </style>
+    
+        /* 📄 アプリフッターのスタイル */
+        .app-footer {
+            margin-top: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 16px 0 10px 0;
+            border-top: 1px solid var(--border-glass);
+            width: 100%;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .footer-links a {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            text-decoration: none;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-primary);
+        }
+
+        .footer-divider {
+            font-size: 0.7rem;
+            color: var(--border-glass);
+        }
+
+        .copyright {
+            font-size: 0.65rem;
+            color: var(--text-sub);
+            opacity: 0.8;
+            margin: 0;
+        }
+</style>
 </head>
 <body>
     <div class="app-container">
@@ -1369,6 +1411,32 @@
                     </div>
 
                 </div>
+            </div>
+        </div>
+    
+        <!-- 📄 フッター (免責事項・プライバシーポリシー・運営者情報) -->
+        <footer class="app-footer">
+            <div class="footer-links">
+                <a id="footer-disclaimer">免責事項</a>
+                <span class="footer-divider">|</span>
+                <a id="footer-privacy">プライバシーポリシー</a>
+                <span class="footer-divider">|</span>
+                <a id="footer-operator">運営者情報</a>
+            </div>
+            <p class="copyright">© 2026 HabitVest All Rights Reserved.</p>
+        </footer>
+</div>
+
+    
+    <!-- ℹ️ 情報モーダル (免責事項・プライバシーポリシー・運営者情報) -->
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="info-modal-title">情報</h3>
+                <button id="info-modal-close" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="info-modal-body" style="font-size: 0.75rem; line-height: 1.6; color: var(--text-sub); max-height: 60vh; overflow-y: auto; padding-right: 4px; text-align: left;">
+                <!-- コンテンツが動的に挿入されます -->
             </div>
         </div>
     </div>
@@ -1845,7 +1913,16 @@
         // DOM要素の取得
         const themeToggle = document.getElementById('theme-toggle');
         const settingsToggle = document.getElementById('settings-toggle');
-        const settingsModal = document.getElementById('settings-modal');
+        
+        const infoModal = document.getElementById('info-modal');
+        const infoModalClose = document.getElementById('info-modal-close');
+        const infoModalTitle = document.getElementById('info-modal-title');
+        const infoModalBody = document.getElementById('info-modal-body');
+        
+        const footerDisclaimer = document.getElementById('footer-disclaimer');
+        const footerPrivacy = document.getElementById('footer-privacy');
+        const footerOperator = document.getElementById('footer-operator');
+const settingsModal = document.getElementById('settings-modal');
         const modalClose = document.getElementById('modal-close');
         const modalSave = document.getElementById('modal-save');
         const modalReset = document.getElementById('modal-reset');
@@ -2026,7 +2103,61 @@
         });
 
         // 🗑️ オールリセット
-        const resetConfirmModal = document.getElementById('reset-confirm-modal');
+        
+        // ℹ️ 情報モーダルの表示制御
+        const openInfoModal = (title, htmlContent) => {
+            infoModalTitle.innerText = title;
+            infoModalBody.innerHTML = htmlContent;
+            infoModal.classList.add('active');
+        };
+
+        const closeInfoModal = () => {
+            infoModal.classList.remove('active');
+        };
+
+        footerDisclaimer.addEventListener('click', () => {
+            openInfoModal('⚖️ 免責事項', `
+                <div style="font-weight: 700; margin-bottom: 8px; color: var(--text-main);">免責事項について</div>
+                <p style="margin-bottom: 12px;">当アプリ「HabitVest」で提供されるシミュレーション結果（セーブ総額、投資複利予測、ロードマップの獲得アイテム等）は、あくまで入力された条件に基づいた試算値であり、将来の実際の投資成果や貯蓄額を保証するものではありません。</p>
+                <p style="margin-bottom: 12px;">シミュレーション内の「投資複利」等の計算には一般的な計算式を用いておりますが、実際の市場価格の変動、信託報酬等の諸費用、税金等は考慮されておりません。資産運用を行う際は、リスクを十分に理解した上で、自己責任において行っていただきますようお願い申し上げます。</p>
+                <p>当アプリの利用により生じた利益、損害、紛争等について、運営者は一切の責任を負いかねますのでご了承ください。</p>
+            `);
+        });
+
+        footerPrivacy.addEventListener('click', () => {
+            openInfoModal('🔒 プライバシーポリシー', `
+                <div style="font-weight: 700; margin-bottom: 8px; color: var(--text-main);">個人情報の取り扱い</div>
+                <p style="margin-bottom: 12px;"><strong>1. 個人情報の収集と管理</strong><br>当アプリは、ユーザーの氏名、メールアドレス、電話番号などの個人情報を収集・保存しません。設定されたプロフィール名や記録データは、すべてユーザーの端末内（LocalStorage）にのみ保存されます。</p>
+                <p style="margin-bottom: 12px;"><strong>2. データの外部送信について</strong><br>現在提供している機能では、ユーザーのデータが外部のサーバーに送信されることはありません（将来的にクラウド連携等を導入する際も、ユーザーの同意なく送信することはありません）。</p>
+                <p><strong>3. 免責事項</strong><br>データの破損や端末の紛失等によりアプリデータが消去された場合、データの復元は行えませんのでご注意ください。定期的に設定ファイルの書き出しなどによるバックアップを行うことを推奨します。</p>
+            `);
+        });
+
+        footerOperator.addEventListener('click', () => {
+            openInfoModal('🏢 運営者情報', `
+                <div style="font-weight: 700; margin-bottom: 8px; color: var(--text-main);">運営者プロフィール</div>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.75rem;">
+                    <tr style="border-bottom: 1px solid var(--border-glass);">
+                        <td style="padding: 8px 0; font-weight: 700; width: 35%; color: var(--text-main);">運営者</td>
+                        <td style="padding: 8px 0; color: var(--text-sub);">HabitVest 運営事務局</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-glass);">
+                        <td style="padding: 8px 0; font-weight: 700; color: var(--text-main);">活動目的</td>
+                        <td style="padding: 8px 0; color: var(--text-sub);">個人の良い習慣形成をサポートするツールの開発・提供</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-glass);">
+                        <td style="padding: 8px 0; font-weight: 700; color: var(--text-main);">お問い合わせ</td>
+                        <td style="padding: 8px 0; color: var(--text-sub);">アプリ設定画面内の「アカウント連携」やフィードバックフォーム等より受け付けております。</td>
+                    </tr>
+                </table>
+            `);
+        });
+
+        infoModalClose.addEventListener('click', closeInfoModal);
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) closeInfoModal();
+        });
+const resetConfirmModal = document.getElementById('reset-confirm-modal');
         const resetCancel = document.getElementById('reset-cancel');
         const resetExecute = document.getElementById('reset-execute');
 
