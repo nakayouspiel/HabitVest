@@ -1129,7 +1129,10 @@
 
             <!-- 📜 これまでの履歴 -->
             <div class="glass-card history-card">
-                <h2 class="card-title">📜 これまでのやめた履歴</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h2 class="card-title" style="margin-bottom: 0;">📜 これまでのやめた履歴</h2>
+                    <button id="btn-open-calendar" class="modal-btn" style="margin-top: 0; padding: 6px 12px; font-size: 0.75rem; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--border-glass); border-radius: 12px; cursor: pointer;">📅 カレンダーで見る</button>
+                </div>
                 <div class="history-list" id="history-list-container">
                     <div style="text-align: center; color: var(--text-sub); font-size: 0.72rem; padding: 20px;">
                         履歴がありません。上のボタンから「今日やめた！」を記録しましょう。
@@ -1144,6 +1147,16 @@
         <div id="tab-content-assets" class="tab-content">
             <div class="glass-card">
                 <h2 class="card-title">🔮 資産シミュレーション</h2>
+                
+                <!-- 💡 シミュレーション前提の説明文 -->
+                <div style="background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 12px; padding: 12px; font-size: 0.72rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 20px; text-align: left; display: flex; align-items: flex-start; gap: 8px;">
+                    <span style="font-size: 1rem;">💡</span>
+                    <div>
+                        <strong>シミュレーションの前提：</strong><br>
+                        この将来予測は、<strong>現在チェックイン（我慢）している習慣を今後も毎日・毎月継続し、</strong>浮いたお金を想定の利回りで投資に回し続けた場合を示しています。<br>
+                        初日の記録だけでも「このまま毎日続けたら将来どうなるか」の成果がひと目でわかるようになっています。
+                    </div>
+                </div>
                 
                 <div class="dashboard-grid">
                     <div class="dash-card">
@@ -1198,111 +1211,122 @@
              🍀 タブ3: ライフ (Life) データ（時間・健康）
              ========================================== -->
         <div id="tab-content-life" class="tab-content">
+            <!-- ⚔️ 禁欲ステータス (RPG要素) -->
+            <div class="glass-card" style="margin-bottom: 16px;">
+                <h2 class="card-title">⚔️ 禁欲ステータス</h2>
+                <div style="display: flex; gap: 16px; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 16px; border-radius: 20px;">
+                    <div style="font-size: 2.8rem; text-align: center; line-height: 1; min-width: 65px;">🛡️</div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
+                            <span id="life-title" style="font-size: 0.72rem; font-weight: 800; color: var(--neon-secondary); letter-spacing: 0.05em;">見習い禁欲者 🔰</span>
+                            <span id="life-level" style="font-size: 1.25rem; font-weight: 800; color: var(--neon-primary); font-family: 'Outfit';">Lv. 1</span>
+                        </div>
+                        <!-- 経験値バー -->
+                        <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
+                            <div id="life-exp-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary)); transition: width 0.3s;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
+                            <span>意志力 (我慢総額): <span id="life-exp-val">0</span> / <span id="life-next-exp-val">1000</span>円</span>
+                            <span id="life-streak" style="color: var(--neon-secondary); font-weight: 700;">🔥 0日連続我慢中</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📊 累計我慢の実績数値 -->
+            <div class="glass-card" style="margin-bottom: 16px;">
+                <h2 class="card-title">📊 これまでの我慢実績</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <!-- 累計やめた日数 -->
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">累計我慢日数</div>
+                        <div id="life-stats-days" style="font-size: 1.4rem; font-weight: 800; color: var(--neon-primary); margin-top: 4px; font-family: 'Outfit';">0 日</div>
+                    </div>
+                    <!-- 累計浮いたお金 -->
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">累計節約総額</div>
+                        <div id="life-stats-money" style="font-size: 1.4rem; font-weight: 800; color: var(--neon-secondary); margin-top: 4px; font-family: 'Outfit';">0 円</div>
+                    </div>
+                    <!-- タバコの実績 -->
+                    <div id="life-stats-tobacco-card" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
+                        <div style="font-weight: 700; font-size: 0.78rem; color: var(--neon-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">🚭 タバコの我慢成果</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.72rem;">
+                            <div>我慢した本数: <span id="life-stats-tobacco-count" style="font-weight:700; color:var(--text-sub);">0本</span></div>
+                            <div>取り戻した寿命: <span id="life-stats-tobacco-life" style="font-weight:700; color:var(--text-sub);">0分</span></div>
+                        </div>
+                    </div>
+                    <!-- お酒の実績 -->
+                    <div id="life-stats-beer-card" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
+                        <div style="font-weight: 700; font-size: 0.78rem; color: var(--neon-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">🍺 お酒の我慢成果</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.72rem;">
+                            <div>我慢した本数: <span id="life-stats-beer-count" style="font-weight:700; color:var(--text-sub);">0本</span></div>
+                            <div>カットしたカロリー: <span id="life-stats-beer-cal" style="font-weight:700; color:var(--text-sub);">0 kcal</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⏳ 時間経過で起こる未来の統計予測 (我慢を続けた場合) -->
             <div class="glass-card">
-                <h2 class="card-title">🍀 やめて得られるライフデータ</h2>
-                
-                <div class="life-grid">
-                    <!-- ⏰ 浮く時間 (合算) -->
-                    <div class="life-card">
-                        <div class="life-card-header">
-                            <span class="emoji">⏳</span>
-                            <span>新しく手に入る「時間」</span>
-                        </div>
-                        <div class="life-card-val" id="life-time">---</div>
-                        <div class="life-card-desc" id="life-time-desc">準備中</div>
-                    </div>
-
-                    <!-- 各習慣ごとの健康・メンタルのカード -->
+                <h2 class="card-title">⏳ このまま続けた未来のロードマップ</h2>
+                <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4;">
+                    今選択・記録されている習慣のセーブペース（月換算 <span id="life-roadmap-monthly-val" style="color:var(--neon-primary); font-weight:700;">0</span>円）をこのまま継続した場合に、あなたの身体と資産に起こる素晴らしい変化の予測です。
+                </p>
+                <div class="timeline-container" style="display: flex; flex-direction: column; gap: 20px; border-left: 2px dashed var(--border-glass); padding-left: 15px; margin-left: 10px; text-align: left;">
                     
-                    <!-- 🚭 タバコのメリット -->
-                    <div class="life-card" id="life-card-tobacco" style="display:none;">
-                        <div class="life-card-header">
-                            <span class="emoji">🚭</span>
-                            <span>禁煙による健康効果</span>
+                    <!-- 1日 -->
+                    <div style="position: relative;">
+                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 8px var(--neon-primary);"></div>
+                        <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 1日後</div>
+                        <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
+                            節約額: <span id="rm-day-money" style="font-weight: 700;">0</span>円<br>
+                            <span style="color: var(--text-muted);">【変化】ジュースやカフェ代1回分が浮きました。悪い習慣に流されず、「自分の人生を自分でコントロールしている」という自尊心が芽生える最高の一歩です ☕</span>
                         </div>
-                        <div class="life-card-val" id="life-tobacco-health" style="color: var(--neon-green);">---</div>
-                        <div class="life-card-desc" id="life-tobacco-desc">準備中</div>
                     </div>
 
-                    <!-- 🍺 お酒のメリット -->
-                    <div class="life-card" id="life-card-beer" style="display:none;">
-                        <div class="life-card-header">
-                            <span class="emoji">🍺</span>
-                            <span>禁酒・節酒による減量＆肝臓保護</span>
+                    <!-- 1週間 -->
+                    <div style="position: relative;">
+                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-secondary); box-shadow: 0 0 8px var(--neon-secondary);"></div>
+                        <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 1週間後</div>
+                        <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
+                            節約額: <span id="rm-week-money" style="font-weight: 700;">0</span>円<br>
+                            <span style="color: var(--text-muted);">【変化】プチ贅沢なディナーができる額に！体内から毒素が抜け始め、睡眠の質が徐々に改善。朝の目覚めがすっきり軽やかになるのを体感できます 🥩</span>
                         </div>
-                        <div class="life-card-val" id="life-beer-health" style="color: var(--neon-green);">---</div>
-                        <div class="life-card-desc" id="life-beer-desc">準備中</div>
                     </div>
 
-                    <!-- 📱 サブスクのメリット -->
-                    <div class="life-card" id="life-card-sub" style="display:none;">
-                        <div class="life-card-header">
-                            <span class="emoji">📱</span>
-                            <span>デジタルデトックス効果</span>
+                    <!-- 1ヶ月 -->
+                    <div style="position: relative;">
+                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 8px var(--neon-primary);"></div>
+                        <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 1ヶ月後</div>
+                        <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
+                            節約額: <span id="rm-month-money" style="font-weight: 700;">0</span>円<br>
+                            <span style="color: var(--text-muted);">【変化】欲しかった服や人気ゲームソフトが買える額！脳内のドーパミン受容体が正常化し、イライラ感が減少。呼吸機能の向上や胃腸の調子の良さをハッキリと実感できます 🧠</span>
                         </div>
-                        <div class="life-card-val" id="life-sub-val" style="color: var(--neon-primary);">---</div>
-                        <div class="life-card-desc" id="life-sub-desc">準備中</div>
                     </div>
 
-                    <!-- 🎮 ガチャのメリット -->
-                    <div class="life-card" id="life-card-gacha" style="display:none;">
-                        <div class="life-card-header">
-                            <span class="emoji">🎮</span>
-                            <span>ドーパミンの正常化</span>
+                    <!-- 1年 -->
+                    <div style="position: relative;">
+                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-secondary); box-shadow: 0 0 8px var(--neon-secondary);"></div>
+                        <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 1年後</div>
+                        <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
+                            節約額: <span id="rm-year-money" style="font-weight: 700;">0</span>円<br>
+                            <span style="color: var(--text-muted);">【変化】最新の高級スマホ購入や旅行に行ける大金に！肌ツヤが劇的に若返り、生活習慣病やガン、心臓病の将来的な発症リスクが大きく低下します ✈️</span>
                         </div>
-                        <div class="life-card-val" id="life-gacha-val" style="color: var(--neon-primary);">---</div>
-                        <div class="life-card-desc" id="life-gacha-desc">準備中</div>
                     </div>
 
-                    <!-- 何も選んでない場合 -->
-                    <div class="life-card" id="life-card-empty" style="text-align: center; padding: 20px;">
-                        <div class="life-card-desc">「習慣」タブで習慣を選択してください。ここに時間や健康の改善データが合算されます。</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 🔮 占い ✕ 統計予測カード -->
-            <div class="glass-card" id="fortune-card" style="margin-top: 14px; background: linear-gradient(135deg, rgba(217, 70, 239, 0.04) 0%, rgba(14, 165, 233, 0.04) 100%); border-color: rgba(217, 70, 239, 0.2);">
-                <h2 class="card-title" style="color: var(--neon-secondary);">🔮 習慣化占い ✕ 統計予測</h2>
-                <div style="text-align: center; margin-bottom: 12px;">
-                    <span id="fortune-badge" style="background: linear-gradient(135deg, var(--neon-secondary) 0%, var(--neon-primary) 100%); color: white; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; box-shadow: 0 4px 10px rgba(219, 39, 119, 0.2);">今日の習慣化運勢：???</span>
-                </div>
-                <div class="fortune-content" style="font-size: 0.75rem; color: var(--text-main); line-height: 1.5; display: flex; flex-direction: column; gap: 8px;">
-                    <p id="fortune-text-1" style="background: rgba(120, 120, 120, 0.05); padding: 10px; border-radius: 12px; border-left: 3.5px solid var(--neon-secondary);"></p>
-                    <p id="fortune-text-2" style="background: rgba(120, 120, 120, 0.05); padding: 10px; border-radius: 12px; border-left: 3.5px solid var(--neon-primary);"></p>
-                </div>
-            </div>
-
-            <!-- ⏳ 時間経過によるロードマップ -->
-            <div class="glass-card" id="timeline-card" style="margin-top: 14px;">
-                <h2 class="card-title" style="color: var(--neon-green);">⏳ 時間経過で起こる劇的変化 (統計データ)</h2>
-                <div class="timeline-container" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px; position: relative; padding-left: 20px;">
-                    <!-- 縦線 -->
-                    <div style="position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: rgba(22, 163, 74, 0.25);"></div>
-                    
-                    <div class="timeline-item" style="position: relative;">
-                        <div style="position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green);"></div>
-                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 2px;">1日後：体内環境のリセット開始</h4>
-                        <p style="font-size: 0.7rem; color: var(--text-sub); line-height: 1.45;" id="timeline-1day"></p>
-                    </div>
-                    
-                    <div class="timeline-item" style="position: relative;">
-                        <div style="position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green);"></div>
-                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 2px;">3日後：五感と神経系の回復</h4>
-                        <p style="font-size: 0.7rem; color: var(--text-sub); line-height: 1.45;" id="timeline-3days"></p>
+                    <!-- 設定期間のゴール -->
+                    <div style="position: relative; border: 1px solid rgba(0,243,255,0.15); background: rgba(0,243,255,0.04); border-radius: 12px; padding: 12px; margin-left: -5px;">
+                        <div style="position: absolute; left: -18px; top: 16px; width: 12px; height: 12px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 10px var(--neon-primary);"></div>
+                        <div style="font-weight: 800; font-size: 0.95rem; color: var(--neon-primary); display: flex; align-items: center; gap: 6px;">🗽 <span id="rm-goal-title">20年後 (ゴール)</span></div>
+                        <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 6px; line-height: 1.5;">
+                            ただ貯めた場合: <span id="rm-goal-saving" style="font-weight: 700; color: var(--accent-pink);">0</span>円<br>
+                            <strong>積立投資 (複利あり): <span id="rm-goal-invest" style="font-weight: 800; color: var(--neon-primary); font-size: 0.85rem;">0</span>円</strong><br>
+                            <span style="color: var(--text-muted); display: block; margin-top: 6px;" id="rm-goal-desc">
+                                悪い習慣をやめるだけで、これほど莫大な資産が手に入ります。浮いたお金は「経済的自立（FIRE）」を実現する最高の軍資金になり、あなたの選択肢と自由を広げてくれます 🚀
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="timeline-item" style="position: relative;">
-                        <div style="position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 8px var(--neon-primary);"></div>
-                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 2px;">1週間後：外見と睡眠の劇的変化</h4>
-                        <p style="font-size: 0.7rem; color: var(--text-sub); line-height: 1.45;" id="timeline-1week"></p>
-                    </div>
-
-                    <div class="timeline-item" style="position: relative;">
-                        <div style="position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-secondary); box-shadow: 0 0 8px var(--neon-secondary);"></div>
-                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-secondary); margin-bottom: 2px;">1ヶ月後：メンタル＆体質の完全変革</h4>
-                        <p style="font-size: 0.7rem; color: var(--text-sub); line-height: 1.45;" id="timeline-1month"></p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1636,11 +1660,44 @@
         </div>
     </div>
 
+    <!-- 📅 履歴カレンダーモーダル -->
+    <div id="calendar-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 450px; width: 95%;">
+            <div class="modal-header">
+                <h3>📅 記録カレンダー</h3>
+                <button id="calendar-close" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 10px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 10px;">
+                    <button id="cal-prev-month" class="modal-btn" style="margin-top: 0; padding: 4px 10px; font-size: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); cursor: pointer;">&lt;</button>
+                    <span id="cal-month-title" style="font-weight: 700; font-size: 1.1rem; color: var(--neon-primary);">2026年 6月</span>
+                    <button id="cal-next-month" class="modal-btn" style="margin-top: 0; padding: 4px 10px; font-size: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); cursor: pointer;">&gt;</button>
+                </div>
+                
+                <!-- 曜日見出し -->
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; font-size: 0.75rem; color: var(--text-sub); margin-bottom: 8px;">
+                    <div style="color: var(--accent-pink);">日</div>
+                    <div>月</div>
+                    <div>火</div>
+                    <div>水</div>
+                    <div>木</div>
+                    <div>金</div>
+                    <div style="color: var(--neon-secondary);">土</div>
+                </div>
+                
+                <!-- カレンダーグリッド -->
+                <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center;">
+                    <!-- JSで動的にセルを挿入 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 📱 ボトムナビ -->
     <nav class="bottom-nav">
         <button class="nav-item active" data-tab="habits">
             <span class="icon">📋</span>
-            <span>習慣</span>
+            <span>記録</span>
         </button>
         <button class="nav-item" data-tab="assets">
             <span class="icon">📈</span>
@@ -1707,23 +1764,7 @@
         const affiliateBanner = document.getElementById('affiliate-banner');
 
         // タブ3（ライフ）用表示
-        const lifeTime = document.getElementById('life-time');
-        const lifeTimeDesc = document.getElementById('life-time-desc');
-        const lifeCardTobacco = document.getElementById('life-card-tobacco');
-        const lifeTobaccoHealth = document.getElementById('life-tobacco-health');
-        const lifeTobaccoDesc = document.getElementById('life-tobacco-desc');
-        const lifeCardBeer = document.getElementById('life-card-beer');
-        const lifeBeerHealth = document.getElementById('life-beer-health');
-        const lifeBeerDesc = document.getElementById('life-beer-desc');
-        const lifeCardSub = document.getElementById('life-card-sub');
-        const lifeSubVal = document.getElementById('life-sub-val');
-        const lifeSubDesc = document.getElementById('life-sub-desc');
-        const lifeCardGacha = document.getElementById('life-card-gacha');
-        const lifeGachaVal = document.getElementById('life-gacha-val');
-        const lifeGachaDesc = document.getElementById('life-gacha-desc');
-        const lifeCardEmpty = document.getElementById('life-card-empty');
-        const fortuneCard = document.getElementById('fortune-card');
-        const timelineCard = document.getElementById('timeline-card');
+        // 🍀 タブ3（ライフ）用表示要素は updateLifeData 内で取得・更新されるため、ここでのグローバル宣言はクリーンアップしました
 
         // ボトムナビ
         const navItems = document.querySelectorAll('.nav-item');
@@ -1923,6 +1964,193 @@
                 return "【超ハイリスク】年利20%超！仮想通貨やレバレッジ取引など、元本を失うリスクの高い投機的な世界です ⚠️";
             }
         }
+
+        // 🗓️ 連続チェックイン（Streak）計算
+        function calculateStreak() {
+            const dates = Array.from(new Set(history.map(item => item.date))).sort().reverse();
+            if (dates.length === 0) return 0;
+            
+            const today = getTodayStr();
+            const yesterday = getYesterdayStr();
+            
+            if (dates[0] !== today && dates[0] !== yesterday) {
+                return 0;
+            }
+            
+            let streak = 0;
+            let lastDate = null;
+            
+            for (let i = 0; i < dates.length; i++) {
+                const cur = new Date(dates[i]);
+                if (i === 0) {
+                    streak = 1;
+                    lastDate = cur;
+                    continue;
+                }
+                const diffTime = Math.abs(lastDate - cur);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                    streak++;
+                    lastDate = cur;
+                } else if (diffDays > 1) {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        // 🗓️ 前日の日付を取得
+        function getYesterdayStr() {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const y = yesterday.getFullYear();
+            const m = String(yesterday.getMonth() + 1).padStart(2, '0');
+            const d = String(yesterday.getDate()).padStart(2, '0');
+            return `${y}-\m-${d}`.replace('\\m', m);
+        }
+
+        // カレンダーの制御
+        const calendarModal = document.getElementById('calendar-modal');
+        const btnOpenCalendar = document.getElementById('btn-open-calendar');
+        const calendarClose = document.getElementById('calendar-close');
+        const calPrevMonth = document.getElementById('cal-prev-month');
+        const calNextMonth = document.getElementById('cal-next-month');
+        const calMonthTitle = document.getElementById('cal-month-title');
+        const calendarGrid = document.getElementById('calendar-grid');
+
+        let currentCalDate = new Date();
+
+        if (btnOpenCalendar) {
+            btnOpenCalendar.addEventListener('click', () => {
+                currentCalDate = new Date();
+                renderCalendar();
+                calendarModal.classList.add('active');
+            });
+        }
+
+        if (calendarClose) {
+            calendarClose.addEventListener('click', () => {
+                calendarModal.classList.remove('active');
+            });
+        }
+
+        if (calendarModal) {
+            calendarModal.addEventListener('click', (e) => {
+                if (e.target === calendarModal) calendarModal.classList.remove('active');
+            });
+        }
+
+        if (calPrevMonth) {
+            calPrevMonth.addEventListener('click', () => {
+                currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+                renderCalendar();
+            });
+        }
+
+        if (calNextMonth) {
+            calNextMonth.addEventListener('click', () => {
+                currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+                renderCalendar();
+            });
+        }
+
+        function renderCalendar() {
+            if (!calendarGrid) return;
+            calendarGrid.innerHTML = "";
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth();
+
+            calMonthTitle.innerText = `${year}年 ${month + 1}月`;
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            // 空白セルを追加
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.style.padding = '8px 0';
+                calendarGrid.appendChild(emptyCell);
+            }
+
+            const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+            
+            const recordsByDate = {};
+            history.forEach(item => {
+                if (item.date && item.date.startsWith(monthPrefix)) {
+                    if (!recordsByDate[item.date]) {
+                        recordsByDate[item.date] = [];
+                    }
+                    if (!recordsByDate[item.date].includes(item.type)) {
+                        recordsByDate[item.date].push(item.type);
+                    }
+                }
+            });
+
+            const todayStr = getTodayStr();
+
+            for (let day = 1; day <= totalDays; day++) {
+                const cellDateStr = `${year}-\m-${String(day).padStart(2, '0')}`.replace('\\m', String(month + 1).padStart(2, '0'));
+                
+                const cell = document.createElement('div');
+                cell.style.position = 'relative';
+                cell.style.padding = '4px 0';
+                cell.style.minHeight = '45px';
+                cell.style.borderRadius = '8px';
+                cell.style.background = 'rgba(255, 255, 255, 0.03)';
+                cell.style.border = '1px solid rgba(255, 255, 255, 0.05)';
+                cell.style.display = 'flex';
+                cell.style.flexDirection = 'column';
+                cell.style.alignItems = 'center';
+                cell.style.justifyContent = 'space-between';
+                cell.style.fontSize = '0.75rem';
+
+                if (cellDateStr === todayStr) {
+                    cell.style.border = '1px solid var(--neon-secondary)';
+                    cell.style.boxShadow = '0 0 6px rgba(0, 243, 255, 0.3)';
+                }
+
+                const dateNum = document.createElement('span');
+                dateNum.innerText = day;
+                dateNum.style.fontWeight = '600';
+                
+                const dayOfWeek = new Date(year, month, day).getDay();
+                if (dayOfWeek === 0) dateNum.style.color = 'var(--accent-pink)';
+                else if (dayOfWeek === 6) dateNum.style.color = 'var(--neon-secondary)';
+
+                cell.appendChild(dateNum);
+
+                if (recordsByDate[cellDateStr]) {
+                    cell.style.background = 'rgba(0, 243, 255, 0.08)';
+                    cell.style.borderColor = 'rgba(0, 243, 255, 0.2)';
+                    
+                    const emojiContainer = document.createElement('div');
+                    emojiContainer.style.fontSize = '0.62rem';
+                    emojiContainer.style.display = 'flex';
+                    emojiContainer.style.gap = '2px';
+                    emojiContainer.style.marginTop = '2px';
+                    
+                    recordsByDate[cellDateStr].forEach(type => {
+                        let emoji = '✅';
+                        if (type === 'tobacco') emoji = '🚭';
+                        else if (type === 'beer') emoji = '🍺';
+                        else if (type === 'sub') emoji = '📱';
+                        else if (type === 'gacha') emoji = '🎮';
+                        
+                        const emojiSpan = document.createElement('span');
+                        emojiSpan.innerText = emoji;
+                        emojiContainer.appendChild(emojiSpan);
+                    });
+                    cell.appendChild(emojiContainer);
+                } else {
+                    const emptySpan = document.createElement('div');
+                    emptySpan.style.height = '12px';
+                    cell.appendChild(emptySpan);
+                }
+
+                calendarGrid.appendChild(cell);
+            }
+        }
+
 
         // 🚭 設定モーダル内のスライダー連動
         function setupSettingsSliders() {
@@ -2546,168 +2774,166 @@
                 if (item.type === 'gacha') counts.gacha++;
             });
 
-            // トータル浮いた時間（我慢に費やすはずだった時間）
-            // タバコ1本5分、ビール1回60分、サブスク月15時間(日30分)、ソシャゲ月30時間(日60分)
-            let totalMinutes = 0;
-            totalMinutes += counts.tobacco * 20 * 5; // 1回=1箱(20本)換算
-            totalMinutes += counts.beer * 60; // 1缶60分
-            const subDays = Math.round(counts.sub * 15); // 概算
-            const gachaDays = Math.round(counts.gacha * 30);
-            totalMinutes += subDays * 30; // 1日30分
-            totalMinutes += gachaDays * 60; // 1日60分
+            const uniqueDates = new Set(history.map(item => item.date));
+            const totalStatsDays = uniqueDates.size;
 
-            let selectedAny = history.length > 0;
+            // ライフタブのUI要素取得
+            const lifeLevel = document.getElementById('life-level');
+            const lifeTitle = document.getElementById('life-title');
+            const lifeExpBar = document.getElementById('life-exp-bar');
+            const lifeExpVal = document.getElementById('life-exp-val');
+            const lifeNextExpVal = document.getElementById('life-next-exp-val');
+            const lifeStreak = document.getElementById('life-streak');
             
-            // 1. タバコ
-            if (counts.tobacco > 0 || activeHabits.tobacco) {
-                lifeCardTobacco.style.display = 'flex';
-                selectedAny = true;
+            const lifeStatsDays = document.getElementById('life-stats-days');
+            const lifeStatsMoney = document.getElementById('life-stats-money');
+            
+            const statsTobaccoCard = document.getElementById('life-stats-tobacco-card');
+            const statsTobaccoCount = document.getElementById('life-stats-tobacco-count');
+            const statsTobaccoLife = document.getElementById('life-stats-tobacco-life');
+            
+            const statsBeerCard = document.getElementById('life-stats-beer-card');
+            const statsBeerCount = document.getElementById('life-stats-beer-count');
+            const statsBeerCal = document.getElementById('life-stats-beer-cal');
 
-                const cigarettesAvoided = counts.tobacco * 20; // 1チェックインで1箱20本
-                const lifeSavedMinutes = cigarettesAvoided * 11; 
-                const lifeSavedDays = (lifeSavedMinutes / 60 / 24).toFixed(1);
-                const totalTarG = (cigarettesAvoided * 10) / 1000; 
+            // 実績の描画
+            if (lifeStatsDays) lifeStatsDays.innerText = `${totalStatsDays} 日`;
+            if (lifeStatsMoney) lifeStatsMoney.innerText = `${totalEarned.toLocaleString()} 円`;
 
-                lifeTobaccoHealth.innerText = `+ ${parseFloat(lifeSavedDays).toLocaleString()} 日`;
-                lifeTobaccoDesc.innerText = `これまでに吸わずに済んだタバコ ${cigarettesAvoided.toLocaleString()} 本。肺への吸入を回避したタール量は ${totalTarG.toFixed(1)} g。健康寿命が ${lifeSavedDays} 日伸びた計算です。`;
-            } else {
-                lifeCardTobacco.style.display = 'none';
+            // タバコ実績の表示
+            if (statsTobaccoCard) {
+                if (counts.tobacco > 0) {
+                    statsTobaccoCard.style.display = 'block';
+                    // 1回のチェックイン＝1箱（20本）とする
+                    const tobaccoCountVal = counts.tobacco * 20;
+                    const lifeRecoveredMin = counts.tobacco * 110; // 1箱110分寿命回復
+                    
+                    let lifeRecoveredStr = `${lifeRecoveredMin} 分`;
+                    if (lifeRecoveredMin >= 60) {
+                        const hrs = Math.floor(lifeRecoveredMin / 60);
+                        const mins = lifeRecoveredMin % 60;
+                        lifeRecoveredStr = `${hrs}時間 ${mins}分`;
+                    }
+
+                    statsTobaccoCount.innerText = `${tobaccoCountVal} 本`;
+                    statsTobaccoLife.innerText = lifeRecoveredStr;
+                } else {
+                    statsTobaccoCard.style.display = 'none';
+                }
             }
 
-            // 2. お酒
-            if (counts.beer > 0 || activeHabits.beer) {
-                lifeCardBeer.style.display = 'flex';
-                selectedAny = true;
+            // ビール実績の表示
+            if (statsBeerCard) {
+                if (counts.beer > 0) {
+                    statsBeerCard.style.display = 'block';
+                    const beerCountVal = counts.beer; // 1回1本
+                    const calCutVal = counts.beer * 140; // 1缶140kcal
 
-                const totalCups = counts.beer * habitPrices.beerCount; // 回数 × 1日の杯数
-                const totalKcal = totalCups * 150; 
-                const weightLossKg = (totalKcal / 7200).toFixed(2);
-                const totalAlcoholKg = (totalCups * 20) / 1000; 
-
-                lifeBeerHealth.innerText = `-${totalKcal.toLocaleString()} kcal`;
-                lifeBeerDesc.innerText = `我慢したアルコール量 ${totalAlcoholKg.toFixed(2)} kg。回避できた総熱量は ${totalKcal.toLocaleString()} kcal（おにぎり約 ${(totalKcal/180).toFixed(1)} 個分）。体脂肪換算で約 ${weightLossKg} kg の減量実績に相当します！`;
-            } else {
-                lifeCardBeer.style.display = 'none';
+                    statsBeerCount.innerText = `${beerCountVal} 本`;
+                    statsBeerCal.innerText = `${calCutVal.toLocaleString()} kcal`;
+                } else {
+                    statsBeerCard.style.display = 'none';
+                }
             }
 
-            // 3. サブスク
-            if (counts.sub > 0 || activeHabits.sub) {
-                lifeCardSub.style.display = 'flex';
-                selectedAny = true;
+            // RPG レベルと称号の計算 (1,000円ごとに1レベルアップ)
+            const level = Math.floor(totalEarned / 1000) + 1;
+            const expProgress = totalEarned % 1000;
+            const nextLevelExp = 1000;
+            const percent = (expProgress / nextLevelExp) * 100;
 
-                const subSavedMoney = history.filter(h => h.type === 'sub').reduce((acc, c) => acc + c.amount, 0);
+            if (lifeLevel) lifeLevel.innerText = `Lv. ${level}`;
+            if (lifeExpBar) lifeExpBar.style.width = `${percent}%`;
+            if (lifeExpVal) lifeExpVal.innerText = expProgress;
+            if (lifeNextExpVal) lifeNextExpVal.innerText = nextLevelExp;
 
-                lifeSubVal.innerText = `${subSavedMoney.toLocaleString()} 円の実績`;
-                lifeSubDesc.innerText = `無駄なデジタルサブスクの契約をやめ、我慢し続けたことで ${subSavedMoney.toLocaleString()} 円を浮かせました。脳に余白ができ、睡眠の質も向上しています。`;
-            } else {
-                lifeCardSub.style.display = 'none';
+            // 称号の設定
+            let titleStr = "見習い禁欲者 🔰";
+            if (level >= 201) titleStr = "神域のFIREランナー 🗽";
+            else if (level >= 121) titleStr = "禁欲の聖者 👑";
+            else if (level >= 81) titleStr = "複利の魔術師 🧙‍♂️";
+            else if (level >= 51) titleStr = "セルフコントロールの達人 🧘";
+            else if (level >= 31) titleStr = "欲望を断つ者 🛡️";
+            else if (level >= 16) titleStr = "自制の戦士 ⚔️";
+            else if (level >= 6) titleStr = "我慢の卵 🥚";
+            
+            if (lifeTitle) lifeTitle.innerText = titleStr;
+
+            // 連続我慢日数の計算 (Streak)
+            const streak = calculateStreak();
+            if (lifeStreak) {
+                lifeStreak.innerText = `🔥 ${streak}日連続我慢中`;
             }
 
-            // 4. ガチャ
-            if (counts.gacha > 0 || activeHabits.gacha) {
-                lifeCardGacha.style.display = 'flex';
-                selectedAny = true;
-
-                const gachaSavedMoney = history.filter(h => h.type === 'gacha').reduce((acc, c) => acc + c.amount, 0);
-
-                lifeGachaVal.innerText = `${gachaSavedMoney.toLocaleString()} 円節約`;
-                lifeGachaDesc.innerText = `ソシャゲのガチャ課金を我慢し、${gachaSavedMoney.toLocaleString()} 円の節約に成功。脳のドーパミン受容体が正常化し、穏やかな集中力が戻ってきています。`;
-            } else {
-                lifeCardGacha.style.display = 'none';
+            // B. タイムライン予測ロードマップの更新
+            let monthlySaving = 0;
+            if (activeHabits.tobacco) {
+                monthlySaving += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
+            }
+            if (activeHabits.beer) {
+                monthlySaving += Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
+            }
+            if (activeHabits.sub) {
+                monthlySaving += habitPrices.subPrice * habitPrices.subCount;
+            }
+            if (activeHabits.gacha) {
+                monthlySaving += habitPrices.gachaPrice * habitPrices.gachaCount;
             }
 
-            // 合算と表示制御
-            if (selectedAny) {
-                lifeCardEmpty.style.display = 'none';
-                fortuneCard.style.display = 'block';
-                timelineCard.style.display = 'block';
-                
-                const hours = Math.floor(totalMinutes / 60);
-                const dayUnits = (hours / 24).toFixed(1);
-                
-                lifeTime.innerText = `${hours.toLocaleString()} 時間`;
-                lifeTimeDesc.innerText = `（約 ${dayUnits} 日分）の時間を、悪い習慣の誘惑から取り戻しました！この時間を自己投資や本当の休息にあてることができます。`;
+            const lifeRoadmapMonthlyVal = document.getElementById('life-roadmap-monthly-val');
+            if (lifeRoadmapMonthlyVal) {
+                lifeRoadmapMonthlyVal.innerText = monthlySaving.toLocaleString();
+            }
 
-                // 🔮 習慣化占い・統計予測の生成
-                const fortuneBadge = document.getElementById('fortune-badge');
-                const fortuneText1 = document.getElementById('fortune-text-1');
-                const fortuneText2 = document.getElementById('fortune-text-2');
+            const dailySaving = Math.round(monthlySaving / 30);
+            
+            // 各期間の節約額表示
+            const rmDayMoney = document.getElementById('rm-day-money');
+            const rmWeekMoney = document.getElementById('rm-week-money');
+            const rmMonthMoney = document.getElementById('rm-month-money');
+            const rmYearMoney = document.getElementById('rm-year-money');
+            const rmGoalTitle = document.getElementById('rm-goal-title');
+            const rmGoalSaving = document.getElementById('rm-goal-saving');
+            const rmGoalInvest = document.getElementById('rm-goal-invest');
+            const rmGoalDesc = document.getElementById('rm-goal-desc');
 
-                const fortunes = ["超大吉 🌟", "昇龍運 🐉", "黄金期 🪙", "精神超越 🧠", "健康大吉 🍀", "大開運 ✨"];
-                const dayCode = new Date().getDate();
-                const nameCode = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                const seed = (dayCode + nameCode) % fortunes.length;
-                fortuneBadge.innerText = `今日の習慣化運勢：${fortunes[seed]}`;
+            if (rmDayMoney) rmDayMoney.innerText = dailySaving.toLocaleString();
+            if (rmWeekMoney) rmWeekMoney.innerText = (dailySaving * 7).toLocaleString();
+            if (rmMonthMoney) rmMonthMoney.innerText = monthlySaving.toLocaleString();
+            if (rmYearMoney) rmYearMoney.innerText = (monthlySaving * 12).toLocaleString();
 
-                let selectedHabitNames = [];
-                if (activeHabits.tobacco || counts.tobacco > 0) selectedHabitNames.push("禁煙");
-                if (activeHabits.beer || counts.beer > 0) selectedHabitNames.push("禁酒");
-                if (activeHabits.sub || counts.sub > 0) selectedHabitNames.push("デジタルデトックス");
-                if (activeHabits.gacha || counts.gacha > 0) selectedHabitNames.push("ドーパミン制御");
-
-                if (selectedHabitNames.length === 0) selectedHabitNames.push("自己改善");
-
-                fortuneText1.innerText = `🔮 【統計的運命】 ${name}さんが「${selectedHabitNames.join('・')}」の実績を積み重ねたことで、統計的に3ヶ月以内に脳のクリアネス（集中力）が最大1.4倍に向上。仕事の意思決定精度が上がり、臨時収入や新しいチャンスを引き寄せる確率が 78.4% 上昇しています。`;
-                
-                let hobbyTarget = "";
-                let hobbyBenefit = "";
-                switch (profile.hobby) {
-                    case 'car': hobbyTarget = "憧れの車 🚗"; hobbyBenefit = "ドライブで訪れる新しい景色が、あなたの直感力とリフレッシュ度をさらに高めます。"; break;
-                    case 'travel': hobbyTarget = "最高の旅 ✈️"; hobbyBenefit = "旅先での偶然の出会いやインスピレーションが、今後の人生を大きく変えるきっかけになります。"; break;
-                    case 'gadget': hobbyTarget = "最高のデスク環境 💻"; hobbyBenefit = "生産性の極限化により、インプットとアウトプットの質が劇的に向上。自己成長スピードが2倍になります。"; break;
-                    case 'gourmet': hobbyTarget = "至高のグルメ 🍣"; hobbyBenefit = "味覚の鋭敏化により、食事の一口一口から得られる幸福物質（エンドルフィン）が従来の2倍に増加します。"; break;
-                    case 'invest': hobbyTarget = "経済的自由 📈"; hobbyBenefit = "複利の数字が伸びるたび、あなたの精神的余裕と『選べる選択肢の広さ』が統計的に拡張していきます。"; break;
-                    case 'gaming': hobbyTarget = "究極のホビールーム 🎮"; hobbyBenefit = "自分だけの聖域で過ごす集中時間が、最高の精神安定剤となり、対人運を底上げします。"; break;
-                    default: hobbyTarget = "豊かな将来 🗽"; hobbyBenefit = "精神的かつ時間的余裕が、新しい幸福をもたらします。";
-                }
-                fortuneText2.innerText = `✨ 【引き寄せの暗示】 これまでに浮かせた累計 ${totalEarned.toLocaleString()} 円が「${hobbyTarget}」へと形を変えるロードマップが確立されました。悪い習慣を手放した空白には、統計的に『本当にあなたが必要とする良縁やアイデア』が舞い込みます。 ${hobbyBenefit}`;
-
-                // ⏳ 時間経過ロードマップの生成
-                const tl1Day = document.getElementById('timeline-1day');
-                const tl3Days = document.getElementById('timeline-3days');
-                const tl1Week = document.getElementById('timeline-1week');
-                const tl1Month = document.getElementById('timeline-1month');
-
-                let tlData = {
-                    '1day': ["体内環境がリセットされ、血液循環がスムーズになり始めます。"],
-                    '3days': ["睡眠が深くなり、朝スッキリ目覚められるように。胃腸の疲労感も取れてきます。"],
-                    '1week': ["脳のドーパミン受容体のリセットが進行。イライラが減り、集中力が持続しやすくなります。"],
-                    '1month': ["体脂肪や血圧などの健康数値が大幅に改善。自己コントロール感による自信が満ち溢れます。"]
-                };
-
-                if (activeHabits.tobacco || counts.tobacco > 0) {
-                    tlData['1day'].push("血中酸素濃度と血圧が正常化。一酸化炭素が体内から完全に消え去ります。");
-                    tlData['3days'].push("気管支が弛緩し、呼吸が劇的に楽になります。味覚や嗅覚が驚くほど鋭敏に。");
-                    tlData['1week'].push("肺の繊毛運動が回復し、溜まっていた有害物質の排出が本格化します。");
-                    tlData['1month'].push("肺機能が最大30%回復。咳や息切れが消え、肌の血色が格段に良くなります。");
-                }
-                if (activeHabits.beer || counts.beer > 0) {
-                    tlData['1day'].push("肝臓のアルコール分解が終了し、脂肪燃焼プロセスが再開されます。");
-                    tlData['3days'].push("アルコールによる脱水が解消し、肌のキメとハリが戻り始めます。");
-                    tlData['1week'].push("深い睡眠（レム睡眠）の割合が2倍になり、脳の疲労が完璧に解消されます。");
-                    tlData['1month'].push("肝機能（γ-GTP等）が正常値へ。むくみが完全に取れ、体重の減少が目に見えて現れます。");
-                }
-                if (activeHabits.sub || activeHabits.gacha || counts.sub > 0 || counts.gacha > 0) {
-                    tlData['1day'].push("ブルーライト削減により、睡眠誘導ホルモンであるメラトニンの分泌が正常化。");
-                    tlData['3days'].push("スマホ脳特有のマルチタスク疲労が抜け、1つの物事への深い集中力が戻り始めます。");
-                    tlData['1week'].push("異常な快感刺激から解放され、散歩や読書などの穏やかな行動に強い幸福感を感じるように。");
-                    tlData['1month'].push("時間の余裕が統計的に約30〜60時間増加。自己投資や趣味に熱中でき、幸福度が最大化します。");
-                }
-
-                tl1Day.innerHTML = tlData['1day'].join('<br>➕ ');
-                tl3Days.innerHTML = tlData['3days'].join('<br>➕ ');
-                tl1Week.innerHTML = tlData['1week'].join('<br>➕ ');
-                tl1Month.innerHTML = tlData['1month'].join('<br>➕ ');
+            const annualYield = simulationSettings.yield / 100;
+            let totalSavingGoal = monthlySaving * 12 * years;
+            let totalInvestGoal = 0;
+            const monthlyRate = annualYield / 12;
+            const months = years * 12;
+            if (monthlyRate > 0) {
+                totalInvestGoal = monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
             } else {
-                lifeCardEmpty.style.display = 'block';
-                fortuneCard.style.display = 'none';
-                timelineCard.style.display = 'none';
-                lifeTime.innerText = "0 時間";
-                lifeTimeDesc.innerText = "習慣のチェックインを開始すると、取り戻した時間がここに表示されます。";
+                totalInvestGoal = totalSavingGoal;
+            }
+
+            if (rmGoalTitle) rmGoalTitle.innerText = `${years}年後 (ゴール)`;
+            if (rmGoalSaving) rmGoalSaving.innerText = Math.round(totalSavingGoal).toLocaleString();
+            if (rmGoalInvest) rmGoalInvest.innerText = Math.round(totalInvestGoal).toLocaleString();
+
+            // 趣味に合わせた具体的なメッセージをゴールに表示
+            if (rmGoalDesc) {
+                const hobby = profile.hobby || 'invest';
+                let hobbyTarget = "資産形成";
+                switch (hobby) {
+                    case 'car': hobbyTarget = "憧れの車 🚗"; break;
+                    case 'travel': hobbyTarget = "最高の旅 ✈️"; break;
+                    case 'gadget': hobbyTarget = "最高のデスク環境 💻"; break;
+                    case 'gourmet': hobbyTarget = "至高のグルメ 🍣"; break;
+                    case 'invest': hobbyTarget = "経済的自立（FIRE）と不労所得 📈"; break;
+                    case 'gaming': hobbyTarget = "夢のゲーミング/ホビールーム構築 🎮"; break;
+                }
+
+                rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める（${Math.round(totalSavingGoal).toLocaleString()}円）よりも <strong>${Math.round(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${Math.round(totalInvestGoal).toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、「${hobbyTarget}」を実現し、何にも縛られない自由な人生を手に入れることができます！`;
             }
         }
 
-        // 🎁 マイルストーン更新 (趣味連動)
         function updateMilestone(total) {
             const name = profile.name || "あなた";
             const hobby = profile.hobby;
