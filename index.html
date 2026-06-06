@@ -624,16 +624,26 @@
             font-size: 0.72rem;
             font-weight: 600;
             color: var(--text-main);
-            cursor: not-allowed;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            opacity: 0.6;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+
+        .auth-btn:hover:not(.coming-soon) {
+            background: rgba(2, 132, 199, 0.1);
+            border-color: var(--neon-primary);
         }
 
         .theme-dark .auth-btn {
             background: rgba(255, 255, 255, 0.03);
+        }
+
+        .auth-btn.coming-soon {
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .auth-btn.coming-soon::after {
@@ -1159,6 +1169,7 @@
             margin: 0;
         }
 </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="app-container">
@@ -1631,11 +1642,21 @@
 
                 <!-- 🔐 アカウント同期 -->
                 <div class="auth-sync-section">
-                    <div class="auth-title">🔒 アカウント連携 (将来共有用)</div>
-                    <div class="auth-grid">
-                                                <button class="auth-btn coming-soon">🌐 Google</button>
-                        <button class="auth-btn coming-soon">💬 LINE</button>
-                        <button class="auth-btn coming-soon">🍏 Apple</button>
+                    <div class="auth-title" id="auth-section-title">🔒 アカウント連携</div>
+                    <div id="auth-status-area" style="margin-top: 8px;">
+                        <!-- ログインしていない場合はボタン一覧を表示 -->
+                        <div class="auth-grid" id="auth-btn-grid">
+                            <button class="auth-btn" id="btn-login-google">🌐 Google</button>
+                            <button class="auth-btn" id="btn-login-line">💬 LINE</button>
+                            <button class="auth-btn coming-soon" id="btn-login-apple">🍏 Apple</button>
+                        </div>
+                        <!-- ログインしている場合はステータスとログアウトボタンを表示 -->
+                        <div id="auth-logged-in-area" style="display: none; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); padding: 10px 14px; border-radius: 12px;">
+                            <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                                <span id="auth-user-icon">👤</span> <span id="auth-user-name">ログイン中</span>
+                            </div>
+                            <button id="btn-logout" class="modal-btn-secondary" style="margin-top: 0; padding: 6px 12px; width: auto; font-size: 0.7rem;">ログアウト</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1914,7 +1935,16 @@
         const themeToggle = document.getElementById('theme-toggle');
         const settingsToggle = document.getElementById('settings-toggle');
         
-        const infoModal = document.getElementById('info-modal');
+        
+        const btnLoginGoogle = document.getElementById('btn-login-google');
+        const btnLoginLine = document.getElementById('btn-login-line');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        const authBtnGrid = document.getElementById('auth-btn-grid');
+        const authLoggedInArea = document.getElementById('auth-logged-in-area');
+        const authUserName = document.getElementById('auth-user-name');
+        const authUserIcon = document.getElementById('auth-user-icon');
+const infoModal = document.getElementById('info-modal');
         const infoModalClose = document.getElementById('info-modal-close');
         const infoModalTitle = document.getElementById('info-modal-title');
         const infoModalBody = document.getElementById('info-modal-body');
@@ -2104,6 +2134,230 @@ const settingsModal = document.getElementById('settings-modal');
 
         // 🗑️ オールリセット
         
+        
+        // 🌐 Supabaseの設定 (ログイン情報・クラウド同期用)
+        // 開発者登録後にURLとキーを記入すると自動的にクラウド同期が有効化されます。
+        // 空欄の場合はモック（擬似ログイン）モードで動作します。
+        const SUPABASE_URL = ""; 
+        const SUPABASE_ANON_KEY = "";
+        
+        let supabaseClient = null;
+        let currentUser = null;
+
+        // モックユーザーのLocalStorage管理キー
+        const MOCK_USER_KEY = 'habitvest_mock_user';
+
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            try {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (err) {
+                console.error("Supabaseの初期化に失敗しました:", err);
+            }
+        }
+
+        // アカウント状態（ログインUI）の更新
+        function updateAuthUI(user, providerName = '') {
+            if (user) {
+                authBtnGrid.style.display = 'none';
+                authLoggedInArea.style.display = 'flex';
+                
+                const displayName = user.email || user.name || 'ログインユーザー';
+                authUserName.innerText = `${displayName} 連携中`;
+                
+                if (providerName.toLowerCase().includes('google') || (user.app_metadata && user.app_metadata.provider === 'google')) {
+                    authUserIcon.innerText = '🌐';
+                } else if (providerName.toLowerCase().includes('line') || (user.app_metadata && user.app_metadata.provider === 'line')) {
+                    authUserIcon.innerText = '💬';
+                } else {
+                    authUserIcon.innerText = '👤';
+                }
+            } else {
+                authBtnGrid.style.display = 'grid';
+                authLoggedInArea.style.display = 'none';
+            }
+        }
+
+        // データの同期用オブジェクト作成
+        function getSyncDataBlob() {
+            return {
+                profile: profile,
+                settings: habitPrices,
+                states: activeHabits,
+                last_sync: lastSyncDate,
+                simulation: simulationSettings,
+                history: history,
+                daily_checkin: localStorage.getItem('habitvest_daily_checkin')
+            };
+        }
+
+        // 同期されたデータの適用
+        function applySyncDataBlob(blob) {
+            if (!blob) return;
+            if (blob.profile) {
+                profile = blob.profile;
+                localStorage.setItem('habitvest_profile', JSON.stringify(profile));
+            }
+            if (blob.settings) {
+                habitPrices = blob.settings;
+                localStorage.setItem('habitvest_settings', JSON.stringify(habitPrices));
+            }
+            if (blob.states) {
+                activeHabits = blob.states;
+                localStorage.setItem('habitvest_states', JSON.stringify(activeHabits));
+            }
+            if (blob.last_sync) {
+                lastSyncDate = blob.last_sync;
+                localStorage.setItem('habitvest_last_sync', lastSyncDate);
+            }
+            if (blob.simulation) {
+                simulationSettings = blob.simulation;
+                localStorage.setItem('habitvest_simulation', JSON.stringify(simulationSettings));
+            }
+            if (blob.history) {
+                history = blob.history;
+                localStorage.setItem('habitvest_history', JSON.stringify(history));
+            }
+            if (blob.daily_checkin) {
+                localStorage.setItem('habitvest_daily_checkin', blob.daily_checkin);
+            }
+            
+            // 入力欄や表示の更新
+            loadSettingsInputs();
+            updateCheckinBadges();
+            calculate();
+            renderHistoryList();
+        }
+
+        // クラウドへデータを保存
+        async function saveDataToCloud() {
+            if (!supabaseClient || !currentUser) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('habitvest_data')
+                    .upsert({
+                        user_id: currentUser.id,
+                        data: getSyncDataBlob(),
+                        updated_at: new Date().toISOString()
+                    });
+                if (error) throw error;
+                console.log("クラウドへのデータ同期に成功しました。");
+            } catch (err) {
+                console.error("クラウド保存エラー:", err.message);
+            }
+        }
+
+        // クラウドからデータを読み込み
+        async function loadDataFromCloud() {
+            if (!supabaseClient || !currentUser) return;
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('habitvest_data')
+                    .select('data')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (error && error.code !== 'PGRST116') throw error; // PGRST116 is code for no rows found
+                
+                if (data && data.data) {
+                    applySyncDataBlob(data.data);
+                    console.log("クラウドデータの同期が完了しました。");
+                }
+            } catch (err) {
+                console.error("クラウド読み込みエラー:", err.message);
+            }
+        }
+
+        // ログイン状態監視 (Supabase Auth)
+        if (supabaseClient) {
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                if (session) {
+                    currentUser = session.user;
+                    updateAuthUI(currentUser);
+                    await loadDataFromCloud();
+                } else {
+                    currentUser = null;
+                    updateAuthUI(null);
+                }
+            });
+        } else {
+            // モックログインの復元
+            const savedMockUser = localStorage.getItem(MOCK_USER_KEY);
+            if (savedMockUser) {
+                try {
+                    const parsed = JSON.parse(savedMockUser);
+                    currentUser = parsed.user;
+                    updateAuthUI(currentUser, parsed.provider);
+                } catch (e) {
+                    localStorage.removeItem(MOCK_USER_KEY);
+                }
+            }
+        }
+
+        // ログイン処理のハンドリング
+        async function handleLogin(provider) {
+            if (supabaseClient) {
+                // 本番環境：Supabase OAuth
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: provider,
+                    options: {
+                        redirectTo: window.location.origin + window.location.pathname
+                    }
+                });
+                if (error) {
+                    alert(`ログインに失敗しました: ${error.message}`);
+                }
+            } else {
+                // テスト環境：モック動作
+                const mockUser = {
+                    id: 'mock-uuid-1234-5678',
+                    email: provider === 'google' ? 'test.google@example.com' : 'test.line@example.com',
+                    name: provider === 'google' ? 'Googleテストユーザー' : 'LINEテストユーザー',
+                    app_metadata: { provider: provider }
+                };
+                currentUser = mockUser;
+                localStorage.setItem(MOCK_USER_KEY, JSON.stringify({ user: mockUser, provider: provider }));
+                updateAuthUI(mockUser, provider);
+                alert(`[デバッグ] ${provider === 'google' ? 'Google' : 'LINE'}でサインインしました（モック動作）`);
+            }
+        }
+
+        // ログアウト処理のハンドリング
+        async function handleLogout() {
+            if (supabaseClient) {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) alert(`ログアウトに失敗しました: ${error.message}`);
+            } else {
+                currentUser = null;
+                localStorage.removeItem(MOCK_USER_KEY);
+                updateAuthUI(null);
+                alert("[デバッグ] ログアウトしました（モック動作）");
+            }
+        }
+
+        // ボタンのクリックイベント紐付け
+        btnLoginGoogle.addEventListener('click', () => handleLogin('google'));
+        btnLoginLine.addEventListener('click', () => handleLogin('line'));
+        btnLogout.addEventListener('click', handleLogout);
+
+        // 各種保存処理の後にクラウド保存をトリガーするようにフックを追加
+        const originalSaveSettings = saveSettings;
+        saveSettings = function() {
+            originalSaveSettings();
+            if (currentUser && supabaseClient) {
+                saveDataToCloud();
+            }
+        };
+
+        const originalSaveHistory = saveHistory;
+        saveHistory = function() {
+            originalSaveHistory();
+            if (currentUser && supabaseClient) {
+                saveDataToCloud();
+            }
+        };
+
         // ℹ️ 情報モーダルの表示制御
         const openInfoModal = (title, htmlContent) => {
             infoModalTitle.innerText = title;
