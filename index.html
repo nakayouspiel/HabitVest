@@ -1168,6 +1168,63 @@
             opacity: 0.8;
             margin: 0;
         }
+
+        /* 🔄 ペース切り替えのセグメントコントロール */
+        .pace-toggle-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-glass);
+            margin-bottom: 8px;
+            max-width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+            overflow: hidden;
+            height: 40px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);
+        }
+        .theme-dark .pace-toggle-container {
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .pace-btn-sliding-bg {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: var(--btn-gradient);
+            border-radius: 8px;
+            transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+        }
+        .pace-toggle-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--text-sub);
+            padding: 6px 12px;
+            font-family: var(--font-ui);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 2;
+            outline: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .pace-toggle-btn.active {
+            color: #ffffff !important;
+        }
 </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1263,12 +1320,16 @@
                 </div>
                 
                 <!-- 🔄 ペース切り替えトグル (理想 vs 現実) -->
-                <div class="pace-toggle-container" style="display: flex; justify-content: center; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 8px; max-width: 280px; margin-left: auto; margin-right: auto;">
-                    <button type="button" id="btn-pace-ideal" class="pace-btn active" style="flex: 1; border: none; background: var(--btn-gradient); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: none;">理想目標 🏆</button>
-                    <button type="button" id="btn-pace-real" class="pace-btn" style="flex: 1; border: none; background: transparent; color: var(--text-sub); padding: 6px 12px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: none;">現実ペース 🏃 <span id="pace-real-badge" style="font-size: 0.62rem; background: rgba(0, 243, 255, 0.15); color: var(--neon-primary); padding: 1px 4px; border-radius: 4px;">---%</span></button>
+                <div style="font-size: 0.68rem; font-weight: 700; color: var(--text-sub); text-align: center; margin-bottom: 6px; letter-spacing: 0.3px;">
+                    📈 将来予測モード (タップで切替)
                 </div>
-                <div id="pace-explanation" style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-bottom: 14px; font-weight: 500; min-height: 1.5em; line-height: 1.4;">
-                    💡 理想目標: 習慣を毎日100%継続できた場合の将来予測です
+                <div class="pace-toggle-container">
+                    <div id="pace-toggle-bg" class="pace-btn-sliding-bg"></div>
+                    <button type="button" id="btn-pace-ideal" class="pace-toggle-btn active">理想目標 🏆</button>
+                    <button type="button" id="btn-pace-real" class="pace-toggle-btn">現実ペース 🏃 <span id="pace-real-badge" style="font-size: 0.62rem; background: rgba(0, 243, 255, 0.15); color: var(--neon-primary); padding: 1px 4px; border-radius: 4px; transition: all 0.2s;">---%</span></button>
+                </div>
+                <div id="pace-explanation" style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-bottom: 14px; font-weight: 500; min-height: 2.8em; line-height: 1.45; padding: 0 16px;">
+                    💡 理想目標: 習慣セーブの成功率を100%（毎日継続）と仮定した将来予測です
                 </div>
 
                 <div class="dashboard-grid">
@@ -2133,27 +2194,35 @@ const settingsModal = document.getElementById('settings-modal');
         // 🔄 ペース切り替えイベント登録
         const btnPaceIdeal = document.getElementById('btn-pace-ideal');
         const btnPaceReal = document.getElementById('btn-pace-real');
+        const paceToggleBg = document.getElementById('pace-toggle-bg');
 
         if (btnPaceIdeal && btnPaceReal) {
             btnPaceIdeal.addEventListener('click', () => {
                 simulationPaceMode = 'ideal';
-                btnPaceIdeal.style.background = 'var(--btn-gradient)';
-                btnPaceIdeal.style.color = 'white';
-                btnPaceReal.style.background = 'transparent';
-                btnPaceReal.style.color = 'var(--text-sub)';
+                btnPaceIdeal.classList.add('active');
+                btnPaceReal.classList.remove('active');
+                if (paceToggleBg) paceToggleBg.style.transform = 'translateX(0)';
                 const exp = document.getElementById('pace-explanation');
-                if (exp) exp.innerText = '💡 理想目標: 習慣を毎日100%継続できた場合の将来予測です';
+                if (exp) exp.innerText = '💡 理想目標: 習慣セーブの成功率を100%（毎日継続）と仮定した将来予測です';
                 calculate();
             });
 
             btnPaceReal.addEventListener('click', () => {
                 simulationPaceMode = 'real';
-                btnPaceReal.style.background = 'var(--btn-gradient)';
-                btnPaceReal.style.color = 'white';
-                btnPaceIdeal.style.background = 'transparent';
-                btnPaceIdeal.style.color = 'var(--text-sub)';
+                btnPaceReal.classList.add('active');
+                btnPaceIdeal.classList.remove('active');
+                if (paceToggleBg) paceToggleBg.style.transform = 'translateX(100%)';
+                const rates = getHabitSuccessRates();
+                let activeRates = [];
+                if (profile.trackTobacco) activeRates.push(rates.tobacco);
+                if (profile.trackBeer) activeRates.push(rates.beer);
+                let avgRate = 1.0;
+                if (activeRates.length > 0) {
+                    avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
+                }
+                const percentStr = `${Math.round(avgRate * 100)}%`;
                 const exp = document.getElementById('pace-explanation');
-                if (exp) exp.innerText = '💡 現実ペース: 過去の実際のセーブ率（継続率）に基づいた将来予測です';
+                if (exp) exp.innerText = `💡 現実ペース: 実際のあなたの平均セーブ率（${percentStr}）を考慮した将来予測です`;
                 calculate();
             });
         }
@@ -6332,18 +6401,29 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             // スイッチ表示用の実質継続率を計算してバッジに反映
             const paceRealBadge = document.getElementById('pace-real-badge');
+            let avgRate = 1.0;
+            let activeRates = [];
+            if (profile.trackTobacco) activeRates.push(rates.tobacco);
+            if (profile.trackBeer) activeRates.push(rates.beer);
+            if (activeHabits.sub) activeRates.push(1.0);
+            if (activeHabits.gacha) activeRates.push(1.0);
+            
+            if (activeRates.length > 0) {
+                avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
+            }
             if (paceRealBadge) {
-                let activeRates = [];
-                if (profile.trackTobacco) activeRates.push(rates.tobacco);
-                if (profile.trackBeer) activeRates.push(rates.beer);
-                if (activeHabits.sub) activeRates.push(1.0);
-                if (activeHabits.gacha) activeRates.push(1.0);
-                
-                let avgRate = 1.0;
-                if (activeRates.length > 0) {
-                    avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
-                }
                 paceRealBadge.innerText = `${Math.round(avgRate * 100)}%`;
+            }
+
+            // 説明文の動的アップデート
+            const exp = document.getElementById('pace-explanation');
+            if (exp) {
+                if (simulationPaceMode === 'ideal') {
+                    exp.innerText = '💡 理想目標: 習慣セーブの成功率を100%（毎日継続）と仮定した将来予測です';
+                } else {
+                    const percentStr = `${Math.round(avgRate * 100)}%`;
+                    exp.innerText = `💡 現実ペース: 実際のあなたの平均セーブ率（${percentStr}）を考慮した、よりリアルな将来予測です`;
+                }
             }
 
             if (simulationPaceMode === 'real') {
