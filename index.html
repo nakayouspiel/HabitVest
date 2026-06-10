@@ -36,6 +36,10 @@
             --border-input: #cbd5e1;
             --card-shadow: 0 10px 30px rgba(148, 163, 184, 0.12);
             --nav-bg: rgba(255, 255, 255, 0.85);
+            --btn-gradient: linear-gradient(135deg, #0284c7 0%, #db2777 100%);
+            --btn-secondary-bg: #e2e8f0;
+            --btn-secondary-border: #cbd5e1;
+            --btn-secondary-text: #0f172a;
         }
 
         /* 🌙 ダークモード */
@@ -54,6 +58,10 @@
             --border-input: rgba(255, 255, 255, 0.1);
             --card-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
             --nav-bg: rgba(16, 24, 48, 0.85);
+            --btn-gradient: linear-gradient(135deg, #00f3ff 0%, #ff007f 100%);
+            --btn-secondary-bg: #1e293b;
+            --btn-secondary-border: #334155;
+            --btn-secondary-text: #f8fafc;
         }
 
         * {
@@ -690,33 +698,23 @@
         /* 🔘 セカンダリボタン (コントラスト改善) */
         .modal-btn-secondary {
             width: 100%;
-            background: #cbd5e1; /* 視認性の良い明るい灰色 */
-            border: 1px solid #94a3b8;
+            background: var(--btn-secondary-bg);
+            border: 1px solid var(--btn-secondary-border);
             border-radius: 12px;
             padding: 10px;
-            color: #000000; /* 文字色は黒でコントラスト最大化 */
+            color: var(--btn-secondary-text);
             font-family: var(--font-ui);
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s, border-color 0.2s;
+            transition: all 0.2s;
             outline: none;
             text-align: center;
         }
 
-        .theme-dark .modal-btn-secondary {
-            background: #1e293b; /* 暗いスレート */
-            border-color: rgba(255, 255, 255, 0.15);
-            color: #ffffff; /* ダークモード時は白文字 */
-        }
-
         .modal-btn-secondary:active {
-            background: #b91c1c; /* ホバー・アクティブ時のフィードバック */
-            opacity: 0.85;
-        }
-
-        .theme-dark .modal-btn-secondary:active {
-            background: #334155;
+            opacity: 0.8;
+            transform: scale(0.98);
         }
 
         .bottom-nav {
@@ -969,8 +967,8 @@
             margin-bottom: 8px;
         }
         .checkin-btn {
-            background: var(--bg-card);
-            border: 2px solid var(--border-glass);
+            background: var(--bg-input);
+            border: 2px solid var(--border-input);
             border-radius: 18px;
             padding: 16px 12px;
             color: var(--text-main);
@@ -985,6 +983,10 @@
             box-shadow: var(--card-shadow);
             position: relative;
             overflow: hidden;
+        }
+        .theme-dark .checkin-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.1);
         }
         .checkin-btn .emoji {
             font-size: 1.8rem;
@@ -1002,17 +1004,77 @@
             border-radius: 6px;
         }
         .theme-dark .checkin-btn .price-badge {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-sub);
         }
-        /* アクティブ時の状態 */
+        /* アクティブ時の状態 (超高コントラストベタ塗りグラデーション) */
         .checkin-btn.active {
-            border-color: var(--neon-primary);
-            background: rgba(14, 165, 233, 0.08);
-            box-shadow: 0 0 15px rgba(14, 165, 233, 0.25);
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
         }
         .checkin-btn.active .emoji {
             transform: scale(1.15) rotate(-5deg);
         }
+        .checkin-btn.active .price-badge {
+            background: rgba(255, 255, 255, 0.25) !important;
+            color: #ffffff !important;
+        }
+
+        /* 個別のアクティブカラースキーム */
+        #checkin-btn-tobacco.active {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            border-color: #db2777;
+        }
+        #checkin-btn-beer.active {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            border-color: #0284c7;
+        }
+        #checkin-btn-sub.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-color: #059669;
+        }
+        #checkin-btn-gacha.active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-color: #d97706;
+        }
+
+        /* ダークモード時のアクティブカラー (より鮮やかに) */
+        .theme-dark #checkin-btn-tobacco.active {
+            background: linear-gradient(135deg, #ff007f 0%, #db006f 100%);
+            border-color: #ff007f;
+            box-shadow: 0 0 18px rgba(255, 0, 127, 0.45);
+        }
+        .theme-dark #checkin-btn-beer.active {
+            background: linear-gradient(135deg, #00f3ff 0%, #00c2cc 100%);
+            border-color: #00f3ff;
+            color: #060913 !important; /* 黒文字で視認性抜群 */
+            box-shadow: 0 0 18px rgba(0, 243, 255, 0.45);
+        }
+        .theme-dark #checkin-btn-beer.active .price-badge {
+            color: #060913 !important;
+            background: rgba(0, 0, 0, 0.15) !important;
+        }
+        .theme-dark #checkin-btn-sub.active {
+            background: linear-gradient(135deg, #39ff14 0%, #2ecc11 100%);
+            border-color: #39ff14;
+            color: #060913 !important;
+            box-shadow: 0 0 18px rgba(57, 255, 20, 0.45);
+        }
+        .theme-dark #checkin-btn-sub.active .price-badge {
+            color: #060913 !important;
+            background: rgba(0, 0, 0, 0.15) !important;
+        }
+        .theme-dark #checkin-btn-gacha.active {
+            background: linear-gradient(135deg, #ffa500 0%, #cc8400 100%);
+            border-color: #ffa500;
+            color: #060913 !important;
+            box-shadow: 0 0 18px rgba(255, 165, 0, 0.45);
+        }
+        .theme-dark #checkin-btn-gacha.active .price-badge {
+            color: #060913 !important;
+            background: rgba(0, 0, 0, 0.15) !important;
+        }
+
         .checkin-btn.active.daily::after {
             content: "今日やめた！✨";
             position: absolute;
@@ -1020,11 +1082,10 @@
             right: 4px;
             font-size: 0.55rem;
             font-weight: 800;
-            background: var(--neon-primary);
+            background: rgba(0, 0, 0, 0.2);
             color: white;
             padding: 1px 4px;
             border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(2, 132, 199, 0.3);
         }
         .checkin-btn.active.monthly::after {
             content: "セーブ中 🔒";
@@ -1033,16 +1094,10 @@
             right: 4px;
             font-size: 0.55rem;
             font-weight: 800;
-            background: var(--neon-secondary);
+            background: rgba(0, 0, 0, 0.2);
             color: white;
             padding: 1px 4px;
             border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(219, 39, 119, 0.3);
-        }
-        .checkin-btn.active.monthly {
-            border-color: var(--neon-secondary);
-            background: rgba(219, 39, 119, 0.08);
-            box-shadow: 0 0 15px rgba(219, 39, 119, 0.25);
         }
 
         /* 実績表示 */
@@ -1078,6 +1133,7 @@
             overflow-y: auto;
             padding-right: 4px;
             margin-top: 4px;
+            /* スクロールバー装飾 */
         }
         .history-item {
             display: flex;
@@ -1207,13 +1263,14 @@
             flex: 1;
             border: none;
             background: transparent;
-            color: var(--text-sub);
+            color: var(--text-main);
+            opacity: 0.75;
             padding: 6px 12px;
             font-family: var(--font-ui);
             font-size: 0.78rem;
             font-weight: 700;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
             z-index: 2;
             outline: none;
             position: relative;
@@ -1224,6 +1281,81 @@
         }
         .pace-toggle-btn.active {
             color: #ffffff !important;
+            opacity: 1;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 📅 カレンダー記録管理ボタンのスタイル */
+        .cal-preview-btn {
+            font-size: 0.65rem;
+            padding: 8px 4px;
+            margin: 0;
+            background: var(--btn-secondary-bg);
+            border: 1px solid var(--btn-secondary-border);
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--btn-secondary-text);
+            font-family: var(--font-ui);
+            font-weight: 700;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .cal-preview-btn:active {
+            transform: scale(0.95);
+        }
+
+        .cal-preview-btn.active {
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .cal-preview-btn-tobacco.active {
+            background: #db2777;
+            border-color: #db2777;
+        }
+        .theme-dark .cal-preview-btn-tobacco.active {
+            background: #ff007f;
+            border-color: #ff007f;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.3);
+        }
+
+        .cal-preview-btn-beer.active {
+            background: #0284c7;
+            border-color: #0284c7;
+        }
+        .theme-dark .cal-preview-btn-beer.active {
+            background: #00f3ff;
+            border-color: #00f3ff;
+            color: #060913 !important;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        .cal-preview-btn-sub.active {
+            background: #16a34a;
+            border-color: #16a34a;
+        }
+        .theme-dark .cal-preview-btn-sub.active {
+            background: #39ff14;
+            border-color: #39ff14;
+            color: #060913 !important;
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+        }
+
+        .cal-preview-btn-gacha.active {
+            background: #f59e0b;
+            border-color: #f59e0b;
+        }
+        .theme-dark .cal-preview-btn-gacha.active {
+            background: #ffa500;
+            border-color: #ffa500;
+            color: #060913 !important;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
         }
 </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -5652,16 +5784,16 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         <strong>現在のセーブ状況:</strong><br>${recordText}
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
-                        <button onclick="togglePastRecord('${dateStr}', 'tobacco')" class="modal-btn" style="font-size: 0.65rem; padding: 6px 2px; margin: 0; background: ${hasTobacco ? 'rgba(219, 39, 119, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasTobacco ? 'var(--accent-pink)' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                        <button onclick="togglePastRecord('${dateStr}', 'tobacco')" class="cal-preview-btn cal-preview-btn-tobacco ${hasTobacco ? 'active' : ''}">
                             ${hasTobacco ? '🗑️ タバコ消去' : '🚭 タバコ追加'}
                         </button>
-                        <button onclick="togglePastRecord('${dateStr}', 'beer')" class="modal-btn" style="font-size: 0.65rem; padding: 6px 2px; margin: 0; background: ${hasBeer ? 'rgba(2, 132, 199, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasBeer ? 'var(--neon-primary)' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                        <button onclick="togglePastRecord('${dateStr}', 'beer')" class="cal-preview-btn cal-preview-btn-beer ${hasBeer ? 'active' : ''}">
                             ${hasBeer ? '🗑️ ビール消去' : '🍺 ビール追加'}
                         </button>
-                        <button onclick="togglePastRecord('${dateStr}', 'sub')" class="modal-btn" style="font-size: 0.65rem; padding: 6px 2px; margin: 0; background: ${hasSub ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasSub ? '#10b981' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                        <button onclick="togglePastRecord('${dateStr}', 'sub')" class="cal-preview-btn cal-preview-btn-sub ${hasSub ? 'active' : ''}">
                             ${hasSub ? '🗑️ サブスク消去' : '📱 サブスク追加'}
                         </button>
-                        <button onclick="togglePastRecord('${dateStr}', 'gacha')" class="modal-btn" style="font-size: 0.65rem; padding: 6px 2px; margin: 0; background: ${hasGacha ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid #f59e0b; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                        <button onclick="togglePastRecord('${dateStr}', 'gacha')" class="cal-preview-btn cal-preview-btn-gacha ${hasGacha ? 'active' : ''}">
                             ${hasGacha ? '🗑️ ガチャ消去' : '🎮 ガチャ追加'}
                         </button>
                     </div>
