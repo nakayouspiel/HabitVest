@@ -2917,28 +2917,37 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         // 🗓️ 連続チェックイン（Streak）計算
         function calculateStreak() {
-            const dates = Array.from(new Set(history.map(item => item.date))).sort().reverse();
-            if (dates.length === 0) return 0;
+            const uniqueDateStrings = Array.from(new Set(history.map(item => item.date)));
+            const dateObjects = uniqueDateStrings
+                .map(dStr => parseDateSafely(dStr))
+                .filter(d => d !== null);
+                
+            if (dateObjects.length === 0) return 0;
+            
+            // 日付の降順（新しい順）にソート (ミリ秒タイムスタンプ比較のため数値ソートで正確)
+            dateObjects.sort((a, b) => b.getTime() - a.getTime());
             
             const today = getTodayStr();
             const yesterday = getYesterdayStr();
             
-            if (dates[0] !== today && dates[0] !== yesterday) {
+            const formatDate = (d) => `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+            const latestDateStr = formatDate(dateObjects[0]);
+            
+            if (latestDateStr !== today && latestDateStr !== yesterday) {
                 return 0;
             }
             
-            let streak = 0;
-            let lastDate = null;
+            let streak = 1;
+            let lastDate = dateObjects[0];
             
-            for (let i = 0; i < dates.length; i++) {
-                const cur = new Date(dates[i]);
-                if (i === 0) {
-                    streak = 1;
-                    lastDate = cur;
-                    continue;
-                }
-                const diffTime = Math.abs(lastDate - cur);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            for (let i = 1; i < dateObjects.length; i++) {
+                const cur = dateObjects[i];
+                const d1 = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
+                const d2 = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate());
+                
+                const diffTime = d1.getTime() - d2.getTime();
+                const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
+                
                 if (diffDays === 1) {
                     streak++;
                     lastDate = cur;
@@ -2949,14 +2958,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return streak;
         }
 
-        // 🗓️ 前日の日付を取得
+        // 🗓️ 前日の日付を取得 ('YYYY/M/D')
         function getYesterdayStr() {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             const y = yesterday.getFullYear();
-            const m = String(yesterday.getMonth() + 1).padStart(2, '0');
-            const d = String(yesterday.getDate()).padStart(2, '0');
-            return `${y}-\m-${d}`.replace('\\m', m);
+            const m = yesterday.getMonth() + 1;
+            const d = yesterday.getDate();
+            return `${y}/${m}/${d}`;
         }
 
         // カレンダーの制御
