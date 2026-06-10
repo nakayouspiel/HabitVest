@@ -1022,31 +1022,31 @@
 
         /* 個別のアクティブカラースキーム */
         #checkin-btn-tobacco.active {
-            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-            border-color: #db2777;
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            border-color: #ec4899;
         }
         #checkin-btn-beer.active {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-            border-color: #0284c7;
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            border-color: #0ea5e9;
         }
         #checkin-btn-sub.active {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-color: #059669;
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            border-color: #10b981;
         }
         #checkin-btn-gacha.active {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            border-color: #d97706;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-color: #f59e0b;
         }
 
-        /* ダークモード時のアクティブカラー (より鮮やかに) */
+        /* ダークモード時のアクティブカラー (より鮮やかに、かつ柔らかいグラデーション) */
         .theme-dark #checkin-btn-tobacco.active {
-            background: linear-gradient(135deg, #ff007f 0%, #db006f 100%);
-            border-color: #ff007f;
+            background: linear-gradient(135deg, #ff5e97 0%, #ff007f 100%);
+            border-color: #ff5e97;
             box-shadow: 0 0 18px rgba(255, 0, 127, 0.45);
         }
         .theme-dark #checkin-btn-beer.active {
-            background: linear-gradient(135deg, #00f3ff 0%, #00c2cc 100%);
-            border-color: #00f3ff;
+            background: linear-gradient(135deg, #5effff 0%, #00f3ff 100%);
+            border-color: #5effff;
             color: #060913 !important; /* 黒文字で視認性抜群 */
             box-shadow: 0 0 18px rgba(0, 243, 255, 0.45);
         }
@@ -1055,8 +1055,8 @@
             background: rgba(0, 0, 0, 0.15) !important;
         }
         .theme-dark #checkin-btn-sub.active {
-            background: linear-gradient(135deg, #39ff14 0%, #2ecc11 100%);
-            border-color: #39ff14;
+            background: linear-gradient(135deg, #7fff5e 0%, #39ff14 100%);
+            border-color: #7fff5e;
             color: #060913 !important;
             box-shadow: 0 0 18px rgba(57, 255, 20, 0.45);
         }
@@ -1065,8 +1065,8 @@
             background: rgba(0, 0, 0, 0.15) !important;
         }
         .theme-dark #checkin-btn-gacha.active {
-            background: linear-gradient(135deg, #ffa500 0%, #cc8400 100%);
-            border-color: #ffa500;
+            background: linear-gradient(135deg, #ffbe5e 0%, #ffa500 100%);
+            border-color: #ffbe5e;
             color: #060913 !important;
             box-shadow: 0 0 18px rgba(255, 165, 0, 0.45);
         }
@@ -6587,6 +6587,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (activeHabits.gacha) monthlySaving += gachaMonthly;
             }
 
+            // ライフ（健康・未来ロードマップ）用に常に現実ペースの月間節約額を計算
+            let realMonthlySaving = 0;
+            if (profile.trackTobacco) realMonthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
+            if (profile.trackBeer) realMonthlySaving += Math.round(beerMonthly * rates.beer);
+            if (activeHabits.sub) realMonthlySaving += subMonthly;
+            if (activeHabits.gacha) realMonthlySaving += gachaMonthly;
+
             const annualYield = simulationSettings.yield / 100;
             const years = simulationSettings.years;
 
@@ -6624,7 +6631,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             valYieldInfo.innerText = `${simulationSettings.yield}%`;
 
             updateMilestone(finalInvest);
-            updateLifeData(years, monthlySaving);
+            updateLifeData(years, realMonthlySaving);
             updateAffiliateBanner(finalInvest, monthlySaving);
             
             if (monthlySaving <= 0) {
