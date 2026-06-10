@@ -1262,6 +1262,12 @@
                     </div>
                 </div>
                 
+                <!-- 🔄 ペース切り替えトグル (理想 vs 現実) -->
+                <div class="pace-toggle-container" style="display: flex; justify-content: center; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 16px; max-width: 280px; margin-left: auto; margin-right: auto;">
+                    <button type="button" id="btn-pace-ideal" class="pace-btn active" style="flex: 1; border: none; background: var(--btn-gradient); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: none;">理想目標 🏆</button>
+                    <button type="button" id="btn-pace-real" class="pace-btn" style="flex: 1; border: none; background: transparent; color: var(--text-sub); padding: 6px 12px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: none;">現実ペース 🏃 <span id="pace-real-badge" style="font-size: 0.62rem; background: rgba(0, 243, 255, 0.15); color: var(--neon-primary); padding: 1px 4px; border-radius: 4px;">---%</span></button>
+                </div>
+
                 <div class="dashboard-grid">
                     <div class="dash-card">
                         <div class="dash-label">浮いたお金 (元本)</div>
@@ -2050,6 +2056,8 @@ const settingsModal = document.getElementById('settings-modal');
         const onboardBack3 = document.getElementById('onboard-back-3');
 
         // --- 状態変数 ---
+        let simulationPaceMode = 'ideal'; // 'ideal' or 'real'
+
         let profile = {
             name: "",
             hobby: "gadget",
@@ -2093,6 +2101,58 @@ const settingsModal = document.getElementById('settings-modal');
             saveSettings();
             calculate();
         });
+
+        // 🔄 ペース切り替えイベント登録
+        const btnPaceIdeal = document.getElementById('btn-pace-ideal');
+        const btnPaceReal = document.getElementById('btn-pace-real');
+
+        if (btnPaceIdeal && btnPaceReal) {
+            btnPaceIdeal.addEventListener('click', () => {
+                simulationPaceMode = 'ideal';
+                btnPaceIdeal.style.background = 'var(--btn-gradient)';
+                btnPaceIdeal.style.color = 'white';
+                btnPaceReal.style.background = 'transparent';
+                btnPaceReal.style.color = 'var(--text-sub)';
+                calculate();
+            });
+
+            btnPaceReal.addEventListener('click', () => {
+                simulationPaceMode = 'real';
+                btnPaceReal.style.background = 'var(--btn-gradient)';
+                btnPaceReal.style.color = 'white';
+                btnPaceIdeal.style.background = 'transparent';
+                btnPaceIdeal.style.color = 'var(--text-sub)';
+                calculate();
+            });
+        }
+
+        // 📅 習慣ごとの継続率（成功率）を算出する関数
+        function getHabitSuccessRates() {
+            const rates = { tobacco: 1.0, beer: 1.0 };
+            if (history.length === 0) return rates;
+
+            // 最も古い履歴の日付を取得
+            const oldestItem = history[history.length - 1];
+            if (!oldestItem || !oldestItem.date) return rates;
+
+            const oldestDate = new Date(oldestItem.date);
+            const todayDate = new Date(getTodayStr());
+            const timeDiff = todayDate.getTime() - oldestDate.getTime();
+            const diffDays = Math.floor(timeDiff / (1000 * 3600 * 24)) + 1; // 当日を含めるため+1
+
+            if (diffDays <= 0) return rates;
+
+            const tobaccoDates = new Set();
+            const beerDates = new Set();
+            history.forEach(item => {
+                if (item.type === 'tobacco') tobaccoDates.add(item.date);
+                if (item.type === 'beer') beerDates.add(item.date);
+            });
+
+            rates.tobacco = Math.min(1.0, tobaccoDates.size / diffDays);
+            rates.beer = Math.min(1.0, beerDates.size / diffDays);
+            return rates;
+        }
 
         // ⚙️ 設定モーダルの開閉
         settingsToggle.addEventListener('click', () => {
@@ -6011,19 +6071,41 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
 
             // 2. 将来予測シミュレーションの月間元本（targetSaving）の計算
-            // 「現在チェックインされている習慣」を「毎日(毎月)やめ続ける」と仮定した月額合計
             let monthlySaving = 0;
-            if (activeHabits.tobacco) {
-                monthlySaving += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
+
+            const tobaccoMonthly = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
+            const beerMonthly = Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
+            const subMonthly = habitPrices.subPrice * habitPrices.subCount;
+            const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+
+            const rates = getHabitSuccessRates();
+
+            // スイッチ表示用の実質継続率を計算してバッジに反映
+            const paceRealBadge = document.getElementById('pace-real-badge');
+            if (paceRealBadge) {
+                let activeRates = [];
+                if (activeHabits.tobacco) activeRates.push(rates.tobacco);
+                if (activeHabits.beer) activeRates.push(rates.beer);
+                if (activeHabits.sub) activeRates.push(1.0);
+                if (activeHabits.gacha) activeRates.push(1.0);
+                
+                let avgRate = 1.0;
+                if (activeRates.length > 0) {
+                    avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
+                }
+                paceRealBadge.innerText = `${Math.round(avgRate * 100)}%`;
             }
-            if (activeHabits.beer) {
-                monthlySaving += Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
-            }
-            if (activeHabits.sub) {
-                monthlySaving += habitPrices.subPrice * habitPrices.subCount;
-            }
-            if (activeHabits.gacha) {
-                monthlySaving += habitPrices.gachaPrice * habitPrices.gachaCount;
+
+            if (simulationPaceMode === 'real') {
+                if (activeHabits.tobacco) monthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
+                if (activeHabits.beer) monthlySaving += Math.round(beerMonthly * rates.beer);
+                if (activeHabits.sub) monthlySaving += subMonthly;
+                if (activeHabits.gacha) monthlySaving += gachaMonthly;
+            } else {
+                if (activeHabits.tobacco) monthlySaving += tobaccoMonthly;
+                if (activeHabits.beer) monthlySaving += beerMonthly;
+                if (activeHabits.sub) monthlySaving += subMonthly;
+                if (activeHabits.gacha) monthlySaving += gachaMonthly;
             }
 
             const annualYield = simulationSettings.yield / 100;
