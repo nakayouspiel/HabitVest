@@ -2107,17 +2107,17 @@ const settingsModal = document.getElementById('settings-modal');
             profile.age = profileAge.value;
             profile.gender = profileGender.value;
 
-            habitPrices.tobaccoPrice = parseInt(tobaccoPackPrice.value);
-            habitPrices.tobaccoCount = parseFloat(tobaccoPacksPerDay.value);
-            habitPrices.beerPrice = parseInt(beerUnitPrice.value);
-            habitPrices.beerCount = parseFloat(beerUnitsPerDay.value);
-            habitPrices.subPrice = parseInt(subUnitPrice.value);
-            habitPrices.subCount = parseInt(subCount.value);
-            habitPrices.gachaPrice = parseInt(gachaUnitPrice.value);
-            habitPrices.gachaCount = parseInt(gachaCount.value);
+            habitPrices.tobaccoPrice = validateAndParse(tobaccoPackPrice, 600);
+            habitPrices.tobaccoCount = validateAndParse(tobaccoPacksPerDay, 1.0, true);
+            habitPrices.beerPrice = validateAndParse(beerUnitPrice, 250);
+            habitPrices.beerCount = validateAndParse(beerUnitsPerDay, 2.0, true);
+            habitPrices.subPrice = validateAndParse(subUnitPrice, 1000);
+            habitPrices.subCount = validateAndParse(subCount, 1);
+            habitPrices.gachaPrice = validateAndParse(gachaUnitPrice, 3000);
+            habitPrices.gachaCount = validateAndParse(gachaCount, 1);
 
-            simulationSettings.yield = parseFloat(sliderYield.value);
-            simulationSettings.years = parseInt(sliderYears.value);
+            simulationSettings.yield = validateAndParse(sliderYield, 8.0, true);
+            simulationSettings.years = validateAndParse(sliderYears, 20);
 
             // チェックインボタンのバッジテキストを更新
             updateCheckinBadges();
@@ -5513,19 +5513,19 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             };
 
             habitPrices = {
-                tobaccoPrice: parseInt(obTobaccoPackPrice.value),
+                tobaccoPrice: validateAndParse(obTobaccoPackPrice, 600),
                 tobaccoCount: 1.0,
-                beerPrice: parseInt(obBeerUnitPrice.value),
+                beerPrice: validateAndParse(obBeerUnitPrice, 250),
                 beerCount: 2.0,
-                subPrice: parseInt(obSubUnitPrice.value),
+                subPrice: validateAndParse(obSubUnitPrice, 1000),
                 subCount: 1,
-                gachaPrice: parseInt(obGachaUnitPrice.value),
+                gachaPrice: validateAndParse(obGachaUnitPrice, 3000),
                 gachaCount: 1
             };
 
             simulationSettings = {
-                yield: parseFloat(obSliderYield.value),
-                years: parseInt(obSliderYears.value)
+                yield: validateAndParse(obSliderYield, 8.0, true),
+                years: validateAndParse(obSliderYears, 20)
             };
 
             // 習慣チェックインの初期値
@@ -6007,6 +6007,21 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         function formatCurrency(num) {
             return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(num);
+        }
+
+        // 🛡️ 数値入力値のバリデーションとパース用ヘルパー
+        function validateAndParse(inputEl, defaultValue, isFloat = false) {
+            if (!inputEl) return defaultValue;
+            let val = isFloat ? parseFloat(inputEl.value) : parseInt(inputEl.value, 10);
+            if (isNaN(val)) {
+                val = defaultValue;
+            }
+            const min = parseFloat(inputEl.min);
+            const max = parseFloat(inputEl.max);
+            if (!isNaN(min) && val < min) val = min;
+            if (!isNaN(max) && val > max) val = max;
+            inputEl.value = val; // クリーンになった値をUI入力要素へ反映
+            return val;
         }
 
         // 🍀 ライフデータ更新 (健康・時間の実績＆メリット)
