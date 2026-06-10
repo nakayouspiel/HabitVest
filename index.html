@@ -5584,18 +5584,17 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return idx !== -1 ? idx : list.length - 1;
         }
 
-        // ⚔️ 自己投資称号の設定 (年数設定に応じて必要金額・レベルが動的変化)
-        function getRanksConfig(years) {
-            const y = years || 20;
+        // ⚔️ 自己投資称号の設定 (最高レベル99、5年完スト想定＝1レベルあたり15,000円セーブ)
+        function getRanksConfig() {
             return [
                 { level: 1, title: "自己投資ビギナー", emoji: "🔰", minAmount: 0 },
-                { level: Math.floor((5000 * y) / 1000) + 1, title: "習慣改善の芽生え", emoji: "🌱", minAmount: 5000 * y },
-                { level: Math.floor((15000 * y) / 1000) + 1, title: "自制の戦士", emoji: "⚔️", minAmount: 15000 * y },
-                { level: Math.floor((30000 * y) / 1000) + 1, title: "欲望の支配者", emoji: "🛡️", minAmount: 30000 * y },
-                { level: Math.floor((50000 * y) / 1000) + 1, title: "セルフコントロールの達人", emoji: "🧘", minAmount: 50000 * y },
-                { level: Math.floor((80000 * y) / 1000) + 1, title: "複利の魔術師", emoji: "🧙‍♂️", minAmount: 80000 * y },
-                { level: Math.floor((120000 * y) / 1000) + 1, title: "習慣の聖者", emoji: "👑", minAmount: 120000 * y },
-                { level: Math.floor((200000 * y) / 1000) + 1, title: "神域のFIREランナー", emoji: "🗽", minAmount: 200000 * y }
+                { level: 5, title: "習慣改善 of 芽生え", emoji: "🌱", minAmount: 60000 },
+                { level: 15, title: "自制の戦士", emoji: "⚔️", minAmount: 210000 },
+                { level: 30, title: "欲望の支配者", emoji: "🛡️", minAmount: 435000 },
+                { level: 50, title: "セルフコントロールの達人", emoji: "🧘", minAmount: 735000 },
+                { level: 70, title: "複利の魔術師", emoji: "🧙‍♂️", minAmount: 1035000 },
+                { level: 85, title: "習慣の聖者", emoji: "👑", minAmount: 1260000 },
+                { level: 99, title: "神域のFIREランナー", emoji: "🗽", minAmount: 1470000 }
             ];
         }
 
@@ -5605,8 +5604,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (!container) return;
             container.innerHTML = "";
 
-            const years = simulationSettings.years || 20;
-            const ranks = getRanksConfig(years);
+            const ranks = getRanksConfig();
 
             let currentRankIdx = 0;
             for (let i = ranks.length - 1; i >= 0; i--) {
@@ -6763,19 +6761,29 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 }
             }
 
-            // RPG レベルと称号の計算 (1,000円ごとに1レベルアップ)
-            const level = Math.floor(totalEarned / 1000) + 1;
-            const expProgress = totalEarned % 1000;
-            const nextLevelExp = 1000;
-            const percent = (expProgress / nextLevelExp) * 100;
+            // RPG レベルと称号の計算 (15,000円ごとに1レベルアップ、最高Lv.99)
+            const levelVal = Math.floor(totalEarned / 15000) + 1;
+            const level = Math.min(99, levelVal);
+            
+            let expProgress = 0;
+            let nextLevelExp = 15000;
+            let percent = 0;
+            
+            if (level < 99) {
+                expProgress = totalEarned % 15000;
+                percent = (expProgress / nextLevelExp) * 100;
+            } else {
+                expProgress = 15000;
+                percent = 100;
+            }
 
             if (lifeLevel) lifeLevel.innerText = `Lv. ${level}`;
             if (lifeExpBar) lifeExpBar.style.width = `${percent}%`;
-            if (lifeExpVal) lifeExpVal.innerText = expProgress;
-            if (lifeNextExpVal) lifeNextExpVal.innerText = nextLevelExp;
+            if (lifeExpVal) lifeExpVal.innerText = expProgress.toLocaleString();
+            if (lifeNextExpVal) lifeNextExpVal.innerText = nextLevelExp.toLocaleString();
 
             // 称号の設定
-            const ranks = getRanksConfig(years);
+            const ranks = getRanksConfig();
             let titleStr = `${ranks[0].title} ${ranks[0].emoji}`;
             let badgeIcon = ranks[0].emoji;
             for (let i = ranks.length - 1; i >= 0; i--) {
