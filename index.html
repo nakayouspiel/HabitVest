@@ -2126,31 +2126,50 @@ const settingsModal = document.getElementById('settings-modal');
             });
         }
 
-        // 📅 習慣ごとの継続率（成功率）を算出する関数
+        // 📅 習慣ごとの継続率（成功率）を算出する関数 (各習慣の最初の日付から日数をカウント)
         function getHabitSuccessRates() {
             const rates = { tobacco: 1.0, beer: 1.0 };
             if (history.length === 0) return rates;
 
-            // 最も古い履歴の日付を取得
-            const oldestItem = history[history.length - 1];
-            if (!oldestItem || !oldestItem.date) return rates;
-
-            const oldestDate = new Date(oldestItem.date);
             const todayDate = new Date(getTodayStr());
-            const timeDiff = todayDate.getTime() - oldestDate.getTime();
-            const diffDays = Math.floor(timeDiff / (1000 * 3600 * 24)) + 1; // 当日を含めるため+1
 
-            if (diffDays <= 0) return rates;
+            let oldestTobaccoDate = null;
+            let oldestBeerDate = null;
 
             const tobaccoDates = new Set();
             const beerDates = new Set();
+
             history.forEach(item => {
-                if (item.type === 'tobacco') tobaccoDates.add(item.date);
-                if (item.type === 'beer') beerDates.add(item.date);
+                if (item.type === 'tobacco') {
+                    tobaccoDates.add(item.date);
+                    const d = new Date(item.date);
+                    if (!oldestTobaccoDate || d < oldestTobaccoDate) oldestTobaccoDate = d;
+                }
+                if (item.type === 'beer') {
+                    beerDates.add(item.date);
+                    const d = new Date(item.date);
+                    if (!oldestBeerDate || d < oldestBeerDate) oldestBeerDate = d;
+                }
             });
 
-            rates.tobacco = Math.min(1.0, tobaccoDates.size / diffDays);
-            rates.beer = Math.min(1.0, beerDates.size / diffDays);
+            // タバコの継続率計算
+            if (oldestTobaccoDate) {
+                const diffTime = todayDate.getTime() - oldestTobaccoDate.getTime();
+                const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
+                rates.tobacco = diffDays > 0 ? Math.min(1.0, tobaccoDates.size / diffDays) : 1.0;
+            } else {
+                rates.tobacco = 1.0;
+            }
+
+            // ビールの継続率計算
+            if (oldestBeerDate) {
+                const diffTime = todayDate.getTime() - oldestBeerDate.getTime();
+                const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
+                rates.beer = diffDays > 0 ? Math.min(1.0, beerDates.size / diffDays) : 1.0;
+            } else {
+                rates.beer = 1.0;
+            }
+
             return rates;
         }
 
@@ -2515,6 +2534,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         content.classList.add('active');
                     }
                 });
+
+                // タブ切り替え時にページのスクロール位置を最上部にリセットする
+                window.scrollTo({ top: 0, behavior: 'instant' });
 
                 if (tabName === 'assets' && chart) {
                     setTimeout(() => { chart.resize(); }, 50);
@@ -5351,6 +5373,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     amount = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
                     label = "ビールをセーブ！ 🍻";
                     quantity = habitPrices.beerCount;
+                } else if (type === 'sub') {
+                    amount = habitPrices.subPrice * habitPrices.subCount;
+                    label = "サブスクを解約セーブ！ 📱";
+                    quantity = habitPrices.subCount;
+                } else if (type === 'gacha') {
+                    amount = habitPrices.gachaPrice * habitPrices.gachaCount;
+                    label = "ソシャゲ課金をセーブ！ 🎮";
+                    quantity = habitPrices.gachaCount;
                 }
 
                 const item = {
@@ -5399,6 +5429,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const dayRecords = history.filter(item => item.date === dateStr);
                 const hasTobacco = dayRecords.some(item => item.type === 'tobacco');
                 const hasBeer = dayRecords.some(item => item.type === 'beer');
+                const hasSub = dayRecords.some(item => item.type === 'sub');
+                const hasGacha = dayRecords.some(item => item.type === 'gacha');
 
                 let recordText = "";
                 if (dayRecords.length > 0) {
@@ -5412,12 +5444,18 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     <div style="margin-bottom: 8px; line-height: 1.4;">
                         <strong>現在のセーブ状況:</strong><br>${recordText}
                     </div>
-                    <div style="display: flex; gap: 8px; margin-top: 10px;">
-                        <button onclick="togglePastRecord('${dateStr}', 'tobacco')" class="modal-btn" style="flex: 1; font-size: 0.68rem; padding: 8px 4px; margin: 0; background: ${hasTobacco ? 'rgba(219, 39, 119, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasTobacco ? 'var(--accent-pink)' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                        <button onclick="togglePastRecord('${dateStr}', 'tobacco')" class="modal-btn" style="font-size: 0.65rem; padding: 6px 2px; margin: 0; background: ${hasTobacco ? 'rgba(219, 39, 119, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasTobacco ? 'var(--accent-pink)' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
                             ${hasTobacco ? '🗑️ タバコ消去' : '🚭 タバコ追加'}
                         </button>
-                        <button onclick="togglePastRecord('${dateStr}', 'beer')" class="modal-btn" style="flex: 1; font-size: 0.68rem; padding: 8px 4px; margin: 0; background: ${hasBeer ? 'rgba(2, 132, 199, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasBeer ? 'var(--neon-primary)' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                        <button onclick="togglePastRecord('${dateStr}', 'beer')" class="modal-btn" style="font-size: 0.65rem; padding: 6px 2px; margin: 0; background: ${hasBeer ? 'rgba(2, 132, 199, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasBeer ? 'var(--neon-primary)' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
                             ${hasBeer ? '🗑️ ビール消去' : '🍺 ビール追加'}
+                        </button>
+                        <button onclick="togglePastRecord('${dateStr}', 'sub')" class="modal-btn" style="font-size: 0.65rem; padding: 6px 2px; margin: 0; background: ${hasSub ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasSub ? '#10b981' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                            ${hasSub ? '🗑️ サブスク消去' : '📱 サブスク追加'}
+                        </button>
+                        <button onclick="togglePastRecord('${dateStr}', 'gacha')" class="modal-btn" style="font-size: 0.65rem; padding: 6px 2px; margin: 0; background: ${hasGacha ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid #f59e0b; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                            ${hasGacha ? '🗑️ ガチャ消去' : '🎮 ガチャ追加'}
                         </button>
                     </div>
                 `;
@@ -5744,28 +5782,17 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         checkinBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const type = btn.dataset.habit;
-                const isDaily = btn.classList.contains('daily');
 
-                if (isDaily) {
-                    // 日次項目（タバコ、ビール）
-                    activeHabits[type] = !activeHabits[type];
-                    if (activeHabits[type]) {
-                        btn.classList.add('active');
-                        // 履歴に追加
-                        addHistoryItem(type);
-                    } else {
-                        btn.classList.remove('active');
-                        // 今日の履歴から削除
-                        removeTodayHistoryItem(type);
-                    }
+                // 全ての項目（日次・月次）でチェックイン時の履歴追加・削除を共通化
+                activeHabits[type] = !activeHabits[type];
+                if (activeHabits[type]) {
+                    btn.classList.add('active');
+                    // 履歴に追加
+                    addHistoryItem(type);
                 } else {
-                    // 月次項目（サブスク、ソシャゲ課金）
-                    activeHabits[type] = !activeHabits[type];
-                    if (activeHabits[type]) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
+                    btn.classList.remove('active');
+                    // 今日の履歴から削除
+                    removeTodayHistoryItem(type);
                 }
 
                 saveSettings();
@@ -5788,6 +5815,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 amount = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
                 label = "ビールをセーブ！ 🍻";
                 quantity = habitPrices.beerCount; // 1日の消費本数
+            } else if (type === 'sub') {
+                amount = habitPrices.subPrice * habitPrices.subCount;
+                label = "サブスクを解約セーブ！ 📱";
+                quantity = habitPrices.subCount;
+            } else if (type === 'gacha') {
+                amount = habitPrices.gachaPrice * habitPrices.gachaCount;
+                label = "ソシャゲ課金をセーブ！ 🎮";
+                quantity = habitPrices.gachaCount;
             }
 
             const item = {
@@ -5982,7 +6017,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             else checkinBtnGacha.classList.remove('active');
         }
 
-        // 🆕 月額項目の日割り自動同期
+        // 🆕 月額項目の自動同期 (日割り自動加算を廃止)
         function syncMonthlySavings() {
             const todayStr = getTodayStr();
             if (!lastSyncDate) {
@@ -5993,48 +6028,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             if (lastSyncDate === todayStr) return; // 本日同期済み
 
-            // 日数差を計算
-            const lastDate = new Date(lastSyncDate);
-            const todayDate = new Date(todayStr);
-            const timeDiff = todayDate.getTime() - lastDate.getTime();
-            const diffDays = Math.floor(timeDiff / (1000 * 3600 * 24));
-
-            if (diffDays > 0) {
-                // サブスク自動加算
-                if (activeHabits.sub) {
-                    const dailySubCost = (habitPrices.subPrice * habitPrices.subCount) / 30;
-                    const totalSubAmount = Math.round(dailySubCost * diffDays);
-                    if (totalSubAmount > 0) {
-                        history.unshift({
-                            id: Date.now() - 1, // 重複防止の微小なズレ
-                            date: todayStr,
-                            type: 'sub',
-                            label: `サブスク解約中 📱 (${diffDays}日分)`,
-                            amount: totalSubAmount
-                        });
-                    }
-                }
-
-                // ソシャゲセーブ自動加算
-                if (activeHabits.gacha) {
-                    const dailyGachaCost = (habitPrices.gachaPrice * habitPrices.gachaCount) / 30;
-                    const totalGachaAmount = Math.round(dailyGachaCost * diffDays);
-                    if (totalGachaAmount > 0) {
-                        history.unshift({
-                            id: Date.now(),
-                            date: todayStr,
-                            type: 'gacha',
-                            label: `ソシャゲ課金セーブ 🎮 (${diffDays}日分)`,
-                            amount: totalGachaAmount
-                        });
-                    }
-                }
-
-                lastSyncDate = todayStr;
-                saveHistory();
-                saveSettings();
-                renderHistoryList();
-            }
+            // 日割り自動加算は行わない（月次の都度チェックインに移行）
+            lastSyncDate = todayStr;
+            saveSettings();
         }
 
         // 🔮 複利計算
