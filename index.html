@@ -5584,22 +5584,29 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return idx !== -1 ? idx : list.length - 1;
         }
 
+        // ⚔️ 自己投資称号の設定 (年数設定に応じて必要金額・レベルが動的変化)
+        function getRanksConfig(years) {
+            const y = years || 20;
+            return [
+                { level: 1, title: "自己投資ビギナー", emoji: "🔰", minAmount: 0 },
+                { level: Math.floor((5000 * y) / 1000) + 1, title: "習慣改善の芽生え", emoji: "🌱", minAmount: 5000 * y },
+                { level: Math.floor((15000 * y) / 1000) + 1, title: "自制の戦士", emoji: "⚔️", minAmount: 15000 * y },
+                { level: Math.floor((30000 * y) / 1000) + 1, title: "欲望の支配者", emoji: "🛡️", minAmount: 30000 * y },
+                { level: Math.floor((50000 * y) / 1000) + 1, title: "セルフコントロールの達人", emoji: "🧘", minAmount: 50000 * y },
+                { level: Math.floor((80000 * y) / 1000) + 1, title: "複利の魔術師", emoji: "🧙‍♂️", minAmount: 80000 * y },
+                { level: Math.floor((120000 * y) / 1000) + 1, title: "習慣の聖者", emoji: "👑", minAmount: 120000 * y },
+                { level: Math.floor((200000 * y) / 1000) + 1, title: "神域のFIREランナー", emoji: "🗽", minAmount: 200000 * y }
+            ];
+        }
+
         // ⚔️ 自己投資称号ツリーのレンダリング
         function renderStatusTree(currentLevel) {
             const container = document.getElementById('life-status-tree-container');
             if (!container) return;
             container.innerHTML = "";
 
-            const ranks = [
-                { level: 1, title: "自己投資ビギナー 🔰", minAmount: 0 },
-                { level: 6, title: "習慣改善の芽生え 🌱", minAmount: 5000 },
-                { level: 16, title: "自制の戦士 ⚔️", minAmount: 15000 },
-                { level: 31, title: "欲望の支配者 🛡️", minAmount: 30000 },
-                { level: 51, title: "セルフコントロールの達人 🧘", minAmount: 50000 },
-                { level: 81, title: "複利の魔術師 🧙‍♂️", minAmount: 80000 },
-                { level: 121, title: "習慣の聖者 👑", minAmount: 120000 },
-                { level: 201, title: "神域のFIREランナー 🗽", minAmount: 200000 }
-            ];
+            const years = simulationSettings.years || 20;
+            const ranks = getRanksConfig(years);
 
             let currentRankIdx = 0;
             for (let i = ranks.length - 1; i >= 0; i--) {
@@ -5646,7 +5653,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 leftSide.appendChild(statusIcon);
 
                 const titleInfo = document.createElement('div');
-                titleInfo.innerHTML = `<span style="font-weight: 700; color: ${isUnlocked ? 'var(--text-sub)' : 'var(--text-muted)'};">Lv.${rank.level}+</span> <span style="font-weight: 800; color: ${isCurrent ? 'var(--neon-primary)' : (isUnlocked ? 'var(--text-main)' : 'var(--text-muted)')};">${rank.title}</span>`;
+                titleInfo.innerHTML = `<span style="font-weight: 700; color: ${isUnlocked ? 'var(--text-sub)' : 'var(--text-muted)'};">Lv.${rank.level}+</span> <span style="font-weight: 800; color: ${isCurrent ? 'var(--neon-primary)' : (isUnlocked ? 'var(--text-main)' : 'var(--text-muted)')};">${rank.title} ${rank.emoji}</span>`;
                 leftSide.appendChild(titleInfo);
 
                 const rightSide = document.createElement('div');
@@ -6768,15 +6775,16 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (lifeNextExpVal) lifeNextExpVal.innerText = nextLevelExp;
 
             // 称号の設定
-            let titleStr = "自己投資ビギナー 🔰";
-            let badgeIcon = "🔰";
-            if (level >= 201) { titleStr = "神域のFIREランナー 🗽"; badgeIcon = "🗽"; }
-            else if (level >= 121) { titleStr = "習慣の聖者 👑"; badgeIcon = "👑"; }
-            else if (level >= 81) { titleStr = "複利の魔術師 🧙‍♂️"; badgeIcon = "🧙‍♂️"; }
-            else if (level >= 51) { titleStr = "セルフコントロールの達人 🧘"; badgeIcon = "🧘"; }
-            else if (level >= 31) { titleStr = "欲望の支配者 🛡️"; badgeIcon = "🛡️"; }
-            else if (level >= 16) { titleStr = "自制の戦士 ⚔️"; badgeIcon = "⚔️"; }
-            else if (level >= 6) { titleStr = "習慣改善の芽生え 🌱"; badgeIcon = "🌱"; }
+            const ranks = getRanksConfig(years);
+            let titleStr = `${ranks[0].title} ${ranks[0].emoji}`;
+            let badgeIcon = ranks[0].emoji;
+            for (let i = ranks.length - 1; i >= 0; i--) {
+                if (level >= ranks[i].level) {
+                    titleStr = `${ranks[i].title} ${ranks[i].emoji}`;
+                    badgeIcon = ranks[i].emoji;
+                    break;
+                }
+            }
             
             if (lifeTitle) lifeTitle.innerText = titleStr;
             const badgeEl = document.getElementById('life-badge-icon');
