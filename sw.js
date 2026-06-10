@@ -1,10 +1,13 @@
-const CACHE_NAME = 'habitvest-v23';
+const CACHE_NAME = 'habitvest-v24';
 const ASSETS = [
-  '/',
+  './',
   'index.html',
   'manifest.json',
   'icon-192.png',
-  'icon-512.png'
+  'icon-512.png',
+  'https://cdn.jsdelivr.net/npm/chart.js',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+  'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap'
 ];
 
 // インストール時にリソースをキャッシュ
@@ -53,4 +56,3 @@ self.addEventListener('fetch', (e) => {
     })
   );
 });
-
