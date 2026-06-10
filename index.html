@@ -1263,9 +1263,12 @@
                 </div>
                 
                 <!-- 🔄 ペース切り替えトグル (理想 vs 現実) -->
-                <div class="pace-toggle-container" style="display: flex; justify-content: center; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 16px; max-width: 280px; margin-left: auto; margin-right: auto;">
+                <div class="pace-toggle-container" style="display: flex; justify-content: center; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 8px; max-width: 280px; margin-left: auto; margin-right: auto;">
                     <button type="button" id="btn-pace-ideal" class="pace-btn active" style="flex: 1; border: none; background: var(--btn-gradient); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: none;">理想目標 🏆</button>
                     <button type="button" id="btn-pace-real" class="pace-btn" style="flex: 1; border: none; background: transparent; color: var(--text-sub); padding: 6px 12px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: none;">現実ペース 🏃 <span id="pace-real-badge" style="font-size: 0.62rem; background: rgba(0, 243, 255, 0.15); color: var(--neon-primary); padding: 1px 4px; border-radius: 4px;">---%</span></button>
+                </div>
+                <div id="pace-explanation" style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-bottom: 14px; font-weight: 500; min-height: 1.5em; line-height: 1.4;">
+                    💡 理想目標: 習慣を毎日100%継続できた場合の将来予測です
                 </div>
 
                 <div class="dashboard-grid">
@@ -2124,6 +2127,8 @@ const settingsModal = document.getElementById('settings-modal');
                 btnPaceIdeal.style.color = 'white';
                 btnPaceReal.style.background = 'transparent';
                 btnPaceReal.style.color = 'var(--text-sub)';
+                const exp = document.getElementById('pace-explanation');
+                if (exp) exp.innerText = '💡 理想目標: 習慣を毎日100%継続できた場合の将来予測です';
                 calculate();
             });
 
@@ -2133,8 +2138,27 @@ const settingsModal = document.getElementById('settings-modal');
                 btnPaceReal.style.color = 'white';
                 btnPaceIdeal.style.background = 'transparent';
                 btnPaceIdeal.style.color = 'var(--text-sub)';
+                const exp = document.getElementById('pace-explanation');
+                if (exp) exp.innerText = '💡 現実ペース: 過去の実際のセーブ率（継続率）に基づいた将来予測です';
                 calculate();
             });
+        }
+
+        // Helper to parse dates safely to avoid UTC offsets and Invalid Date RangeErrors
+        function parseDateSafely(dateStr) {
+            if (!dateStr) return null;
+            let cleanStr = dateStr;
+            if (cleanStr.includes('-')) {
+                const parts = cleanStr.split('-');
+                if (parts.length === 3) {
+                    cleanStr = `${parseInt(parts[0])}/${parseInt(parts[1])}/${parseInt(parts[2])}`;
+                }
+            }
+            const d = new Date(cleanStr);
+            if (isNaN(d.getTime())) {
+                return null;
+            }
+            return d;
         }
 
         // Helper to convert 'YYYY/M/D' to 'YYYY-MM-DD' for date inputs
@@ -2162,9 +2186,13 @@ const settingsModal = document.getElementById('settings-modal');
             }
             let oldest = null;
             history.forEach(item => {
-                const d = new Date(item.date);
-                if (!oldest || d < oldest) {
-                    oldest = d;
+                if (item.date) {
+                    const d = parseDateSafely(item.date);
+                    if (d) {
+                        if (!oldest || d < oldest) {
+                            oldest = d;
+                        }
+                    }
                 }
             });
             if (oldest) {
@@ -2179,9 +2207,8 @@ const settingsModal = document.getElementById('settings-modal');
         // 📅 習慣ごとの継続率（成功率）を算出する関数 (開始日から現在までの日数ベース)
         function getHabitSuccessRates() {
             const rates = { tobacco: 1.0, beer: 1.0 };
-            const todayDate = new Date(getTodayStr());
-            const startTrackingDateStr = profile.startDate || getTodayStr();
-            const startTrackingDate = new Date(startTrackingDateStr);
+            const todayDate = parseDateSafely(getTodayStr()) || new Date();
+            const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
 
             let oldestTobaccoDate = null;
             let oldestBeerDate = null;
@@ -2190,15 +2217,21 @@ const settingsModal = document.getElementById('settings-modal');
             const beerDates = new Set();
 
             history.forEach(item => {
-                if (item.type === 'tobacco') {
-                    tobaccoDates.add(item.date);
-                    const d = new Date(item.date);
-                    if (!oldestTobaccoDate || d < oldestTobaccoDate) oldestTobaccoDate = d;
-                }
-                if (item.type === 'beer') {
-                    beerDates.add(item.date);
-                    const d = new Date(item.date);
-                    if (!oldestBeerDate || d < oldestBeerDate) oldestBeerDate = d;
+                if (item.date) {
+                    if (item.type === 'tobacco') {
+                        tobaccoDates.add(item.date);
+                        const d = parseDateSafely(item.date);
+                        if (d) {
+                            if (!oldestTobaccoDate || d < oldestTobaccoDate) oldestTobaccoDate = d;
+                        }
+                    }
+                    if (item.type === 'beer') {
+                        beerDates.add(item.date);
+                        const d = parseDateSafely(item.date);
+                        if (d) {
+                            if (!oldestBeerDate || d < oldestBeerDate) oldestBeerDate = d;
+                        }
+                    }
                 }
             });
 
