@@ -1502,6 +1502,10 @@
                             <option value="other">その他</option>
                         </select>
                     </div>
+                    <div class="form-group" style="margin-top: 10px;">
+                        <label for="profile-start-date">開始日 (シミュレーション算出の起点)</label>
+                        <input type="date" id="profile-start-date" value="" style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main); font-weight: 600; font-family: var(--font-ui); outline: none;">
+                    </div>
                 </div>
 
                 <!-- 🚭 習慣の単価設定 -->
@@ -1726,6 +1730,10 @@
                             <option value="other">その他</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label for="onboard-start-date">開始日 (習慣をやめ始めた日)</label>
+                    <input type="date" id="onboard-start-date" required style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main); font-weight: 600; font-family: var(--font-ui); outline: none;">
                 </div>
                 <button type="button" class="modal-btn" id="onboard-next-1">次へ進む ➔</button>
             </div>
@@ -1967,6 +1975,7 @@ const settingsModal = document.getElementById('settings-modal');
         const profileHobby = document.getElementById('profile-hobby');
         const profileAge = document.getElementById('profile-age');
         const profileGender = document.getElementById('profile-gender');
+        const profileStartDate = document.getElementById('profile-start-date');
 
         // 設定スライダー（settings-modal内に引っ越したもの）
         const tobaccoPackPrice = document.getElementById('tobacco-pack-price');
@@ -2031,6 +2040,7 @@ const settingsModal = document.getElementById('settings-modal');
         const obHobby = document.getElementById('onboard-hobby');
         const obAge = document.getElementById('onboard-age');
         const obGender = document.getElementById('onboard-gender');
+        const obStartDate = document.getElementById('onboard-start-date');
         const obChkTobacco = document.getElementById('onboard-chk-tobacco');
         const obChkBeer = document.getElementById('onboard-chk-beer');
         const obChkSub = document.getElementById('onboard-chk-sub');
@@ -2063,6 +2073,7 @@ const settingsModal = document.getElementById('settings-modal');
             hobby: "gadget",
             age: "30",
             gender: "male",
+            startDate: "",
             onboarded: false
         };
 
@@ -2126,12 +2137,51 @@ const settingsModal = document.getElementById('settings-modal');
             });
         }
 
-        // 📅 習慣ごとの継続率（成功率）を算出する関数 (各習慣の最初の日付から日数をカウント)
+        // Helper to convert 'YYYY/M/D' to 'YYYY-MM-DD' for date inputs
+        function formatToInputDate(slashDateStr) {
+            if (!slashDateStr) return '';
+            const parts = slashDateStr.split('/');
+            if (parts.length !== 3) return '';
+            const y = parts[0];
+            const m = parts[1].padStart(2, '0');
+            const d = parts[2].padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        // Helper to convert 'YYYY-MM-DD' from date inputs to 'YYYY/M/D'
+        function formatFromInputDate(hyphenDateStr) {
+            if (!hyphenDateStr) return '';
+            const parts = hyphenDateStr.split('-');
+            if (parts.length !== 3) return '';
+            return `${parseInt(parts[0])}/${parseInt(parts[1])}/${parseInt(parts[2])}`;
+        }
+
+        function getFallbackStartDate() {
+            if (history.length === 0) {
+                return getTodayStr();
+            }
+            let oldest = null;
+            history.forEach(item => {
+                const d = new Date(item.date);
+                if (!oldest || d < oldest) {
+                    oldest = d;
+                }
+            });
+            if (oldest) {
+                const y = oldest.getFullYear();
+                const m = oldest.getMonth() + 1;
+                const d = oldest.getDate();
+                return `${y}/${m}/${d}`;
+            }
+            return getTodayStr();
+        }
+
+        // 📅 習慣ごとの継続率（成功率）を算出する関数 (開始日から現在までの日数ベース)
         function getHabitSuccessRates() {
             const rates = { tobacco: 1.0, beer: 1.0 };
-            if (history.length === 0) return rates;
-
             const todayDate = new Date(getTodayStr());
+            const startTrackingDateStr = profile.startDate || getTodayStr();
+            const startTrackingDate = new Date(startTrackingDateStr);
 
             let oldestTobaccoDate = null;
             let oldestBeerDate = null;
@@ -2153,8 +2203,12 @@ const settingsModal = document.getElementById('settings-modal');
             });
 
             // タバコの継続率計算
-            if (oldestTobaccoDate) {
-                const diffTime = todayDate.getTime() - oldestTobaccoDate.getTime();
+            let effectiveStartTobacco = startTrackingDate;
+            if (oldestTobaccoDate && oldestTobaccoDate < effectiveStartTobacco) {
+                effectiveStartTobacco = oldestTobaccoDate;
+            }
+            if (tobaccoDates.size > 0 || activeHabits.tobacco) {
+                const diffTime = todayDate.getTime() - effectiveStartTobacco.getTime();
                 const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
                 rates.tobacco = diffDays > 0 ? Math.min(1.0, tobaccoDates.size / diffDays) : 1.0;
             } else {
@@ -2162,8 +2216,12 @@ const settingsModal = document.getElementById('settings-modal');
             }
 
             // ビールの継続率計算
-            if (oldestBeerDate) {
-                const diffTime = todayDate.getTime() - oldestBeerDate.getTime();
+            let effectiveStartBeer = startTrackingDate;
+            if (oldestBeerDate && oldestBeerDate < effectiveStartBeer) {
+                effectiveStartBeer = oldestBeerDate;
+            }
+            if (beerDates.size > 0 || activeHabits.beer) {
+                const diffTime = todayDate.getTime() - effectiveStartBeer.getTime();
                 const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
                 rates.beer = diffDays > 0 ? Math.min(1.0, beerDates.size / diffDays) : 1.0;
             } else {
@@ -2185,6 +2243,9 @@ const settingsModal = document.getElementById('settings-modal');
             profile.hobby = profileHobby.value;
             profile.age = profileAge.value;
             profile.gender = profileGender.value;
+            if (profileStartDate && profileStartDate.value) {
+                profile.startDate = formatFromInputDate(profileStartDate.value);
+            }
 
             habitPrices.tobaccoPrice = validateAndParse(tobaccoPackPrice, 600);
             habitPrices.tobaccoCount = validateAndParse(tobaccoPacksPerDay, 1.0, true);
@@ -2274,6 +2335,9 @@ const settingsModal = document.getElementById('settings-modal');
             if (!blob) return;
             if (blob.profile) {
                 profile = blob.profile;
+                if (!profile.startDate) {
+                    profile.startDate = getFallbackStartDate();
+                }
                 localStorage.setItem('habitvest_profile', JSON.stringify(profile));
             }
             if (blob.settings) {
@@ -2301,7 +2365,7 @@ const settingsModal = document.getElementById('settings-modal');
             }
             
             // 入力欄や表示の更新
-            loadSettingsInputs();
+            syncModalFieldsWithState();
             updateCheckinBadges();
             calculate();
             renderHistoryList();
@@ -5348,12 +5412,21 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         // 📅 過去日付のセーブ記録をトグル（追加・消去）するグローバル関数
         window.togglePastRecord = function(dateStr, type) {
-            const hasRecord = history.some(item => item.date === dateStr && item.type === type);
+            let targetDateStr = dateStr;
+            if (type === 'sub' || type === 'gacha') {
+                const parts = dateStr.split('/');
+                targetDateStr = `${parts[0]}/${parts[1]}/1`;
+            }
+
+            const now = new Date();
+            const currentMonthFirstStr = `${now.getFullYear()}/${now.getMonth() + 1}/1`;
+
+            const hasRecord = history.some(item => item.date === targetDateStr && item.type === type);
             if (hasRecord) {
                 // 記録を削除
-                history = history.filter(item => !(item.date === dateStr && item.type === type));
-                // 選択日が今日の場合、メイン画面のチェックインボタンのactiveも連動して外す
-                if (dateStr === getTodayStr()) {
+                history = history.filter(item => !(item.date === targetDateStr && item.type === type));
+                // 選択月が当月の場合、メイン画面のチェックインボタンのactiveも連動して外す
+                if (targetDateStr === currentMonthFirstStr) {
                     activeHabits[type] = false;
                     const btn = document.getElementById(`checkin-btn-${type}`);
                     if (btn) btn.classList.remove('active');
@@ -5385,7 +5458,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
                 const item = {
                     id: Date.now(),
-                    date: dateStr,
+                    date: targetDateStr,
                     type: type,
                     label: label,
                     amount: amount,
@@ -5393,8 +5466,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 };
                 history.unshift(item);
 
-                // 選択日が今日の場合、メイン画面のチェックインボタンのactiveも連動して点灯させる
-                if (dateStr === getTodayStr()) {
+                // 選択月が当月の場合、メイン画面のチェックインボタンのactiveも連動して点灯させる
+                if (targetDateStr === currentMonthFirstStr) {
                     activeHabits[type] = true;
                     const btn = document.getElementById(`checkin-btn-${type}`);
                     if (btn) btn.classList.add('active');
@@ -5426,15 +5499,28 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             // もし選択されたのが今日以前の場合
             if (targetDate <= today) {
-                const dayRecords = history.filter(item => item.date === dateStr);
-                const hasTobacco = dayRecords.some(item => item.type === 'tobacco');
-                const hasBeer = dayRecords.some(item => item.type === 'beer');
-                const hasSub = dayRecords.some(item => item.type === 'sub');
-                const hasGacha = dayRecords.some(item => item.type === 'gacha');
+                const parts = dateStr.split('/');
+                const monthFirstStr = `${parts[0]}/${parts[1]}/1`;
+
+                const dayRecords = history.filter(item => item.date === dateStr && (item.type === 'tobacco' || item.type === 'beer'));
+                const monthRecords = history.filter(item => item.date === monthFirstStr && (item.type === 'sub' || item.type === 'gacha'));
+
+                const hasTobacco = history.some(item => item.date === dateStr && item.type === 'tobacco');
+                const hasBeer = history.some(item => item.date === dateStr && item.type === 'beer');
+                const hasSub = history.some(item => item.date === monthFirstStr && item.type === 'sub');
+                const hasGacha = history.some(item => item.date === monthFirstStr && item.type === 'gacha');
 
                 let recordText = "";
-                if (dayRecords.length > 0) {
-                    recordText = dayRecords.map(item => `・${item.label} (+${item.amount.toLocaleString()}円)`).join('<br>');
+                const recordsList = [];
+                dayRecords.forEach(item => {
+                    recordsList.push(`・${item.label} (+${item.amount.toLocaleString()}円)`);
+                });
+                monthRecords.forEach(item => {
+                    recordsList.push(`・${item.label} (+${item.amount.toLocaleString()}円/月)`);
+                });
+
+                if (recordsList.length > 0) {
+                    recordText = recordsList.join('<br>');
                 } else {
                     recordText = "<span style='color: var(--text-muted);'>この日のセーブ記録はありません。</span>";
                 }
@@ -5635,6 +5721,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const hobby = obHobby.value;
             const age = obAge.value;
             const gender = obGender.value;
+            const startDateVal = obStartDate ? obStartDate.value : "";
 
             if (!name) {
                 alert("ニックネームを入力してください。");
@@ -5650,6 +5737,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
             if (!gender) {
                 alert("性別を選択してください。");
+                return;
+            }
+            if (!startDateVal) {
+                alert("開始日を選択してください。");
                 return;
             }
             
@@ -5674,11 +5765,16 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         onboardFinish.addEventListener('click', () => {
             // オンボーディング設定の保存
+            let obStartDateVal = getTodayStr();
+            if (obStartDate && obStartDate.value) {
+                obStartDateVal = formatFromInputDate(obStartDate.value);
+            }
             profile = {
                 name: obName.value.trim(),
                 hobby: obHobby.value,
                 age: obAge.value,
                 gender: obGender.value,
+                startDate: obStartDateVal,
                 onboarded: true
             };
 
@@ -5724,6 +5820,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             profileHobby.value = profile.hobby;
             profileAge.value = profile.age;
             profileGender.value = profile.gender;
+            if (profileStartDate) {
+                if (!profile.startDate) {
+                    profile.startDate = getFallbackStartDate();
+                }
+                profileStartDate.value = formatToInputDate(profile.startDate);
+            }
 
             tobaccoPackPrice.value = habitPrices.tobaccoPrice;
             tobaccoPriceBadge.innerText = `${habitPrices.tobaccoPrice}円`;
@@ -5783,20 +5885,29 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             btn.addEventListener('click', () => {
                 const type = btn.dataset.habit;
 
-                // 全ての項目（日次・月次）でチェックイン時の履歴追加・削除を共通化
-                activeHabits[type] = !activeHabits[type];
-                if (activeHabits[type]) {
-                    btn.classList.add('active');
-                    // 履歴に追加
-                    addHistoryItem(type);
+                if (type === 'sub' || type === 'gacha') {
+                    // Toggle activeHabits (calculate() will run syncMonthlyLumpSavings() which manages history)
+                    activeHabits[type] = !activeHabits[type];
+                    if (activeHabits[type]) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
                 } else {
-                    btn.classList.remove('active');
-                    // 今日の履歴から削除
-                    removeTodayHistoryItem(type);
+                    activeHabits[type] = !activeHabits[type];
+                    if (activeHabits[type]) {
+                        btn.classList.add('active');
+                        addHistoryItem(type);
+                    } else {
+                        btn.classList.remove('active');
+                        removeTodayHistoryItem(type);
+                    }
                 }
 
                 saveSettings();
                 calculate();
+                renderHistoryList();
+                renderCalendar();
             });
         });
 
@@ -5918,7 +6029,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const simStr = localStorage.getItem('habitvest_simulation');
             const dailyCheckinStr = localStorage.getItem('habitvest_daily_checkin');
 
-            if (profileStr) profile = JSON.parse(profileStr);
+            if (profileStr) {
+                profile = JSON.parse(profileStr);
+                if (!profile.startDate) {
+                    profile.startDate = getFallbackStartDate();
+                }
+            }
             if (settingsStr) habitPrices = JSON.parse(settingsStr);
             if (statesStr) activeHabits = JSON.parse(statesStr);
             const cleanDateStr = (str) => {
@@ -5975,6 +6091,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 obHobby.value = "";
                 obAge.value = "";
                 obGender.value = "";
+                if (obStartDate) {
+                    obStartDate.value = formatToInputDate(getTodayStr());
+                }
                 
                 // 利回りと期間の初期値 (8%, 20年)
                 obSliderYield.value = 8.0;
@@ -6017,24 +6136,79 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             else checkinBtnGacha.classList.remove('active');
         }
 
-        // 🆕 月額項目の自動同期 (日割り自動加算を廃止)
-        function syncMonthlySavings() {
-            const todayStr = getTodayStr();
-            if (!lastSyncDate) {
-                lastSyncDate = todayStr;
-                saveSettings();
-                return;
+        // 🆕 月額項目の自動同期 (1日に月額金額を計上)
+        function syncMonthlyLumpSavings() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+            const currentMonthFirstStr = `${currentYear}/${currentMonth}/1`;
+
+            // Sync Sub
+            const hasSubRecord = history.some(item => item.date === currentMonthFirstStr && item.type === 'sub');
+            if (activeHabits.sub) {
+                if (!hasSubRecord) {
+                    const item = {
+                        id: Date.now(),
+                        date: currentMonthFirstStr,
+                        type: 'sub',
+                        label: "サブスクを解約セーブ！ 📱",
+                        amount: habitPrices.subPrice * habitPrices.subCount,
+                        quantity: habitPrices.subCount
+                    };
+                    history.unshift(item);
+                    saveHistory();
+                } else {
+                    // 同期済みの設定金額を最新化
+                    const subItem = history.find(item => item.date === currentMonthFirstStr && item.type === 'sub');
+                    if (subItem) {
+                        subItem.amount = habitPrices.subPrice * habitPrices.subCount;
+                        subItem.quantity = habitPrices.subCount;
+                    }
+                    saveHistory();
+                }
+            } else {
+                if (hasSubRecord) {
+                    history = history.filter(item => !(item.date === currentMonthFirstStr && item.type === 'sub'));
+                    saveHistory();
+                }
             }
 
-            if (lastSyncDate === todayStr) return; // 本日同期済み
-
-            // 日割り自動加算は行わない（月次の都度チェックインに移行）
-            lastSyncDate = todayStr;
-            saveSettings();
+            // Sync Gacha
+            const hasGachaRecord = history.some(item => item.date === currentMonthFirstStr && item.type === 'gacha');
+            if (activeHabits.gacha) {
+                if (!hasGachaRecord) {
+                    const item = {
+                        id: Date.now() + 1,
+                        date: currentMonthFirstStr,
+                        type: 'gacha',
+                        label: "ソシャゲ課金をセーブ！ 🎮",
+                        amount: habitPrices.gachaPrice * habitPrices.gachaCount,
+                        quantity: habitPrices.gachaCount
+                    };
+                    history.unshift(item);
+                    saveHistory();
+                } else {
+                    // 同期済みの設定金額を最新化
+                    const gachaItem = history.find(item => item.date === currentMonthFirstStr && item.type === 'gacha');
+                    if (gachaItem) {
+                        gachaItem.amount = habitPrices.gachaPrice * habitPrices.gachaCount;
+                        gachaItem.quantity = habitPrices.gachaCount;
+                    }
+                    saveHistory();
+                }
+            } else {
+                if (hasGachaRecord) {
+                    history = history.filter(item => !(item.date === currentMonthFirstStr && item.type === 'gacha'));
+                    saveHistory();
+                }
+            }
         }
 
         // 🔮 複利計算
         function calculate() {
+            // 月次項目の自動同期
+            syncMonthlyLumpSavings();
+
             // 今日のチェックイン状態を daily_checkin に書き出す
             const todayStr = getTodayStr();
             localStorage.setItem('habitvest_daily_checkin', JSON.stringify({
