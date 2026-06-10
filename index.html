@@ -6222,6 +6222,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         // 過去の履歴をリストレンダリング
         function renderHistoryList() {
+            sortHistoryByDate();
             historyListContainer.innerHTML = "";
             if (history.length === 0) {
                 historyListContainer.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 0.72rem; padding: 20px;">履歴がありません。上のボタンから「今日やめた！」を記録しましょう。</div>`;
@@ -6277,7 +6278,23 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             localStorage.setItem('habitvest_simulation', JSON.stringify(simulationSettings));
         }
 
+        function sortHistoryByDate() {
+            if (!history || history.length <= 1) return;
+            history.sort((a, b) => {
+                const dA = parseDateSafely(a.date);
+                const dB = parseDateSafely(b.date);
+                if (!dA && !dB) return 0;
+                if (!dA) return 1;
+                if (!dB) return -1;
+                if (dA.getTime() !== dB.getTime()) {
+                    return dB.getTime() - dA.getTime(); // 降順 (新しい日付が先頭)
+                }
+                return b.id - a.id; // 同日の場合はID降順 (新しいものが先頭)
+            });
+        }
+
         function saveHistory() {
+            sortHistoryByDate();
             localStorage.setItem('habitvest_history', JSON.stringify(history));
         }
 
@@ -7182,6 +7199,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         window.addEventListener('load', () => {
             loadSettings(); 
             calculate();
+            renderHistoryList();
 
             // 自己投資ステータスカードの開閉イベント
             const statusCard = document.getElementById('life-status-card');
