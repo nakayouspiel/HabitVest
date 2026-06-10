@@ -1516,6 +1516,11 @@
                     <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-secondary); margin-bottom: 10px;">🚭 習慣ごとの単価設定</h4>
                     
                     <!-- 🚭 タバコ -->
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
+                            <input type="checkbox" id="profile-track-tobacco"> 🚭 タバコをやめたい (シミュレートする)
+                        </label>
+                    </div>
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="tobacco-pack-price">🚭 タバコ 1箱の価格</label>
@@ -1542,7 +1547,12 @@
                     </div>
 
                     <!-- 🍺 お酒 -->
-                    <div class="form-group" style="margin-top: 14px;">
+                    <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
+                            <input type="checkbox" id="profile-track-beer"> 🍺 お酒を減らしたい (シミュレートする)
+                        </label>
+                    </div>
+                    <div class="form-group">
                         <div class="label-wrapper">
                             <label for="beer-unit-price">🍺 お酒 1本/1杯の価格</label>
                             <span class="val-badge" id="beer-price-badge">250円</span>
@@ -1979,6 +1989,8 @@ const settingsModal = document.getElementById('settings-modal');
         const profileAge = document.getElementById('profile-age');
         const profileGender = document.getElementById('profile-gender');
         const profileStartDate = document.getElementById('profile-start-date');
+        const profileTrackTobacco = document.getElementById('profile-track-tobacco');
+        const profileTrackBeer = document.getElementById('profile-track-beer');
 
         // 設定スライダー（settings-modal内に引っ越したもの）
         const tobaccoPackPrice = document.getElementById('tobacco-pack-price');
@@ -2077,6 +2089,8 @@ const settingsModal = document.getElementById('settings-modal');
             age: "30",
             gender: "male",
             startDate: "",
+            trackTobacco: true,
+            trackBeer: true,
             onboarded: false
         };
 
@@ -2279,6 +2293,11 @@ const settingsModal = document.getElementById('settings-modal');
             if (profileStartDate && profileStartDate.value) {
                 profile.startDate = formatFromInputDate(profileStartDate.value);
             }
+            profile.trackTobacco = profileTrackTobacco ? profileTrackTobacco.checked : false;
+            profile.trackBeer = profileTrackBeer ? profileTrackBeer.checked : false;
+            if (!profile.trackTobacco) activeHabits.tobacco = false;
+            if (!profile.trackBeer) activeHabits.beer = false;
+            updateCheckinBtnVisibility();
 
             habitPrices.tobaccoPrice = validateAndParse(tobaccoPackPrice, 600);
             habitPrices.tobaccoCount = validateAndParse(tobaccoPacksPerDay, 1.0, true);
@@ -5808,6 +5827,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 age: obAge.value,
                 gender: obGender.value,
                 startDate: obStartDateVal,
+                trackTobacco: obChkTobacco.checked,
+                trackBeer: obChkBeer.checked,
                 onboarded: true
             };
 
@@ -5839,6 +5860,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             // 設定のフォームへ値を反映
             syncModalFieldsWithState();
+            updateCheckinBtnVisibility();
 
             // 保存 & 計算
             saveSettings();
@@ -5853,6 +5875,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             profileHobby.value = profile.hobby;
             profileAge.value = profile.age;
             profileGender.value = profile.gender;
+            if (profileTrackTobacco) {
+                profileTrackTobacco.checked = (profile.trackTobacco !== false);
+            }
+            if (profileTrackBeer) {
+                profileTrackBeer.checked = (profile.trackBeer !== false);
+            }
             if (profileStartDate) {
                 if (!profile.startDate) {
                     profile.startDate = getFallbackStartDate();
@@ -6067,6 +6095,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (!profile.startDate) {
                     profile.startDate = getFallbackStartDate();
                 }
+                if (profile.trackTobacco === undefined) {
+                    profile.trackTobacco = true;
+                }
+                if (profile.trackBeer === undefined) {
+                    profile.trackBeer = true;
+                }
             }
             if (settingsStr) habitPrices = JSON.parse(settingsStr);
             if (statesStr) activeHabits = JSON.parse(statesStr);
@@ -6116,6 +6150,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 onboardingModal.classList.remove('active');
                 syncModalFieldsWithState();
                 updateCheckinBtnStates();
+                updateCheckinBtnVisibility();
             } else {
                 // 未オンボーディングなら、初期化状態でオンボーディングモーダルを表示
                 onboardingModal.classList.add('active');
@@ -6167,6 +6202,18 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             if (activeHabits.gacha) checkinBtnGacha.classList.add('active');
             else checkinBtnGacha.classList.remove('active');
+        }
+
+        function updateCheckinBtnVisibility() {
+            const btnTobacco = document.getElementById('checkin-btn-tobacco');
+            const btnBeer = document.getElementById('checkin-btn-beer');
+
+            if (btnTobacco) {
+                btnTobacco.style.display = profile.trackTobacco ? 'flex' : 'none';
+            }
+            if (btnBeer) {
+                btnBeer.style.display = profile.trackBeer ? 'flex' : 'none';
+            }
         }
 
         // 🆕 月額項目の自動同期 (1日に月額金額を計上)
@@ -6287,8 +6334,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const paceRealBadge = document.getElementById('pace-real-badge');
             if (paceRealBadge) {
                 let activeRates = [];
-                if (activeHabits.tobacco) activeRates.push(rates.tobacco);
-                if (activeHabits.beer) activeRates.push(rates.beer);
+                if (profile.trackTobacco) activeRates.push(rates.tobacco);
+                if (profile.trackBeer) activeRates.push(rates.beer);
                 if (activeHabits.sub) activeRates.push(1.0);
                 if (activeHabits.gacha) activeRates.push(1.0);
                 
@@ -6300,13 +6347,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
 
             if (simulationPaceMode === 'real') {
-                if (activeHabits.tobacco) monthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
-                if (activeHabits.beer) monthlySaving += Math.round(beerMonthly * rates.beer);
+                if (profile.trackTobacco) monthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
+                if (profile.trackBeer) monthlySaving += Math.round(beerMonthly * rates.beer);
                 if (activeHabits.sub) monthlySaving += subMonthly;
                 if (activeHabits.gacha) monthlySaving += gachaMonthly;
             } else {
-                if (activeHabits.tobacco) monthlySaving += tobaccoMonthly;
-                if (activeHabits.beer) monthlySaving += beerMonthly;
+                if (profile.trackTobacco) monthlySaving += tobaccoMonthly;
+                if (profile.trackBeer) monthlySaving += beerMonthly;
                 if (activeHabits.sub) monthlySaving += subMonthly;
                 if (activeHabits.gacha) monthlySaving += gachaMonthly;
             }
