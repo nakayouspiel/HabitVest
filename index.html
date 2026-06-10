@@ -1620,6 +1620,7 @@
                             <span style="color: var(--text-muted); display: block; margin-top: 6px;" id="rm-goal-desc">
                                 悪い習慣をやめるだけで、これほど莫大な資産が手に入ります。浮いたお金は「経済的自立（FIRE）」を実現する最高の軍資金になり、あなたの選択肢と自由を広げてくれます 🚀
                             </span>
+                            <div id="rm-goal-advice"></div>
                         </div>
                     </div>
 
@@ -6977,6 +6978,93 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める（${Math.round(totalSavingGoal).toLocaleString()}円）よりも <strong>${Math.round(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${Math.round(totalInvestGoal).toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、「<strong>${hobbyTarget}</strong>」を実現し、何にも縛られない自由な人生を手に入れることができます！`;
             }
 
+            const rmGoalAdvice = document.getElementById('rm-goal-advice');
+            if (rmGoalAdvice) {
+                if (monthlySaving > 0) {
+                    const tobaccoMonthly = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
+                    const beerMonthly = Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
+                    const subMonthly = habitPrices.subPrice * habitPrices.subCount;
+                    const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+
+                    let idealMonthlySaving = 0;
+                    if (profile.trackTobacco) idealMonthlySaving += tobaccoMonthly;
+                    if (profile.trackBeer) idealMonthlySaving += beerMonthly;
+                    if (activeHabits.sub) idealMonthlySaving += subMonthly;
+                    if (activeHabits.gacha) idealMonthlySaving += gachaMonthly;
+
+                    const idealDailySaving = Math.round(idealMonthlySaving / 30);
+                    
+                    const todayDate = parseDateSafely(getTodayStr()) || new Date();
+                    const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
+                    const elapsedDiffTime = todayDate.getTime() - startTrackingDate.getTime();
+                    const elapsedDays = Math.max(1, Math.floor(elapsedDiffTime / (1000 * 3600 * 24)) + 1);
+
+                    const idealCumToday = idealDailySaving * elapsedDays;
+                    const diffToday = idealCumToday - totalEarned;
+
+                    const rates = getHabitSuccessRates();
+                    const activeRates = [];
+                    if (profile.trackTobacco) activeRates.push(rates.tobacco);
+                    if (profile.trackBeer) activeRates.push(rates.beer);
+                    if (activeHabits.sub) activeRates.push(1.0);
+                    if (activeHabits.gacha) activeRates.push(1.0);
+                    
+                    let avgRate = 1.0;
+                    if (activeRates.length > 0) {
+                        avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
+                    }
+                    const ratePercent = Math.round(avgRate * 100);
+
+                    let totalInvestIdeal = 0;
+                    if (monthlyRate > 0) {
+                        totalInvestIdeal = P * Math.pow(1 + monthlyRate, months) + idealMonthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                    } else {
+                        totalInvestIdeal = P + (idealMonthlySaving * 12 * years);
+                    }
+                    const diffInvestGoal = Math.max(0, totalInvestIdeal - totalInvestGoal);
+
+                    let adviceMessage = "";
+                    if (ratePercent >= 90) {
+                        adviceMessage = `🏆 <strong>神レベルの自制心です！</strong> ほぼ完璧なセーブペースを維持できています。このまま継続すれば、理想の未来（${Math.round(totalInvestIdeal).toLocaleString()}円）はすぐそこです。自分を信じて突き進みましょう！🚀`;
+                    } else if (ratePercent >= 75) {
+                        adviceMessage = `🌟 <strong>素晴らしいペースです！</strong> あと少しチェックイン日数を増やすだけで、理想との差（${Math.round(diffInvestGoal).toLocaleString()}円）を埋めることができます。小さな積み重ねが、将来驚くほどの大きな成果に化けますよ！💪`;
+                    } else if (ratePercent >= 50) {
+                        adviceMessage = `📈 <strong>伸びしろ満点です！</strong> 現在約半分をセーブできています。2日に1回の成功を、3日に2回へとほんの少しだけ引き上げることで、将来手にする自由（資産）が数百万円レベルで変わってきます。まずは次の1回をセーブしてみましょう！✨`;
+                    } else {
+                        adviceMessage = `🌱 <strong>一歩ずつ進めましょう！</strong> 最初は誰もがここからスタートします。焦らず、まずは週に数日のセーブ日から習慣化していきましょう。少しでもやめられた日は自分を褒め、未来の資産を育てていきましょう！❤️`;
+                    }
+
+                    let diffInvestText = "";
+                    if (diffInvestGoal > 100) {
+                        diffInvestText = `もしセーブ率を<strong>100%（完璧）</strong>に引き上げると、${years}年後の資産はさらに <span style="color: var(--neon-primary); font-weight:800; font-size: 0.82rem;">+${Math.round(diffInvestGoal).toLocaleString()}円</span> アップし、合計 <span style="color: var(--neon-secondary); font-weight:800;">${Math.round(totalInvestIdeal).toLocaleString()}円</span> に達します！💰`;
+                    } else {
+                        diffInvestText = `現在、<strong>完璧な100%のセーブペース</strong>を維持しています！このまま継続できれば、最高の未来（資産: <span style="color: var(--neon-secondary); font-weight:800;">${Math.round(totalInvestIdeal).toLocaleString()}円</span>）が確実に実現します！🎉`;
+                    }
+
+                    rmGoalAdvice.innerHTML = `
+                        <div style="background: rgba(0, 243, 255, 0.02); border: 1px dashed rgba(0, 243, 255, 0.25); border-radius: 12px; padding: 12px; margin-top: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+                            <div style="font-weight: 700; color: var(--neon-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
+                                💡 ${years}年後の自分への特別アドバイス
+                            </div>
+                            <div style="line-height: 1.6; font-size: 0.7rem; color: var(--text-sub);">
+                                <strong>【開始日からの実績と理想】</strong><br>
+                                セーブ開始（${profile.startDate || getTodayStr()}）から今日まで：<br>
+                                ・理想目標額: <span style="color: var(--text-main); font-weight:700;">${idealCumToday.toLocaleString()}円</span> (100%継続時)<br>
+                                ・あなたの実績: <span style="color: var(--neon-secondary); font-weight:700;">${totalEarned.toLocaleString()}円</span> (セーブ率: <span style="color: var(--neon-primary); font-weight:700;">${ratePercent}%</span>)<br>
+                                ${diffToday > 0 ? `・理想目標との差: <span style="color: var(--accent-pink); font-weight:700;">-${diffToday.toLocaleString()}円</span><br>` : `・理想目標との差: <span style="color: var(--neon-primary); font-weight:700;">クリア！完璧です🔥</span><br>`}
+                                <br>
+                                <strong>【将来の伸びしろ予測】</strong><br>
+                                ${diffInvestText}<br>
+                                <span style="color: var(--text-muted); display: block; margin-top: 8px; border-left: 2px solid var(--neon-primary); padding-left: 8px; line-height: 1.5;">
+                                    ${adviceMessage}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    rmGoalAdvice.innerHTML = "";
+                }
+            }
 
         }
 
