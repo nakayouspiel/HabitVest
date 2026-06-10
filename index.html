@@ -1020,59 +1020,84 @@
             color: #ffffff !important;
         }
 
-        /* 個別のアクティブカラースキーム */
+        /* 個別のアクティブカラースキーム (パステル調で文字の視認性も高めた柔らかい配色) */
         #checkin-btn-tobacco.active {
-            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
-            border-color: #ec4899;
+            background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%);
+            border-color: #f472b6;
+            color: #831843 !important;
+        }
+        #checkin-btn-tobacco.active .price-badge {
+            color: #831843 !important;
+            background: rgba(255, 255, 255, 0.4) !important;
         }
         #checkin-btn-beer.active {
-            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
-            border-color: #0ea5e9;
+            background: linear-gradient(135deg, #bae6fd 0%, #38bdf8 100%);
+            border-color: #38bdf8;
+            color: #0369a1 !important;
+        }
+        #checkin-btn-beer.active .price-badge {
+            color: #0369a1 !important;
+            background: rgba(255, 255, 255, 0.4) !important;
         }
         #checkin-btn-sub.active {
-            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-            border-color: #10b981;
+            background: linear-gradient(135deg, #a7f3d0 0%, #34d399 100%);
+            border-color: #34d399;
+            color: #065f46 !important;
+        }
+        #checkin-btn-sub.active .price-badge {
+            color: #065f46 !important;
+            background: rgba(255, 255, 255, 0.4) !important;
         }
         #checkin-btn-gacha.active {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+            border-color: #fbbf24;
+            color: #78350f !important;
+        }
+        #checkin-btn-gacha.active .price-badge {
+            color: #78350f !important;
+            background: rgba(255, 255, 255, 0.4) !important;
         }
 
-        /* ダークモード時のアクティブカラー (より鮮やかに、かつ柔らかいグラデーション) */
+        /* ダークモード時のアクティブカラー (暗闇に優しく浮かぶソフトネオングラデーション) */
         .theme-dark #checkin-btn-tobacco.active {
-            background: linear-gradient(135deg, #ff5e97 0%, #ff007f 100%);
-            border-color: #ff5e97;
-            box-shadow: 0 0 18px rgba(255, 0, 127, 0.45);
+            background: linear-gradient(135deg, #fda4af 0%, #f43f5e 100%);
+            border-color: #fda4af;
+            color: #4c0519 !important;
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.3);
+        }
+        .theme-dark #checkin-btn-tobacco.active .price-badge {
+            color: #4c0519 !important;
+            background: rgba(255, 255, 255, 0.3) !important;
         }
         .theme-dark #checkin-btn-beer.active {
-            background: linear-gradient(135deg, #5effff 0%, #00f3ff 100%);
-            border-color: #5effff;
-            color: #060913 !important; /* 黒文字で視認性抜群 */
-            box-shadow: 0 0 18px rgba(0, 243, 255, 0.45);
+            background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%);
+            border-color: #7dd3fc;
+            color: #0c4a6e !important;
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
         }
         .theme-dark #checkin-btn-beer.active .price-badge {
-            color: #060913 !important;
-            background: rgba(0, 0, 0, 0.15) !important;
+            color: #0c4a6e !important;
+            background: rgba(255, 255, 255, 0.3) !important;
         }
         .theme-dark #checkin-btn-sub.active {
-            background: linear-gradient(135deg, #7fff5e 0%, #39ff14 100%);
-            border-color: #7fff5e;
-            color: #060913 !important;
-            box-shadow: 0 0 18px rgba(57, 255, 20, 0.45);
+            background: linear-gradient(135deg, #6ee7b7 0%, #10b981 100%);
+            border-color: #6ee7b7;
+            color: #064e3b !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
         }
         .theme-dark #checkin-btn-sub.active .price-badge {
-            color: #060913 !important;
-            background: rgba(0, 0, 0, 0.15) !important;
+            color: #064e3b !important;
+            background: rgba(255, 255, 255, 0.3) !important;
         }
         .theme-dark #checkin-btn-gacha.active {
-            background: linear-gradient(135deg, #ffbe5e 0%, #ffa500 100%);
-            border-color: #ffbe5e;
-            color: #060913 !important;
-            box-shadow: 0 0 18px rgba(255, 165, 0, 0.45);
+            background: linear-gradient(135deg, #fde047 0%, #eab308 100%);
+            border-color: #fde047;
+            color: #422006 !important;
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
         }
         .theme-dark #checkin-btn-gacha.active .price-badge {
-            color: #060913 !important;
-            background: rgba(0, 0, 0, 0.15) !important;
+            color: #422006 !important;
+            background: rgba(255, 255, 255, 0.3) !important;
         }
 
         .checkin-btn.active.daily::after {
@@ -5651,7 +5676,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 leftSide.appendChild(statusIcon);
 
                 const titleInfo = document.createElement('div');
-                titleInfo.innerHTML = `<span style="font-weight: 700; color: ${isUnlocked ? 'var(--text-sub)' : 'var(--text-muted)'};">Lv.${rank.level}+</span> <span style="font-weight: 800; color: ${isCurrent ? 'var(--neon-primary)' : (isUnlocked ? 'var(--text-main)' : 'var(--text-muted)')};">${rank.title} ${rank.emoji}</span>`;
+                titleInfo.innerHTML = `<span style="font-weight: 700; color: ${isUnlocked ? 'var(--text-sub)' : 'var(--text-muted)'};">Lv.${rank.level}</span> <span style="font-weight: 800; color: ${isCurrent ? 'var(--neon-primary)' : (isUnlocked ? 'var(--text-main)' : 'var(--text-muted)')};">${rank.title} ${rank.emoji}</span>`;
                 leftSide.appendChild(titleInfo);
 
                 const rightSide = document.createElement('div');
