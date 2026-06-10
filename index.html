@@ -7202,11 +7202,18 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const statusChevron = document.getElementById('life-status-chevron');
 
             if (statusCard && statusDetails && statusChevron) {
+                // 初期状態を明示的にリセット
+                statusDetails.style.maxHeight = '0px';
+                statusCard.classList.remove('details-open');
+
                 statusCard.addEventListener('click', () => {
-                    if (statusDetails.style.maxHeight === '0px' || !statusDetails.style.maxHeight) {
+                    const isOpen = statusCard.classList.contains('details-open');
+                    if (!isOpen) {
+                        statusCard.classList.add('details-open');
                         statusDetails.style.maxHeight = statusDetails.scrollHeight + 'px';
                         statusChevron.innerText = '▲ 称号を閉じる';
                     } else {
+                        statusCard.classList.remove('details-open');
                         statusDetails.style.maxHeight = '0px';
                         statusChevron.innerText = '▼ 称号一覧';
                     }
