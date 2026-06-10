@@ -6607,7 +6607,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             valYieldInfo.innerText = `${simulationSettings.yield}%`;
 
             updateMilestone(finalInvest);
-            updateLifeData(years);
+            updateLifeData(years, monthlySaving);
             updateAffiliateBanner(finalInvest, monthlySaving);
             
             if (monthlySaving <= 0) {
@@ -6641,7 +6641,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
 
         // 🍀 ライフデータ更新 (健康・時間の実績＆メリット)
-        function updateLifeData(years) {
+        function updateLifeData(years, monthlySaving) {
             const name = profile.name || "あなた";
             
             // 過去履歴から累計実績を計算する
@@ -6767,19 +6767,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
 
             // B. タイムライン予測ロードマップの更新
-            let monthlySaving = 0;
-            if (activeHabits.tobacco) {
-                monthlySaving += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
-            }
-            if (activeHabits.beer) {
-                monthlySaving += Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
-            }
-            if (activeHabits.sub) {
-                monthlySaving += habitPrices.subPrice * habitPrices.subCount;
-            }
-            if (activeHabits.gacha) {
-                monthlySaving += habitPrices.gachaPrice * habitPrices.gachaCount;
-            }
+            // monthlySaving は引数からそのまま使用します
 
             const lifeRoadmapMonthlyVal = document.getElementById('life-roadmap-monthly-val');
             if (lifeRoadmapMonthlyVal) {
