@@ -5264,6 +5264,64 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             });
         }
 
+        // 📅 過去日付のセーブ記録をトグル（追加・消去）するグローバル関数
+        window.togglePastRecord = function(dateStr, type) {
+            const hasRecord = history.some(item => item.date === dateStr && item.type === type);
+            if (hasRecord) {
+                // 記録を削除
+                history = history.filter(item => !(item.date === dateStr && item.type === type));
+                // 選択日が今日の場合、メイン画面のチェックインボタンのactiveも連動して外す
+                if (dateStr === getTodayStr()) {
+                    activeHabits[type] = false;
+                    const btn = document.getElementById(`checkin-btn-${type}`);
+                    if (btn) btn.classList.remove('active');
+                    saveSettings();
+                }
+            } else {
+                // 記録を追加
+                let amount = 0;
+                let label = "";
+                let quantity = 1;
+
+                if (type === 'tobacco') {
+                    amount = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+                    label = "タバコをセーブ！ 🚫";
+                    quantity = habitPrices.tobaccoCount;
+                } else if (type === 'beer') {
+                    amount = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+                    label = "ビールをセーブ！ 🍻";
+                    quantity = habitPrices.beerCount;
+                }
+
+                const item = {
+                    id: Date.now(),
+                    date: dateStr,
+                    type: type,
+                    label: label,
+                    amount: amount,
+                    quantity: quantity
+                };
+                history.unshift(item);
+
+                // 選択日が今日の場合、メイン画面のチェックインボタンのactiveも連動して点灯させる
+                if (dateStr === getTodayStr()) {
+                    activeHabits[type] = true;
+                    const btn = document.getElementById(`checkin-btn-${type}`);
+                    if (btn) btn.classList.add('active');
+                    saveSettings();
+                }
+            }
+            saveHistory();
+            renderHistoryList();
+            renderCalendar();
+            calculate();
+
+            // プレビュー表示を最新化
+            const parts = dateStr.split('/');
+            const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            showCalendarDaySimulation(d, dateStr);
+        };
+
         // 🔮 カレンダー日付選択未来シミュレーション表示関数 (まだ来ぬ日を試す機能)
         function showCalendarDaySimulation(targetDate, dateStr) {
             const previewArea = document.getElementById('calendar-sim-preview');
@@ -5279,15 +5337,29 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // もし選択されたのが今日以前の場合
             if (targetDate <= today) {
                 const dayRecords = history.filter(item => item.date === dateStr);
+                const hasTobacco = dayRecords.some(item => item.type === 'tobacco');
+                const hasBeer = dayRecords.some(item => item.type === 'beer');
+
                 let recordText = "";
                 if (dayRecords.length > 0) {
                     recordText = dayRecords.map(item => `・${item.label} (+${item.amount.toLocaleString()}円)`).join('<br>');
                 } else {
-                    recordText = "この日のセーブ記録はありません。";
+                    recordText = "<span style='color: var(--text-muted);'>この日のセーブ記録はありません。</span>";
                 }
+
                 previewContent.innerHTML = `
-                    <strong>選択日:</strong> ${dateStr} (過去または本日)<br>
-                    <strong>この日の記録:</strong><br>${recordText}
+                    <div style="font-size: 0.82rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 6px;">📅 ${dateStr} の記録管理</div>
+                    <div style="margin-bottom: 8px; line-height: 1.4;">
+                        <strong>現在のセーブ状況:</strong><br>${recordText}
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button onclick="togglePastRecord('${dateStr}', 'tobacco')" class="modal-btn" style="flex: 1; font-size: 0.68rem; padding: 8px 4px; margin: 0; background: ${hasTobacco ? 'rgba(219, 39, 119, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasTobacco ? 'var(--accent-pink)' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                            ${hasTobacco ? '🗑️ タバコ消去' : '🚭 タバコ追加'}
+                        </button>
+                        <button onclick="togglePastRecord('${dateStr}', 'beer')" class="modal-btn" style="flex: 1; font-size: 0.68rem; padding: 8px 4px; margin: 0; background: ${hasBeer ? 'rgba(2, 132, 199, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; border: 1px solid ${hasBeer ? 'var(--neon-primary)' : 'var(--border-glass)'}; border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                            ${hasBeer ? '🗑️ ビール消去' : '🍺 ビール追加'}
+                        </button>
+                    </div>
                 `;
                 return;
             }
