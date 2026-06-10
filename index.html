@@ -6584,6 +6584,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     e.stopPropagation();
                 });
             }
+
+            // 📲 サービスワーカーの登録 (PWA対応)
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            }
         });
     </script>
 </body>
