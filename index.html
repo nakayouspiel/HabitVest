@@ -41,6 +41,8 @@
             --btn-secondary-border: #cbd5e1;
             --btn-secondary-text: #0f172a;
             --accent-pink: #db2777;
+            --btn-primary-bg: #0284c7;
+            --btn-primary-text: #ffffff;
         }
 
         /* 🌙 ダークモード */
@@ -64,6 +66,8 @@
             --btn-secondary-border: #334155;
             --btn-secondary-text: #f8fafc;
             --accent-pink: #ff007f;
+            --btn-primary-bg: #00f3ff;
+            --btn-primary-text: #060913;
         }
 
         * {
@@ -673,17 +677,26 @@
 
         .modal-btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--neon-primary) 0%, var(--neon-secondary) 100%);
+            background: var(--btn-primary-bg);
             border: none;
             border-radius: 12px;
-            padding: 10px;
-            color: #fff;
+            padding: 11px;
+            color: var(--btn-primary-text);
             font-family: var(--font-ui);
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+            box-shadow: none;
             margin-top: 10px;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.98);
         }
 
         /* 🗑️ オールリセットボタンのスタイル */
