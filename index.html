@@ -3304,15 +3304,43 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     emojiContainer.style.marginTop = '2px';
                     
                     recordsByDate[cellDateStr].forEach(type => {
-                        let emoji = '✅';
-                        if (type === 'tobacco') emoji = '🚭';
-                        else if (type === 'beer') emoji = '🍺';
-                        else if (type === 'sub') emoji = '📱';
-                        else if (type === 'gacha') emoji = '🎮';
-                        
-                        const emojiSpan = document.createElement('span');
-                        emojiSpan.innerText = emoji;
-                        emojiContainer.appendChild(emojiSpan);
+                        if (type === 'beer') {
+                            const beerWrapper = document.createElement('span');
+                            beerWrapper.style.position = 'relative';
+                            beerWrapper.style.display = 'inline-flex';
+                            beerWrapper.style.justifyContent = 'center';
+                            beerWrapper.style.alignItems = 'center';
+                            beerWrapper.style.width = '0.85rem';
+                            beerWrapper.style.height = '0.85rem';
+                            
+                            const beerEmoji = document.createElement('span');
+                            beerEmoji.innerText = '🍺';
+                            beerEmoji.style.fontSize = '0.8rem';
+                            beerEmoji.style.lineHeight = '1';
+                            
+                            const banEmoji = document.createElement('span');
+                            banEmoji.innerText = '🚫';
+                            banEmoji.style.position = 'absolute';
+                            banEmoji.style.fontSize = '0.8rem';
+                            banEmoji.style.top = '50%';
+                            banEmoji.style.left = '50%';
+                            banEmoji.style.transform = 'translate(-50%, -50%)';
+                            banEmoji.style.pointerEvents = 'none';
+                            banEmoji.style.lineHeight = '1';
+                            
+                            beerWrapper.appendChild(beerEmoji);
+                            beerWrapper.appendChild(banEmoji);
+                            emojiContainer.appendChild(beerWrapper);
+                        } else {
+                            let emoji = '✅';
+                            if (type === 'tobacco') emoji = '🚭';
+                            else if (type === 'sub') emoji = '📱';
+                            else if (type === 'gacha') emoji = '🎮';
+                            
+                            const emojiSpan = document.createElement('span');
+                            emojiSpan.innerText = emoji;
+                            emojiContainer.appendChild(emojiSpan);
+                        }
                     });
                     cell.appendChild(emojiContainer);
                 } else {
@@ -5941,7 +5969,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     quantity = habitPrices.tobaccoCount;
                 } else if (type === 'beer') {
                     amount = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
-                    label = "ビールをセーブ！ 🍻";
+                    label = "ビール・お酒をセーブ！ 🚫🍺";
                     quantity = habitPrices.beerCount;
                 } else if (type === 'sub') {
                     amount = habitPrices.subPrice * habitPrices.subCount;
@@ -6032,7 +6060,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             ${hasTobacco ? '🗑️ タバコ消去' : '🚭 タバコ追加'}
                         </button>
                         <button onclick="togglePastRecord('${dateStr}', 'beer')" class="cal-preview-btn cal-preview-btn-beer ${hasBeer ? 'active' : ''}">
-                            ${hasBeer ? '🗑️ ビール消去' : '🍺 ビール追加'}
+                            ${hasBeer ? '🗑️ ビール消去' : `
+                            <span style="position: relative; display: inline-flex; justify-content: center; align-items: center; width: 0.95rem; height: 0.95rem; margin-right: 2px;">
+                                <span style="font-size: 0.95rem; line-height: 1;">🍺</span>
+                                <span style="position: absolute; font-size: 0.95rem; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; line-height: 1;">🚫</span>
+                            </span>ビール追加`}
                         </button>
                         <button onclick="togglePastRecord('${dateStr}', 'sub')" class="cal-preview-btn cal-preview-btn-sub ${hasSub ? 'active' : ''}">
                             ${hasSub ? '🗑️ サブスク消去' : '📱 サブスク追加'}
@@ -6430,7 +6462,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 quantity = habitPrices.tobaccoCount; // 1日の消費箱数
             } else if (type === 'beer') {
                 amount = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
-                label = "ビールをセーブ！ 🍻";
+                label = "ビール・お酒をセーブ！ 🚫🍺";
                 quantity = habitPrices.beerCount; // 1日の消費本数
             } else if (type === 'sub') {
                 amount = habitPrices.subPrice * habitPrices.subCount;
@@ -6671,10 +6703,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const btnBeer = document.getElementById('checkin-btn-beer');
 
             if (btnTobacco) {
-                btnTobacco.style.display = profile.trackTobacco ? 'flex' : 'none';
+                btnTobacco.style.display = 'flex';
             }
             if (btnBeer) {
-                btnBeer.style.display = profile.trackBeer ? 'flex' : 'none';
+                btnBeer.style.display = 'flex';
             }
         }
 
