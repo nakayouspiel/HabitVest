@@ -578,6 +578,114 @@
             transform: translateY(0);
         }
 
+        /* 🎓 チュートリアルオーバーレイ */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(6, 9, 19, 0.78);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .tutorial-step {
+            position: absolute;
+            width: 90%;
+            max-width: 320px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        #tutorial-step-1 {
+            top: 235px;
+        }
+
+        #tutorial-step-2 {
+            bottom: 90px;
+        }
+
+        .tutorial-tooltip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 243, 255, 0.15);
+            text-align: center;
+            width: 100%;
+        }
+
+        .tutorial-tooltip h3 {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--neon-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tutorial-tooltip p {
+            font-size: 0.72rem;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .tutorial-btn {
+            background: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s;
+        }
+
+        .tutorial-btn:hover {
+            opacity: 0.9;
+        }
+
+        .tutorial-arrow {
+            font-size: 1.5rem;
+            margin: 8px;
+            animation: bounceArrow 1.5s infinite;
+            color: var(--neon-primary);
+            text-shadow: 0 0 8px var(--neon-primary);
+            line-height: 1;
+        }
+
+        .arrow-up::before {
+            content: "▲";
+        }
+        
+        .arrow-down::before {
+            content: "▼";
+        }
+
+        @keyframes bounceArrow {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
         .modal-header {
             position: sticky;
             top: -20px;
@@ -2308,6 +2416,26 @@
                 <button id="reset-cancel" class="modal-btn-secondary" style="margin-top: 0;">キャンセル</button>
                 <button id="reset-execute" class="modal-btn" style="background: var(--accent-pink); color: white; border: none; margin-top: 0;">完全に初期化する</button>
             </div>
+        </div>
+    </div>
+
+    <!-- 🎓 クイックチュートリアル用オーバーレイ -->
+    <div id="tutorial-overlay" class="tutorial-overlay" style="display: none;">
+        <div class="tutorial-step" id="tutorial-step-1">
+            <div class="tutorial-tooltip">
+                <h3>💡 習慣をセーブして記録しよう！</h3>
+                <p>タバコやお酒などをやめられた日は、このボタンをタップして「今日やめた！」を記録しましょう。節約実績がすぐに反映されます！</p>
+                <button class="tutorial-btn" onclick="nextTutorialStep(1)">次へ (1/2) ➔</button>
+            </div>
+            <div class="tutorial-arrow arrow-down"></div>
+        </div>
+        <div class="tutorial-step" id="tutorial-step-2" style="display: none;">
+            <div class="tutorial-tooltip">
+                <h3>📈 ライフ・未来ロードマップを見よう！</h3>
+                <p>下の「ライフ」タブをタップすると、現在の自己投資レベル、称号ツリー、そして将来どんなご褒美が手に入るかのロードマップを確認できます！</p>
+                <button class="tutorial-btn" onclick="closeTutorial()">始める！ 🚀</button>
+            </div>
+            <div class="tutorial-arrow arrow-down"></div>
         </div>
     </div>
 
@@ -5954,6 +6082,34 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             });
         }
 
+        // 🎓 クイックチュートリアル機能の定義
+        window.startTutorial = function() {
+            const overlay = document.getElementById('tutorial-overlay');
+            if (overlay) {
+                overlay.style.display = 'block';
+                document.getElementById('tutorial-step-1').style.display = 'flex';
+                document.getElementById('tutorial-step-2').style.display = 'none';
+            }
+        };
+
+        window.nextTutorialStep = function(stepNum) {
+            if (stepNum === 1) {
+                document.getElementById('tutorial-step-1').style.display = 'none';
+                document.getElementById('tutorial-step-2').style.display = 'flex';
+            }
+        };
+
+        window.closeTutorial = function() {
+            const overlay = document.getElementById('tutorial-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    overlay.style.opacity = '1';
+                }, 300);
+            }
+        };
+
         // 📅 過去日付のセーブ記録をトグル（追加・消去）するグローバル関数
         window.togglePastRecord = function(dateStr, type) {
             let targetDateStr = dateStr;
@@ -6357,12 +6513,18 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // 設定のフォームへ値を反映
             syncModalFieldsWithState();
             updateCheckinBtnVisibility();
+            updateCheckinBtnStates();
 
             // 保存 & 計算
             saveSettings();
             calculate();
 
             onboardingModal.classList.remove('active');
+
+            // 🎓 クイックチュートリアルの開始
+            setTimeout(() => {
+                startTutorial();
+            }, 500);
         });
 
         // 状態を設定モーダルフィールドに反映
