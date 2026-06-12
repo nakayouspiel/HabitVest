@@ -840,13 +840,13 @@
         }
 
         .banner-action-btn {
-            background: var(--text-main);
-            color: var(--bg-base);
+            background: var(--btn-gradient);
+            color: #ffffff !important;
             border: none;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.78rem;
+            font-weight: 800;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -854,22 +854,48 @@
             width: 100%;
             box-sizing: border-box;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .theme-dark .banner-action-btn {
-            background: #f8fafc;
-            color: #060913;
+            color: #060913 !important;
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.2);
         }
 
         .banner-action-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 14px rgba(2, 132, 199, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+            filter: brightness(1.08);
+        }
+
+        .theme-dark .banner-action-btn:hover {
+            box-shadow: 0 6px 22px rgba(0, 243, 255, 0.45);
         }
 
         .banner-action-btn:active {
-            transform: scale(0.97);
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* ボタン内の光沢アニメーション */
+        .banner-action-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: skewX(-25deg);
+            animation: button-shine 4s infinite ease-in-out;
+        }
+
+        @keyframes button-shine {
+            0% { left: -150%; }
+            50% { left: 150%; }
+            100% { left: 150%; }
         }
 
         @keyframes pulse-border {
@@ -1538,13 +1564,9 @@
                             <h4 id="banner-title">複利運用を今すぐ始めよう</h4>
                             <p id="banner-desc">浮いたお金を放置するのはもったいない！まずは人気証券会社で口座開設（無料）</p>
                         </div>
-                        <!-- A8.net アフィリエイトバナー表示 -->
-                        <div class="a8-banner-img-container" style="display: flex; justify-content: center; margin: 4px 0; width: 100%;">
-                            <a href="https://px.a8.net/svt/ejp?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL" rel="nofollow" target="_blank">
-                                <img border="0" width="468" height="60" alt="" src="https://www22.a8.net/svt/bgt?aid=260611782411&wid=006&eno=01&mid=s00000018318001082000&mc=1" style="max-width: 100%; height: auto; border-radius: 8px; border: none;">
-                            </a>
-                            <img border="0" width="1" height="1" src="https://www16.a8.net/0.gif?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL" alt="" style="display:none;">
-                        </div>
+                        <!-- 1x1 トラッキングピクセルのみを残す (A8アフィリエイト計測のため必須) -->
+                        <img border="0" width="1" height="1" src="https://www16.a8.net/0.gif?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL" alt="" style="display:none;">
+                        
                         <!-- アクションボタン -->
                         <a href="https://px.a8.net/svt/ejp?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL" target="_blank" rel="nofollow" class="banner-action-btn" id="banner-link">
                             口座を開く 🚀
