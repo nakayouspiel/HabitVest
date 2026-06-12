@@ -1538,7 +1538,15 @@
                             <h4 id="banner-title">複利運用を今すぐ始めよう</h4>
                             <p id="banner-desc">浮いたお金を放置するのはもったいない！まずは人気証券会社で口座開設（無料）</p>
                         </div>
-                        <a href="https://example.com/affiliate-link" target="_blank" rel="noopener noreferrer" class="banner-action-btn" id="banner-link">
+                        <!-- A8.net アフィリエイトバナー表示 -->
+                        <div class="a8-banner-img-container" style="display: flex; justify-content: center; margin: 4px 0; width: 100%;">
+                            <a href="https://px.a8.net/svt/ejp?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL" rel="nofollow" target="_blank">
+                                <img border="0" width="468" height="60" alt="" src="https://www22.a8.net/svt/bgt?aid=260611782411&wid=006&eno=01&mid=s00000018318001082000&mc=1" style="max-width: 100%; height: auto; border-radius: 8px; border: none;">
+                            </a>
+                            <img border="0" width="1" height="1" src="https://www16.a8.net/0.gif?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL" alt="" style="display:none;">
+                        </div>
+                        <!-- アクションボタン -->
+                        <a href="https://px.a8.net/svt/ejp?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL" target="_blank" rel="nofollow" class="banner-action-btn" id="banner-link">
                             口座を開く 🚀
                         </a>
                     </div>
@@ -5626,17 +5634,31 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return idx !== -1 ? idx : list.length - 1;
         }
 
-        // ⚔️ 自己投資称号の設定 (最高レベル99、5年完スト想定＝1レベルあたり15,000円セーブ)
+        // ⚔️ レベルごとの必要累計貯蓄額の計算 (非線形カーブ: 3週間=21日でLv.5、5年=1800日でLv.99想定)
+        // C(L) = 3000 * (L - 1)^1.35
+        function getCumulativeSavingForLevel(L) {
+            if (L <= 1) return 0;
+            return Math.round(3000 * Math.pow(L - 1, 1.35));
+        }
+
+        // 累計貯蓄額から現在のレベルを取得 (最大99)
+        function getLevelFromSaving(totalEarned) {
+            if (totalEarned <= 0) return 1;
+            const levelVal = Math.floor(Math.pow(totalEarned / 3000, 1 / 1.35)) + 1;
+            return Math.min(99, levelVal);
+        }
+
+        // ⚔️ 自己投資称号の設定 (最高レベル99、非線形カーブに基づく)
         function getRanksConfig() {
             return [
-                { level: 1, title: "自己投資ビギナー", emoji: "🔰", minAmount: 0 },
-                { level: 5, title: "習慣改善 of 芽生え", emoji: "🌱", minAmount: 60000 },
-                { level: 15, title: "自制の戦士", emoji: "⚔️", minAmount: 210000 },
-                { level: 30, title: "欲望の支配者", emoji: "🛡️", minAmount: 435000 },
-                { level: 50, title: "セルフコントロールの達人", emoji: "🧘", minAmount: 735000 },
-                { level: 70, title: "複利の魔術師", emoji: "🧙‍♂️", minAmount: 1035000 },
-                { level: 85, title: "習慣の聖者", emoji: "👑", minAmount: 1260000 },
-                { level: 99, title: "神域のFIREランナー", emoji: "🗽", minAmount: 1470000 }
+                { level: 1, title: "自己投資ビギナー", emoji: "🔰", minAmount: getCumulativeSavingForLevel(1) },
+                { level: 5, title: "習慣改善 of 芽生え", emoji: "🌱", minAmount: getCumulativeSavingForLevel(5) },
+                { level: 15, title: "自制の戦士", emoji: "⚔️", minAmount: getCumulativeSavingForLevel(15) },
+                { level: 30, title: "欲望の支配者", emoji: "🛡️", minAmount: getCumulativeSavingForLevel(30) },
+                { level: 50, title: "セルフコントロールの達人", emoji: "🧘", minAmount: getCumulativeSavingForLevel(50) },
+                { level: 70, title: "複利の魔術師", emoji: "🧙‍♂️", minAmount: getCumulativeSavingForLevel(70) },
+                { level: 85, title: "習慣の聖者", emoji: "👑", minAmount: getCumulativeSavingForLevel(85) },
+                { level: 99, title: "神域のFIREランナー", emoji: "🗽", minAmount: getCumulativeSavingForLevel(99) }
             ];
         }
 
@@ -6803,19 +6825,22 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 }
             }
 
-            // RPG レベルと称号の計算 (15,000円ごとに1レベルアップ、最高Lv.99)
-            const levelVal = Math.floor(totalEarned / 15000) + 1;
-            const level = Math.min(99, levelVal);
+            // RPG レベルと称号の計算 (累計金額に基づく非線形カーブ、最高Lv.99)
+            const level = getLevelFromSaving(totalEarned);
             
             let expProgress = 0;
-            let nextLevelExp = 15000;
+            let nextLevelExp = 0;
             let percent = 0;
             
             if (level < 99) {
-                expProgress = totalEarned % 15000;
+                const currentLevelMin = getCumulativeSavingForLevel(level);
+                const nextLevelMin = getCumulativeSavingForLevel(level + 1);
+                nextLevelExp = nextLevelMin - currentLevelMin;
+                expProgress = totalEarned - currentLevelMin;
                 percent = (expProgress / nextLevelExp) * 100;
             } else {
-                expProgress = 15000;
+                nextLevelExp = getCumulativeSavingForLevel(99) - getCumulativeSavingForLevel(98);
+                expProgress = nextLevelExp;
                 percent = 100;
             }
 
@@ -7215,6 +7240,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 bannerTitle.innerText = "複利運用を今すぐ始めよう";
                 bannerDesc.innerText = "やめた習慣のお金で資産運用をスタート！まずは人気証券会社で口座開設（無料）";
                 bannerLink.innerText = "口座を開く 🚀";
+                bannerLink.href = "https://px.a8.net/svt/ejp?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL";
                 return;
             }
 
@@ -7259,7 +7285,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             bannerDesc.innerText = `浮いたお金を放置するのは機会損失！月 ${monthlyStr} 円の積立は、将来 ${totalStr} に化ける力を持っています。まずは人気証券会社で無料口座開設。`;
             bannerLink.innerText = linkText;
             
-            bannerLink.href = "https://example.com/sec-account-promotion?user=" + encodeURIComponent(name) + "&hobby=" + hobby + "&target=" + encodeURIComponent(hobbyTarget);
+            bannerLink.href = "https://px.a8.net/svt/ejp?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL";
         }
 
         // 📈 グラフの更新
