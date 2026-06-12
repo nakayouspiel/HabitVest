@@ -574,52 +574,34 @@
             overflow-y: auto;
         }
 
-        .modal-overlay.active .modal-card {
-            transform: translateY(0);
-        }
-
-        /* 🎓 チュートリアルオーバーレイ */
-        /* 🎓 チュートリアルツアー */
+                /* 🎓 クイックチュートリアル用オーバーレイ */
         .tutorial-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: transparent;
-            z-index: 9997;
-            pointer-events: none;
-            transition: opacity 0.35s ease;
-        }
-
-        #tutorial-highlight-box {
-            position: absolute;
-            border-radius: 16px;
-            box-shadow: 0 0 0 9999px rgba(6, 9, 19, 0.72);
-            border: 2.5px solid var(--neon-primary);
-            z-index: 9998;
-            pointer-events: auto; /* Block clicks on the rest of the page */
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: none;
-        }
-
-        #tutorial-tooltip-container {
-            position: absolute;
-            width: 300px;
+            background: rgba(6, 9, 19, 0.65);
             z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.35s ease;
             pointer-events: auto;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: none;
         }
 
         .tutorial-tooltip {
+            position: fixed;
+            width: 92%;
+            max-width: 320px;
             background: var(--bg-card);
             border: 1.5px solid var(--border-glass);
             border-radius: 20px;
             padding: 18px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 243, 255, 0.2);
             text-align: center;
-            position: relative;
+            z-index: 10000;
+            transition: all 0.3s ease;
         }
 
         .tutorial-tooltip h3 {
@@ -693,14 +675,14 @@
 
         @keyframes bounceArrow {
             0%, 100% {
-                transform: translateY(0);
+                margin-top: 0;
+                margin-bottom: 0;
             }
             50% {
-                transform: translateY(-8px);
+                margin-top: -6px;
+                margin-bottom: 6px;
             }
-        }
-
-        .modal-header {
+        }.modal-header {
             position: sticky;
             top: -20px;
             background: var(--bg-card);
@@ -2455,26 +2437,18 @@
 
     <!-- 🎓 クイックチュートリアル用オーバーレイ -->
     <div id="tutorial-overlay" class="tutorial-overlay" style="display: none;">
-        <!-- スポットライト切り抜きマスク -->
-        <div id="tutorial-highlight-box"></div>
-        
-        <!-- ツールチップポップアップ -->
-        <div id="tutorial-tooltip-container">
+        <!-- ツールチップカードエリア -->
+        <div id="tutorial-tooltip-card" class="tutorial-tooltip">
             <div id="tutorial-arrow" class="tutorial-arrow">▲</div>
-            <div class="tutorial-tooltip">
-                <h3 id="tutorial-title"></h3>
-                <p id="tutorial-desc"></p>
-                <div style="font-size: 0.6rem; color: var(--text-sub); margin-bottom: 8px; text-align: right;" id="tutorial-progress"></div>
-                <div class="tutorial-btn-row">
-                    <button class="tutorial-btn-secondary" id="tutorial-skip-btn" onclick="closeTutorial()">スキップ ✕</button>
-                    <button class="tutorial-btn" id="tutorial-next-btn" onclick="nextTutorialStep()">次へ ➔</button>
-                </div>
+            <h3 id="tutorial-title"></h3>
+            <p id="tutorial-desc"></p>
+            <div style="font-size: 0.6rem; color: var(--text-sub); margin-bottom: 8px; text-align: right;" id="tutorial-progress"></div>
+            <div class="tutorial-btn-row">
+                <button class="tutorial-btn-secondary" id="tutorial-skip-btn" onclick="closeTutorial()">スキップ ✖</button>
+                <button class="tutorial-btn" id="tutorial-next-btn" onclick="nextTutorialStep()">次へ ➔</button>
             </div>
         </div>
-    </div>
-
-    <!-- 📅 履歴カレンダーモーダル -->
-    <div id="calendar-modal" class="modal-overlay">
+    </div><div id="calendar-modal" class="modal-overlay">
         <div class="modal-card" style="max-width: 450px; width: 95%;">
             <div class="modal-header">
                 <h3>📅 記録カレンダー</h3>
@@ -6105,64 +6079,32 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         let currentTutorialIndex = 0;
         const tutorialSteps = [
             {
-                target: '.checkin-container',
                 tab: 'habits',
-                title: '① やめた習慣をセーブ！',
-                desc: '今日セーブできた習慣（タバコ、お酒など）があれば、ボタンをタップしてチェックインします。<br><span style="color: var(--neon-secondary); font-weight:700;">タップすると金額が即時反映されます！</span>'
+                position: 'top',
+                arrowPos: 'center',
+                title: '① やめた日はここをタップ！',
+                desc: '今日セーブできた習慣（タバコやお酒など）があれば、ボタンをタップして「今日やめた！」を記録しましょう。セーブ額が即時反映されます！'
             },
             {
-                target: '.saving-today-card',
                 tab: 'habits',
-                title: '② 本日のセーブ実績・月次固定費',
-                desc: '今日チェックインして浮いた合計金額と、現在節約継続中の固定費（月額のサブスクやガチャ）が表示されます。'
+                position: 'bottom',
+                arrowPos: 'left',
+                title: '② 「記録」タブ',
+                desc: 'このタブでは、毎日のセーブ記録や、過去の記録カレンダー、セーブ履歴の確認・消去ができます。'
             },
             {
-                target: '#btn-open-calendar',
-                tab: 'habits',
-                title: '③ 記録カレンダー',
-                desc: '「過去の日に記録し忘れた！」という時はここからカレンダーを開き、日付をタップして過去チェックインを追加できます。<br>未来の日のシミュレーションも可能です！'
-            },
-            {
-                target: '.history-card',
-                tab: 'habits',
-                title: '④ セーブ履歴',
-                desc: 'これまでのセーブ履歴が新しい順にリスト表示されます。間違えて記録した場合は、右側のゴミ箱ボタンからいつでも消去できます。'
-            },
-            {
-                target: '.nav-item[data-tab="assets"]',
-                tab: 'habits',
-                title: '⑤ 資産タブへの切り替え',
-                desc: '次に、セーブしたお金の将来像をシミュレーションする「資産」画面に移りましょう。次へ進むと自動で切り替わります。'
-            },
-            {
-                target: '.dashboard-grid',
                 tab: 'assets',
-                title: '⑥ 資産シミュレーション',
-                desc: '今セーブできている習慣を継続し、浮いたお金を想定利回りで複利運用した場合の、未来（例: 20年後）の元本と総資産がシミュレーションされます。'
+                position: 'bottom',
+                arrowPos: 'center',
+                title: '③ 「資産」タブ',
+                desc: 'セーブしたお金を将来複利運用した場合の、20年後などの未来の資産形成をシミュレーションできます！'
             },
             {
-                target: '.pace-toggle-container',
-                tab: 'assets',
-                title: '⑦ 理想目標 vs 現実ペース',
-                desc: '毎日セーブできた前提の「理想目標」と、あなたの実際の平均セーブ成功率に基づいたリアルな「現実ペース」をいつでも切り替えることができます。'
-            },
-            {
-                target: '.nav-item[data-tab="life"]',
-                tab: 'assets',
-                title: '⑧ ライフタブへの切り替え',
-                desc: '最後に、習慣化による健康や時間のメリット、未来のご褒美タイムラインがわかる「ライフ」画面を見てみましょう。'
-            },
-            {
-                target: '#life-status-card',
                 tab: 'life',
-                title: '⑨ 自己投資レベルと称号',
-                desc: '習慣セーブの累計金額に応じてあなたのレベルが上昇します！レベルが上がると「称号」が解放され、ゲームのように楽しめます。'
-            },
-            {
-                target: '.timeline-container',
-                tab: 'life',
-                title: '⑩ 未来ロードマップ',
-                desc: 'セーブしたお金で「1日後・1週間後・1年後」に購入できるご褒美アイテム（趣味）の目安が自動で表示されます。セーブのモチベーションを高めましょう！'
+                position: 'bottom',
+                arrowPos: 'right',
+                title: '④ 「ライフ」タブ',
+                desc: '自己投資レベルや称号ツリー、やめたことによる健康・時間のメリット、未来のご褒表ロードマップを確認できます！'
             }
         ];
 
@@ -6207,7 +6149,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             tabContents.forEach(content => {
                 content.classList.remove('active');
-                if (content.id === `tab-content-${tabName}`) {
+                if (content.id === 'tab-content-' + tabName) {
                     content.classList.add('active');
                 }
             });
@@ -6227,86 +6169,60 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 window.switchTab(step.tab);
             }
 
-            const targetEl = document.querySelector(step.target);
-            const highlightBox = document.getElementById('tutorial-highlight-box');
-            const tooltipContainer = document.getElementById('tutorial-tooltip-container');
-            
-            if (!highlightBox || !tooltipContainer) return;
-            
-            if (!targetEl || targetEl.offsetHeight === 0) {
-                // 対象が見当たらない場合は画面中央にポップアップを表示
-                highlightBox.style.display = 'none';
-                tooltipContainer.style.position = 'fixed';
-                tooltipContainer.style.top = '50%';
-                tooltipContainer.style.left = '50%';
-                tooltipContainer.style.transform = 'translate(-50%, -50%)';
-                document.getElementById('tutorial-arrow').style.display = 'none';
+            const tooltip = document.getElementById('tutorial-tooltip-card');
+            const arrowEl = document.getElementById('tutorial-arrow');
+            if (!tooltip || !arrowEl) return;
+
+            // スコアをトップに固定
+            window.scrollTo({ top: 0, behavior: 'instant' });
+
+            if (step.position === 'top') {
+                // 上側に配置 (チェックインボタンの下あたり)
+                tooltip.style.top = '220px';
+                tooltip.style.bottom = 'auto';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translateX(-50%)';
+
+                arrowEl.innerText = '▲';
+                arrowEl.style.top = '-24px';
+                arrowEl.style.bottom = 'auto';
+                arrowEl.style.left = '50%';
+                arrowEl.style.transform = 'translateX(-50%)';
             } else {
-                // スムーズにスクロールさせて見せる
-                targetEl.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+                // 下側に配置 (ボトムナビの上あたり)
+                tooltip.style.bottom = '95px';
+                tooltip.style.top = 'auto';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translateX(-50%)';
+
+                arrowEl.innerText = '▼';
+                arrowEl.style.top = 'auto';
+                arrowEl.style.bottom = '-24px';
                 
-                setTimeout(() => {
-                    const rect = targetEl.getBoundingClientRect();
-                    const scrollX = window.scrollX || window.pageXOffset;
-                    const scrollY = window.scrollY || window.pageYOffset;
-                    
-                    // ハイライトスポットライトを配置
-                    highlightBox.style.display = 'block';
-                    highlightBox.style.top = `${rect.top + scrollY - 6}px`;
-                    highlightBox.style.left = `${rect.left + scrollX - 6}px`;
-                    highlightBox.style.width = `${rect.width + 12}px`;
-                    highlightBox.style.height = `${rect.height + 12}px`;
-                    
-                    tooltipContainer.style.position = 'absolute';
-                    tooltipContainer.style.transform = 'none';
-                    
-                    // ツールチップの表示位置（上か下か）を計算
-                    const spaceBelow = window.innerHeight - rect.bottom;
-                    const tooltipHeight = 180; // 大体の高さ
-                    const positionAbove = rect.top > spaceBelow && rect.top > tooltipHeight + 40;
-                    
-                    const arrowEl = document.getElementById('tutorial-arrow');
-                    arrowEl.style.display = 'block';
-                    
-                    if (positionAbove) {
-                        // 対象の上側にポップアップ
-                        tooltipContainer.style.top = `${rect.top + scrollY - tooltipHeight - 30}px`;
-                        tooltipContainer.style.left = `${Math.max(10, Math.min(window.innerWidth - 320, rect.left + scrollX + (rect.width - 300) / 2))}px`;
-                        
-                        arrowEl.innerText = '▼';
-                        arrowEl.style.top = 'auto';
-                        arrowEl.style.bottom = '-15px';
-                        arrowEl.style.left = '50%';
-                        arrowEl.style.transform = 'translateX(-50%)';
-                    } else {
-                        // 対象の下側にポップアップ
-                        tooltipContainer.style.top = `${rect.bottom + scrollY + 15}px`;
-                        tooltipContainer.style.left = `${Math.max(10, Math.min(window.innerWidth - 320, rect.left + scrollX + (rect.width - 300) / 2))}px`;
-                        
-                        arrowEl.innerText = '▲';
-                        arrowEl.style.top = '-15px';
-                        arrowEl.style.bottom = 'auto';
-                        arrowEl.style.left = '50%';
-                        arrowEl.style.transform = 'translateX(-50%)';
-                    }
-                }, 200);
+                if (step.arrowPos === 'left') {
+                    arrowEl.style.left = '16.7%';
+                } else if (step.arrowPos === 'center') {
+                    arrowEl.style.left = '50%';
+                } else if (step.arrowPos === 'right') {
+                    arrowEl.style.left = '83.3%';
+                }
+                arrowEl.style.transform = 'translateX(-50%)';
             }
-            
+
             // テキストを埋める
             document.getElementById('tutorial-title').innerText = step.title;
             document.getElementById('tutorial-desc').innerHTML = step.desc;
-            document.getElementById('tutorial-progress').innerText = `(${stepIndex + 1}/${tutorialSteps.length})`;
-            
+            document.getElementById('tutorial-progress').innerText = '(' + (stepIndex + 1) + '/' + tutorialSteps.length + ')';
+
             // ボタン文字
             const nextBtn = document.getElementById('tutorial-next-btn');
             if (stepIndex === tutorialSteps.length - 1) {
-                nextBtn.innerText = 'ツアーを終了する 🚀';
+                nextBtn.innerText = 'アプリを始める！ 🚀';
             } else {
                 nextBtn.innerText = '次へ ➔';
             }
         }
 
-        // 📅 過去日付のセーブ記録をトグル（追加・消去）するグローバル関数
         window.togglePastRecord = function(dateStr, type) {
             let targetDateStr = dateStr;
             if (type === 'sub' || type === 'gacha') {
