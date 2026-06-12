@@ -579,54 +579,51 @@
         }
 
         /* 🎓 チュートリアルオーバーレイ */
+        /* 🎓 チュートリアルツアー */
         .tutorial-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(6, 9, 19, 0.78);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
+            background: transparent;
+            z-index: 9997;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
         }
 
-        .tutorial-step {
+        #tutorial-highlight-box {
             position: absolute;
-            width: 90%;
-            max-width: 320px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10000;
+            border-radius: 16px;
+            box-shadow: 0 0 0 9999px rgba(6, 9, 19, 0.72);
+            border: 2.5px solid var(--neon-primary);
+            z-index: 9998;
+            pointer-events: auto; /* Block clicks on the rest of the page */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: none;
         }
 
-        #tutorial-step-1 {
-            top: 235px;
-        }
-
-        #tutorial-step-2 {
-            bottom: 90px;
+        #tutorial-tooltip-container {
+            position: absolute;
+            width: 300px;
+            z-index: 9999;
+            pointer-events: auto;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: none;
         }
 
         .tutorial-tooltip {
             background: var(--bg-card);
-            border: 1px solid var(--border-glass);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 243, 255, 0.15);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 243, 255, 0.2);
             text-align: center;
-            width: 100%;
+            position: relative;
         }
 
         .tutorial-tooltip h3 {
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             font-weight: 800;
             color: var(--neon-primary);
             margin-bottom: 8px;
@@ -639,42 +636,59 @@
         .tutorial-tooltip p {
             font-size: 0.72rem;
             color: var(--text-main);
-            line-height: 1.5;
-            margin-bottom: 12px;
+            line-height: 1.55;
+            margin-bottom: 14px;
+            text-align: left;
+        }
+
+        .tutorial-btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .tutorial-btn {
+            flex: 1;
             background: var(--btn-primary-bg);
             color: var(--btn-primary-text);
             border: none;
             border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 0.72rem;
+            padding: 8px 12px;
+            font-size: 0.7rem;
             font-weight: 700;
             cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
         }
 
         .tutorial-btn:hover {
             opacity: 0.9;
         }
 
-        .tutorial-arrow {
-            font-size: 1.5rem;
-            margin: 8px;
-            animation: bounceArrow 1.5s infinite;
-            color: var(--neon-primary);
-            text-shadow: 0 0 8px var(--neon-primary);
-            line-height: 1;
+        .tutorial-btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-sub);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .arrow-up::before {
-            content: "▲";
+        .tutorial-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
         }
-        
-        .arrow-down::before {
-            content: "▼";
+
+        .tutorial-arrow {
+            position: absolute;
+            font-size: 1.3rem;
+            color: var(--neon-primary);
+            text-shadow: 0 0 6px var(--neon-primary);
+            animation: bounceArrow 1.5s infinite;
+            pointer-events: none;
+            z-index: 10000;
         }
 
         @keyframes bounceArrow {
@@ -2441,21 +2455,21 @@
 
     <!-- 🎓 クイックチュートリアル用オーバーレイ -->
     <div id="tutorial-overlay" class="tutorial-overlay" style="display: none;">
-        <div class="tutorial-step" id="tutorial-step-1">
+        <!-- スポットライト切り抜きマスク -->
+        <div id="tutorial-highlight-box"></div>
+        
+        <!-- ツールチップポップアップ -->
+        <div id="tutorial-tooltip-container">
+            <div id="tutorial-arrow" class="tutorial-arrow">▲</div>
             <div class="tutorial-tooltip">
-                <h3>💡 習慣をセーブして記録しよう！</h3>
-                <p>タバコやお酒などをやめられた日は、このボタンをタップして「今日やめた！」を記録しましょう。節約実績がすぐに反映されます！</p>
-                <button class="tutorial-btn" onclick="nextTutorialStep(1)">次へ (1/2) ➔</button>
+                <h3 id="tutorial-title"></h3>
+                <p id="tutorial-desc"></p>
+                <div style="font-size: 0.6rem; color: var(--text-sub); margin-bottom: 8px; text-align: right;" id="tutorial-progress"></div>
+                <div class="tutorial-btn-row">
+                    <button class="tutorial-btn-secondary" id="tutorial-skip-btn" onclick="closeTutorial()">スキップ ✕</button>
+                    <button class="tutorial-btn" id="tutorial-next-btn" onclick="nextTutorialStep()">次へ ➔</button>
+                </div>
             </div>
-            <div class="tutorial-arrow arrow-down"></div>
-        </div>
-        <div class="tutorial-step" id="tutorial-step-2" style="display: none;">
-            <div class="tutorial-tooltip">
-                <h3>📈 ライフ・未来ロードマップを見よう！</h3>
-                <p>下の「ライフ」タブをタップすると、現在の自己投資レベル、称号ツリー、そして将来どんなご褒美が手に入るかのロードマップを確認できます！</p>
-                <button class="tutorial-btn" onclick="closeTutorial()">始める！ 🚀</button>
-            </div>
-            <div class="tutorial-arrow arrow-down"></div>
         </div>
     </div>
 
@@ -3217,23 +3231,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         // 📱 ボトムナビ
         navItems.forEach(item => {
             item.addEventListener('click', () => {
-                navItems.forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-
                 const tabName = item.dataset.tab;
-                tabContents.forEach(content => {
-                    content.classList.remove('active');
-                    if (content.id === `tab-content-${tabName}`) {
-                        content.classList.add('active');
-                    }
-                });
-
-                // タブ切り替え時にページのスクロール位置を最上部にリセットする
-                window.scrollTo({ top: 0, behavior: 'instant' });
-
-                if (tabName === 'assets' && chart) {
-                    setTimeout(() => { chart.resize(); }, 50);
-                }
+                window.switchTab(tabName);
             });
         });
 
@@ -6103,19 +6102,86 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
 
         // 🎓 クイックチュートリアル機能の定義
+        let currentTutorialIndex = 0;
+        const tutorialSteps = [
+            {
+                target: '.checkin-container',
+                tab: 'habits',
+                title: '① やめた習慣をセーブ！',
+                desc: '今日セーブできた習慣（タバコ、お酒など）があれば、ボタンをタップしてチェックインします。<br><span style="color: var(--neon-secondary); font-weight:700;">タップすると金額が即時反映されます！</span>'
+            },
+            {
+                target: '.saving-today-card',
+                tab: 'habits',
+                title: '② 本日のセーブ実績・月次固定費',
+                desc: '今日チェックインして浮いた合計金額と、現在節約継続中の固定費（月額のサブスクやガチャ）が表示されます。'
+            },
+            {
+                target: '#btn-open-calendar',
+                tab: 'habits',
+                title: '③ 記録カレンダー',
+                desc: '「過去の日に記録し忘れた！」という時はここからカレンダーを開き、日付をタップして過去チェックインを追加できます。<br>未来の日のシミュレーションも可能です！'
+            },
+            {
+                target: '.history-card',
+                tab: 'habits',
+                title: '④ セーブ履歴',
+                desc: 'これまでのセーブ履歴が新しい順にリスト表示されます。間違えて記録した場合は、右側のゴミ箱ボタンからいつでも消去できます。'
+            },
+            {
+                target: '.nav-item[data-tab="assets"]',
+                tab: 'habits',
+                title: '⑤ 資産タブへの切り替え',
+                desc: '次に、セーブしたお金の将来像をシミュレーションする「資産」画面に移りましょう。次へ進むと自動で切り替わります。'
+            },
+            {
+                target: '.dashboard-grid',
+                tab: 'assets',
+                title: '⑥ 資産シミュレーション',
+                desc: '今セーブできている習慣を継続し、浮いたお金を想定利回りで複利運用した場合の、未来（例: 20年後）の元本と総資産がシミュレーションされます。'
+            },
+            {
+                target: '.pace-toggle-container',
+                tab: 'assets',
+                title: '⑦ 理想目標 vs 現実ペース',
+                desc: '毎日セーブできた前提の「理想目標」と、あなたの実際の平均セーブ成功率に基づいたリアルな「現実ペース」をいつでも切り替えることができます。'
+            },
+            {
+                target: '.nav-item[data-tab="life"]',
+                tab: 'assets',
+                title: '⑧ ライフタブへの切り替え',
+                desc: '最後に、習慣化による健康や時間のメリット、未来のご褒美タイムラインがわかる「ライフ」画面を見てみましょう。'
+            },
+            {
+                target: '#life-status-card',
+                tab: 'life',
+                title: '⑨ 自己投資レベルと称号',
+                desc: '習慣セーブの累計金額に応じてあなたのレベルが上昇します！レベルが上がると「称号」が解放され、ゲームのように楽しめます。'
+            },
+            {
+                target: '.timeline-container',
+                tab: 'life',
+                title: '⑩ 未来ロードマップ',
+                desc: 'セーブしたお金で「1日後・1週間後・1年後」に購入できるご褒美アイテム（趣味）の目安が自動で表示されます。セーブのモチベーションを高めましょう！'
+            }
+        ];
+
         window.startTutorial = function() {
             const overlay = document.getElementById('tutorial-overlay');
             if (overlay) {
                 overlay.style.display = 'block';
-                document.getElementById('tutorial-step-1').style.display = 'flex';
-                document.getElementById('tutorial-step-2').style.display = 'none';
+                overlay.style.opacity = '1';
+                currentTutorialIndex = 0;
+                showTutorialStep(0);
             }
         };
 
-        window.nextTutorialStep = function(stepNum) {
-            if (stepNum === 1) {
-                document.getElementById('tutorial-step-1').style.display = 'none';
-                document.getElementById('tutorial-step-2').style.display = 'flex';
+        window.nextTutorialStep = function() {
+            currentTutorialIndex++;
+            if (currentTutorialIndex < tutorialSteps.length) {
+                showTutorialStep(currentTutorialIndex);
+            } else {
+                closeTutorial();
             }
         };
 
@@ -6126,9 +6192,119 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 setTimeout(() => {
                     overlay.style.display = 'none';
                     overlay.style.opacity = '1';
+                    // チュートリアル終了後は最初のタブに戻す
+                    window.switchTab('habits');
                 }, 300);
             }
         };
+
+        // 実際のタブ切り替え処理を仲介するグローバル関数
+        window.switchTab = function(tabName) {
+            const item = Array.from(navItems).find(nav => nav.dataset.tab === tabName);
+            if (!item) return;
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `tab-content-${tabName}`) {
+                    content.classList.add('active');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'instant' });
+
+            if (tabName === 'assets' && chart) {
+                setTimeout(() => { chart.resize(); }, 50);
+            }
+        };
+
+        function showTutorialStep(stepIndex) {
+            const step = tutorialSteps[stepIndex];
+            
+            // タブを自動で切り替える
+            if (step.tab) {
+                window.switchTab(step.tab);
+            }
+
+            const targetEl = document.querySelector(step.target);
+            const highlightBox = document.getElementById('tutorial-highlight-box');
+            const tooltipContainer = document.getElementById('tutorial-tooltip-container');
+            
+            if (!highlightBox || !tooltipContainer) return;
+            
+            if (!targetEl || targetEl.offsetHeight === 0) {
+                // 対象が見当たらない場合は画面中央にポップアップを表示
+                highlightBox.style.display = 'none';
+                tooltipContainer.style.position = 'fixed';
+                tooltipContainer.style.top = '50%';
+                tooltipContainer.style.left = '50%';
+                tooltipContainer.style.transform = 'translate(-50%, -50%)';
+                document.getElementById('tutorial-arrow').style.display = 'none';
+            } else {
+                // スムーズにスクロールさせて見せる
+                targetEl.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+                
+                setTimeout(() => {
+                    const rect = targetEl.getBoundingClientRect();
+                    const scrollX = window.scrollX || window.pageXOffset;
+                    const scrollY = window.scrollY || window.pageYOffset;
+                    
+                    // ハイライトスポットライトを配置
+                    highlightBox.style.display = 'block';
+                    highlightBox.style.top = `${rect.top + scrollY - 6}px`;
+                    highlightBox.style.left = `${rect.left + scrollX - 6}px`;
+                    highlightBox.style.width = `${rect.width + 12}px`;
+                    highlightBox.style.height = `${rect.height + 12}px`;
+                    
+                    tooltipContainer.style.position = 'absolute';
+                    tooltipContainer.style.transform = 'none';
+                    
+                    // ツールチップの表示位置（上か下か）を計算
+                    const spaceBelow = window.innerHeight - rect.bottom;
+                    const tooltipHeight = 180; // 大体の高さ
+                    const positionAbove = rect.top > spaceBelow && rect.top > tooltipHeight + 40;
+                    
+                    const arrowEl = document.getElementById('tutorial-arrow');
+                    arrowEl.style.display = 'block';
+                    
+                    if (positionAbove) {
+                        // 対象の上側にポップアップ
+                        tooltipContainer.style.top = `${rect.top + scrollY - tooltipHeight - 30}px`;
+                        tooltipContainer.style.left = `${Math.max(10, Math.min(window.innerWidth - 320, rect.left + scrollX + (rect.width - 300) / 2))}px`;
+                        
+                        arrowEl.innerText = '▼';
+                        arrowEl.style.top = 'auto';
+                        arrowEl.style.bottom = '-15px';
+                        arrowEl.style.left = '50%';
+                        arrowEl.style.transform = 'translateX(-50%)';
+                    } else {
+                        // 対象の下側にポップアップ
+                        tooltipContainer.style.top = `${rect.bottom + scrollY + 15}px`;
+                        tooltipContainer.style.left = `${Math.max(10, Math.min(window.innerWidth - 320, rect.left + scrollX + (rect.width - 300) / 2))}px`;
+                        
+                        arrowEl.innerText = '▲';
+                        arrowEl.style.top = '-15px';
+                        arrowEl.style.bottom = 'auto';
+                        arrowEl.style.left = '50%';
+                        arrowEl.style.transform = 'translateX(-50%)';
+                    }
+                }, 200);
+            }
+            
+            // テキストを埋める
+            document.getElementById('tutorial-title').innerText = step.title;
+            document.getElementById('tutorial-desc').innerHTML = step.desc;
+            document.getElementById('tutorial-progress').innerText = `(${stepIndex + 1}/${tutorialSteps.length})`;
+            
+            // ボタン文字
+            const nextBtn = document.getElementById('tutorial-next-btn');
+            if (stepIndex === tutorialSteps.length - 1) {
+                nextBtn.innerText = 'ツアーを終了する 🚀';
+            } else {
+                nextBtn.innerText = '次へ ➔';
+            }
+        }
 
         // 📅 過去日付のセーブ記録をトグル（追加・消去）するグローバル関数
         window.togglePastRecord = function(dateStr, type) {
