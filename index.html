@@ -71,6 +71,10 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html, body {
+            overscroll-behavior: none;
+        }
+
         body {
             background-color: var(--bg-base);
             background-image: var(--bg-gradient);
@@ -1512,10 +1516,34 @@
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(-12px); }
         }
-</style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <!-- 🎬 アプリ起動スプラッシュ画面 -->
+    <div id="app-splash-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #060913; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
+        <div style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+            <div style="font-size: 3.2rem; filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.45)); animation: logo-pulse 2s infinite ease-in-out;">🌱</div>
+            <h1 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #00f3ff 0%, #ff007f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; letter-spacing: 0.5px; line-height: 1.2;">HabitVest</h1>
+            <p style="font-size: 0.7rem; color: #94a3b8; margin: 0; opacity: 0.8; font-weight: 500;">習慣投資複利シミュレータ</p>
+            
+            <!-- スリークローダー -->
+            <div style="width: 110px; height: 3px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; margin-top: 10px; position: relative;">
+                <div style="position: absolute; height: 100%; width: 40%; background: linear-gradient(90deg, #00f3ff, #ff007f); border-radius: 3px; animation: loading-slide 1.4s infinite ease-in-out;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes logo-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        @keyframes loading-slide {
+            0% { left: -40%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+    </style>
+
     <div class="app-container">
         <!-- 👑 タイトルヘッダー -->
         <header>
@@ -1571,7 +1599,10 @@
                         <span class="price-badge" id="checkin-badge-tobacco">600円</span>
                     </button>
                     <button class="checkin-btn daily" id="checkin-btn-beer" data-habit="beer">
-                        <span class="emoji">🍺</span>
+                        <span class="emoji" style="position: relative; display: inline-flex; justify-content: center; align-items: center; width: 1.8rem; height: 1.8rem; margin: 0 auto 6px auto;">
+                            <span style="font-size: 1.8rem; line-height: 1;">🍺</span>
+                            <span style="position: absolute; font-size: 1.8rem; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; line-height: 1;">🚫</span>
+                        </span>
                         <span class="label">ビール・お酒</span>
                         <span class="price-badge" id="checkin-badge-beer">250円</span>
                     </button>
@@ -7631,6 +7662,15 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
             })();
+
+            // 🎬 アプリ起動スプラッシュ画面の非表示化
+            const splash = document.getElementById('app-splash-screen');
+            if (splash) {
+                setTimeout(() => {
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                }, 850);
+            }
 
             // 📲 サービスワーカーの登録 (PWA対応)
             if ('serviceWorker' in navigator) {
