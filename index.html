@@ -71,9 +71,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html, body {
-            overscroll-behavior: none;
-        }
 
         body {
             background-color: var(--bg-base);
@@ -5840,14 +5837,21 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         // C(L) = 3000 * (L - 1)^1.35
         function getCumulativeSavingForLevel(L) {
             if (L <= 1) return 0;
-            return Math.round(3000 * Math.pow(L - 1, 1.35));
+            return Math.floor(Math.round(3000 * Math.pow(L - 1, 1.35)) / 100) * 100;
         }
 
         // 累計貯蓄額から現在のレベルを取得 (最大99)
         function getLevelFromSaving(totalEarned) {
             if (totalEarned <= 0) return 1;
-            const levelVal = Math.floor(Math.pow(totalEarned / 3000, 1 / 1.35)) + 1;
-            return Math.min(99, levelVal);
+            let level = 1;
+            for (let L = 2; L <= 99; L++) {
+                if (getCumulativeSavingForLevel(L) <= totalEarned) {
+                    level = L;
+                } else {
+                    break;
+                }
+            }
+            return level;
         }
 
         // ⚔️ 自己投資称号の設定 (最高レベル99、非線形カーブに基づく)
@@ -5964,19 +5968,19 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 let quantity = 1;
 
                 if (type === 'tobacco') {
-                    amount = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+                    amount = floorTo100Jpy(Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount));
                     label = "タバコをセーブ！ 🚫";
                     quantity = habitPrices.tobaccoCount;
                 } else if (type === 'beer') {
-                    amount = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+                    amount = floorTo100Jpy(Math.round(habitPrices.beerPrice * habitPrices.beerCount));
                     label = "ビール・お酒をセーブ！ 🚫🍺";
                     quantity = habitPrices.beerCount;
                 } else if (type === 'sub') {
-                    amount = habitPrices.subPrice * habitPrices.subCount;
+                    amount = floorTo100Jpy(habitPrices.subPrice * habitPrices.subCount);
                     label = "サブスクを解約セーブ！ 📱";
                     quantity = habitPrices.subCount;
                 } else if (type === 'gacha') {
-                    amount = habitPrices.gachaPrice * habitPrices.gachaCount;
+                    amount = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
                     label = "ソシャゲ課金をセーブ！ 🎮";
                     quantity = habitPrices.gachaCount;
                 }
@@ -6396,16 +6400,16 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         // チェックインボタンのバッジ金額を更新
         function updateCheckinBadges() {
-            const tobaccoCost = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+            const tobaccoCost = floorTo100Jpy(Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount));
             document.getElementById('checkin-badge-tobacco').innerText = `${tobaccoCost}円`;
 
-            const beerCost = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+            const beerCost = floorTo100Jpy(Math.round(habitPrices.beerPrice * habitPrices.beerCount));
             document.getElementById('checkin-badge-beer').innerText = `${beerCost}円`;
 
-            const subCost = habitPrices.subPrice * habitPrices.subCount;
+            const subCost = floorTo100Jpy(habitPrices.subPrice * habitPrices.subCount);
             document.getElementById('checkin-badge-sub').innerText = `${subCost.toLocaleString()}円/月`;
 
-            const gachaCost = habitPrices.gachaPrice * habitPrices.gachaCount;
+            const gachaCost = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
             document.getElementById('checkin-badge-gacha').innerText = `${gachaCost.toLocaleString()}円/月`;
         }
 
@@ -6457,19 +6461,19 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             let quantity = 1;
 
             if (type === 'tobacco') {
-                amount = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+                amount = floorTo100Jpy(Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount));
                 label = "タバコをセーブ！ 🚫";
                 quantity = habitPrices.tobaccoCount; // 1日の消費箱数
             } else if (type === 'beer') {
-                amount = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+                amount = floorTo100Jpy(Math.round(habitPrices.beerPrice * habitPrices.beerCount));
                 label = "ビール・お酒をセーブ！ 🚫🍺";
                 quantity = habitPrices.beerCount; // 1日の消費本数
             } else if (type === 'sub') {
-                amount = habitPrices.subPrice * habitPrices.subCount;
+                amount = floorTo100Jpy(habitPrices.subPrice * habitPrices.subCount);
                 label = "サブスクを解約セーブ！ 📱";
                 quantity = habitPrices.subCount;
             } else if (type === 'gacha') {
-                amount = habitPrices.gachaPrice * habitPrices.gachaCount;
+                amount = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
                 label = "ソシャゲ課金をセーブ！ 🎮";
                 quantity = habitPrices.gachaCount;
             }
@@ -6726,7 +6730,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         date: currentMonthFirstStr,
                         type: 'sub',
                         label: "サブスクを解約セーブ！ 📱",
-                        amount: habitPrices.subPrice * habitPrices.subCount,
+                        amount: floorTo100Jpy(habitPrices.subPrice * habitPrices.subCount),
                         quantity: habitPrices.subCount
                     };
                     history.unshift(item);
@@ -6735,7 +6739,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     // 同期済みの設定金額を最新化
                     const subItem = history.find(item => item.date === currentMonthFirstStr && item.type === 'sub');
                     if (subItem) {
-                        subItem.amount = habitPrices.subPrice * habitPrices.subCount;
+                        subItem.amount = floorTo100Jpy(habitPrices.subPrice * habitPrices.subCount);
                         subItem.quantity = habitPrices.subCount;
                     }
                     saveHistory();
@@ -6756,7 +6760,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         date: currentMonthFirstStr,
                         type: 'gacha',
                         label: "ソシャゲ課金をセーブ！ 🎮",
-                        amount: habitPrices.gachaPrice * habitPrices.gachaCount,
+                        amount: floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount),
                         quantity: habitPrices.gachaCount
                     };
                     history.unshift(item);
@@ -6765,7 +6769,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     // 同期済みの設定金額を最新化
                     const gachaItem = history.find(item => item.date === currentMonthFirstStr && item.type === 'gacha');
                     if (gachaItem) {
-                        gachaItem.amount = habitPrices.gachaPrice * habitPrices.gachaCount;
+                        gachaItem.amount = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
                         gachaItem.quantity = habitPrices.gachaCount;
                     }
                     saveHistory();
@@ -6778,7 +6782,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
         }
 
-        // 🔮 複利計算
         function calculate() {
             // 月次項目の自動同期
             syncMonthlyLumpSavings();
@@ -6800,6 +6803,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (activeHabits.beer) {
                 todaySaving += Math.round(habitPrices.beerPrice * habitPrices.beerCount);
             }
+            todaySaving = floorTo100Jpy(todaySaving);
             valSavingToday.innerText = `${todaySaving.toLocaleString()} 円`;
 
             // 月次項目（サブスク、ソシャゲ）は別途、セーブ中の固定費（月次）として表示
@@ -6810,6 +6814,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (activeHabits.gacha) {
                 monthlyFixedSaving += Math.round(habitPrices.gachaPrice * habitPrices.gachaCount);
             }
+            monthlyFixedSaving = floorTo100Jpy(monthlyFixedSaving);
             if (valSavingMonthly) {
                 valSavingMonthly.innerText = `${monthlyFixedSaving.toLocaleString()} 円`;
             }
@@ -6862,6 +6867,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (activeHabits.sub) monthlySaving += subMonthly;
                 if (activeHabits.gacha) monthlySaving += gachaMonthly;
             }
+            monthlySaving = floorTo100Jpy(monthlySaving);
 
             // ライフ（健康・未来ロードマップ）用に常に現実ペースの月間節約額を計算
             let realMonthlySaving = 0;
@@ -6869,6 +6875,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (profile.trackBeer) realMonthlySaving += Math.round(beerMonthly * rates.beer);
             if (activeHabits.sub) realMonthlySaving += subMonthly;
             if (activeHabits.gacha) realMonthlySaving += gachaMonthly;
+            realMonthlySaving = floorTo100Jpy(realMonthlySaving);
 
             const annualYield = simulationSettings.yield / 100;
             const years = simulationSettings.years;
@@ -6885,7 +6892,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 labels.push(`${y}年`);
                 
                 totalSaving = monthlySaving * 12 * y;
-                savingData.push(totalSaving);
+                savingData.push(floorTo100Jpy(totalSaving));
 
                 const months = y * 12;
                 if (monthlyRate > 0) {
@@ -6893,7 +6900,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 } else {
                     totalInvest = totalSaving;
                 }
-                investData.push(Math.round(totalInvest));
+                investData.push(floorTo100Jpy(Math.round(totalInvest)));
             }
 
             const finalSaving = savingData[savingData.length - 1];
@@ -6921,8 +6928,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             updateChart(labels, savingData, investData);
         }
 
+        function floorTo100Jpy(num) {
+            return Math.floor(num / 100) * 100;
+        }
+
         function formatCurrency(num) {
-            return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(num);
+            const rounded = floorTo100Jpy(num);
+            return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(rounded);
         }
 
         // 🛡️ 数値入力値のバリデーションとパース用ヘルパー
@@ -6967,6 +6979,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     counts.gacha += q;
                 }
             });
+            totalEarned = floorTo100Jpy(totalEarned);
 
             const uniqueDates = new Set(history.map(item => item.date));
             const totalStatsDays = uniqueDates.size;
@@ -7088,7 +7101,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 lifeRoadmapMonthlyVal.innerText = monthlySaving.toLocaleString();
             }
 
-            const dailySaving = Math.round(monthlySaving / 30);
+            let dailySaving = Math.round(monthlySaving / 30);
+            if (dailySaving > 0) {
+                dailySaving = Math.max(100, floorTo100Jpy(dailySaving));
+            }
             
             // 0円時にロードマップを非表示にしてプレースホルダーを表示する処理
             const timelineContainer = document.querySelector('.timeline-container');
@@ -7150,27 +7166,27 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const r = monthlyRate;
             const n = months;
             
-            let totalSavingGoal = P + (PMT * 12 * years);
+            let totalSavingGoal = floorTo100Jpy(P + (PMT * 12 * years));
             let totalInvestGoal = 0;
             if (r > 0) {
-                totalInvestGoal = P * Math.pow(1 + r, n) + PMT * ((Math.pow(1 + r, n) - 1) / r);
+                totalInvestGoal = floorTo100Jpy(P * Math.pow(1 + r, n) + PMT * ((Math.pow(1 + r, n) - 1) / r));
             } else {
                 totalInvestGoal = totalSavingGoal;
             }
 
             if (rmGoalTitle) rmGoalTitle.innerText = `${years}年後 (ゴール)`;
-            if (rmGoalSaving) rmGoalSaving.innerText = Math.round(totalSavingGoal).toLocaleString();
-            if (rmGoalInvest) rmGoalInvest.innerText = Math.round(totalInvestGoal).toLocaleString();
+            if (rmGoalSaving) rmGoalSaving.innerText = totalSavingGoal.toLocaleString();
+            if (rmGoalInvest) rmGoalInvest.innerText = totalInvestGoal.toLocaleString();
 
             // 金額と趣味に応じた文章の動的差し替え (レベルロック撤廃 ＆ 現在の累計実績からの未来投影)
             const hobby = profile.hobby || 'invest';
 
             if (monthlySaving > 0) {
                 // 現在の累計実績 (totalEarned) をベースとした相対的な未来予測金額
-                const cumDay = totalEarned + dailySaving;
-                const cumWeek = totalEarned + dailySaving * 7;
-                const cumMonth = totalEarned + monthlySaving;
-                const cumYear = totalEarned + monthlySaving * 12;
+                const cumDay = floorTo100Jpy(totalEarned + dailySaving);
+                const cumWeek = floorTo100Jpy(totalEarned + dailySaving * 7);
+                const cumMonth = floorTo100Jpy(totalEarned + monthlySaving);
+                const cumYear = floorTo100Jpy(totalEarned + monthlySaving * 12);
 
                 const list = HOBBY_ITEMS[hobby] || HOBBY_ITEMS.invest;
                 const maxIdx = list.length - 1;
@@ -7264,7 +7280,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     case 'beauty': hobbyTarget = "至高の美容と自己投資 💄"; break;
                 }
 
-                rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める（${Math.round(totalSavingGoal).toLocaleString()}円）よりも <strong>${Math.round(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${Math.round(totalInvestGoal).toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、「<strong>${hobbyTarget}</strong>」を実現し、何にも縛られない自由な人生を手に入れることができます！`;
+                rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める（${totalSavingGoal.toLocaleString()}円）よりも <strong>${(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${totalInvestGoal.toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、「<strong>${hobbyTarget}</strong>」を実現し、何にも縛られない自由な人生を手に入れることができます！`;
             }
 
             const rmGoalAdvice = document.getElementById('rm-goal-advice');
@@ -7281,15 +7297,18 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     if (activeHabits.sub) idealMonthlySaving += subMonthly;
                     if (activeHabits.gacha) idealMonthlySaving += gachaMonthly;
 
-                    const idealDailySaving = Math.round(idealMonthlySaving / 30);
+                    let idealDailySaving = Math.round(idealMonthlySaving / 30);
+                    if (idealDailySaving > 0) {
+                        idealDailySaving = Math.max(100, floorTo100Jpy(idealDailySaving));
+                    }
                     
                     const todayDate = parseDateSafely(getTodayStr()) || new Date();
                     const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
                     const elapsedDiffTime = todayDate.getTime() - startTrackingDate.getTime();
                     const elapsedDays = Math.max(1, Math.floor(elapsedDiffTime / (1000 * 3600 * 24)) + 1);
 
-                    const idealCumToday = idealDailySaving * elapsedDays;
-                    const diffToday = idealCumToday - totalEarned;
+                    const idealCumToday = floorTo100Jpy(idealDailySaving * elapsedDays);
+                    const diffToday = floorTo100Jpy(idealCumToday - totalEarned);
 
                     const rates = getHabitSuccessRates();
                     const activeRates = [];
@@ -7310,13 +7329,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     } else {
                         totalInvestIdeal = P + (idealMonthlySaving * 12 * years);
                     }
-                    const diffInvestGoal = Math.max(0, totalInvestIdeal - totalInvestGoal);
+                    totalInvestIdeal = floorTo100Jpy(totalInvestIdeal);
+                    const diffInvestGoal = floorTo100Jpy(Math.max(0, totalInvestIdeal - totalInvestGoal));
 
                     let adviceMessage = "";
                     if (ratePercent >= 90) {
-                        adviceMessage = `🏆 <strong>神レベルの自制心です！</strong> ほぼ完璧なセーブペースを維持できています。このまま継続すれば、理想の未来（${Math.round(totalInvestIdeal).toLocaleString()}円）はすぐそこです。自分を信じて突き進みましょう！🚀`;
+                        adviceMessage = `🏆 <strong>神レベルの自制心です！</strong> ほぼ完璧なセーブペースを維持できています。このまま継続すれば、理想の未来（${totalInvestIdeal.toLocaleString()}円）はすぐそこです。自分を信じて突き進みましょう！🚀`;
                     } else if (ratePercent >= 75) {
-                        adviceMessage = `🌟 <strong>素晴らしいペースです！</strong> あと少しチェックイン日数を増やすだけで、理想との差（${Math.round(diffInvestGoal).toLocaleString()}円）を埋めることができます。小さな積み重ねが、将来驚くほどの大きな成果に化けますよ！💪`;
+                        adviceMessage = `🌟 <strong>素晴らしいペースです！</strong> あと少しチェックイン日数を増やすだけで、理想との差（${diffInvestGoal.toLocaleString()}円）を埋めることができます。小さな積み重ねが、将来驚くほどの大きな成果に化けますよ！💪`;
                     } else if (ratePercent >= 50) {
                         adviceMessage = `📈 <strong>伸びしろ満点です！</strong> 現在約半分をセーブできています。2日に1回の成功を、3日に2回へとほんの少しだけ引き上げることで、将来手にする自由（資産）が数百万円レベルで変わってきます。まずは次の1回をセーブしてみましょう！✨`;
                     } else {
@@ -7325,9 +7345,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
                     let diffInvestText = "";
                     if (diffInvestGoal > 100) {
-                        diffInvestText = `もしセーブ率を<strong>100%（完璧）</strong>に引き上げると、${years}年後の資産はさらに <span style="color: var(--neon-primary); font-weight:800; font-size: 0.82rem;">+${Math.round(diffInvestGoal).toLocaleString()}円</span> アップし、合計 <span style="color: var(--neon-secondary); font-weight:800;">${Math.round(totalInvestIdeal).toLocaleString()}円</span> に達します！💰`;
+                        diffInvestText = `もしセーブ率を<strong>100%（完璧）</strong>に引き上げると、${years}年後の資産はさらに <span style="color: var(--neon-primary); font-weight:800; font-size: 0.82rem;">+${diffInvestGoal.toLocaleString()}円</span> アップし、合計 <span style="color: var(--neon-secondary); font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> に達します！💰`;
                     } else {
-                        diffInvestText = `現在、<strong>完璧な100%のセーブペース</strong>を維持しています！このまま継続できれば、最高の未来（資産: <span style="color: var(--neon-secondary); font-weight:800;">${Math.round(totalInvestIdeal).toLocaleString()}円</span>）が確実に実現します！🎉`;
+                        diffInvestText = `現在、<strong>完璧な100%のセーブペース</strong>を維持しています！このまま継続できれば、最高の未来（資産: <span style="color: var(--neon-secondary); font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span>）が確実に実現します！🎉`;
                     }
 
                     rmGoalAdvice.innerHTML = `
