@@ -7483,31 +7483,35 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     if (activeHabits.sub) idealMonthlySaving += subMonthly;
                     if (activeHabits.gacha) idealMonthlySaving += gachaMonthly;
 
-                    let idealDailySaving = Math.round(idealMonthlySaving / 30);
-                    if (idealDailySaving > 0) {
-                        idealDailySaving = Math.max(100, floorTo100Jpy(idealDailySaving));
-                    }
-                    
                     const todayDate = parseDateSafely(getTodayStr()) || new Date();
                     const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
+                    
+                    // 日次項目と月次項目を分離して理想目標額を計算
                     const elapsedDiffTime = todayDate.getTime() - startTrackingDate.getTime();
                     const elapsedDays = Math.max(1, Math.floor(elapsedDiffTime / (1000 * 3600 * 24)) + 1);
+                    const elapsedMonths = (todayDate.getFullYear() - startTrackingDate.getFullYear()) * 12 + (todayDate.getMonth() - startTrackingDate.getMonth()) + 1;
 
-                    const idealCumToday = floorTo100Jpy(idealDailySaving * elapsedDays);
+                    let idealDailyPart = 0;
+                    if (profile.trackTobacco) {
+                        idealDailyPart += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+                    }
+                    if (profile.trackBeer) {
+                        idealDailyPart += Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+                    }
+
+                    let idealMonthlyPart = 0;
+                    if (activeHabits.sub) {
+                        idealMonthlyPart += habitPrices.subPrice * habitPrices.subCount;
+                    }
+                    if (activeHabits.gacha) {
+                        idealMonthlyPart += habitPrices.gachaPrice * habitPrices.gachaCount;
+                    }
+
+                    const idealCumToday = floorTo100Jpy((idealDailyPart * elapsedDays) + (idealMonthlyPart * elapsedMonths));
                     const diffToday = floorTo100Jpy(idealCumToday - totalEarned);
 
-                    const rates = getHabitSuccessRates();
-                    const activeRates = [];
-                    if (profile.trackTobacco) activeRates.push(rates.tobacco);
-                    if (profile.trackBeer) activeRates.push(rates.beer);
-                    if (activeHabits.sub) activeRates.push(1.0);
-                    if (activeHabits.gacha) activeRates.push(1.0);
-                    
-                    let avgRate = 1.0;
-                    if (activeRates.length > 0) {
-                        avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
-                    }
-                    const ratePercent = Math.round(avgRate * 100);
+                    // セーブ率は実際の実績累計額と理想目標額の比率から計算（直感的で整合性がある形にする）
+                    const ratePercent = idealCumToday > 0 ? Math.min(100, Math.round((totalEarned / idealCumToday) * 100)) : 100;
 
                     let totalInvestIdeal = 0;
                     if (monthlyRate > 0) {
