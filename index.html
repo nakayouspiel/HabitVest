@@ -2612,6 +2612,14 @@ const settingsModal = document.getElementById('settings-modal');
             }
         }
 
+        // Supabaseが未設定の場合、設定画面のアカウント連携セクションを非表示にする
+        if (!supabaseClient) {
+            const authSyncSection = document.querySelector('.auth-sync-section');
+            if (authSyncSection) {
+                authSyncSection.style.display = 'none';
+            }
+        }
+
         // アカウント状態（ログインUI）の更新
         function updateAuthUI(user, providerName = '') {
             if (user) {
