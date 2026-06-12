@@ -6125,8 +6125,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (hasRecord) {
                 // 記録を削除
                 history = history.filter(item => !(item.date === targetDateStr && item.type === type));
-                // 選択月が当月の場合、メイン画面のチェックインボタンのactiveも連動して外す
-                if (targetDateStr === currentMonthFirstStr) {
+                // 選択月が当月、または当日が今日の場合、メイン画面のチェックインボタンのactiveも連動して外す
+                const isTodayDaily = (type === 'tobacco' || type === 'beer') && (targetDateStr === getTodayStr());
+                const isCurrentMonthMonthly = (type === 'sub' || type === 'gacha') && (targetDateStr === currentMonthFirstStr);
+                if (isTodayDaily || isCurrentMonthMonthly) {
                     activeHabits[type] = false;
                     const btn = document.getElementById(`checkin-btn-${type}`);
                     if (btn) btn.classList.remove('active');
@@ -6166,8 +6168,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 };
                 history.unshift(item);
 
-                // 選択月が当月の場合、メイン画面のチェックインボタンのactiveも連動して点灯させる
-                if (targetDateStr === currentMonthFirstStr) {
+                // 選択月が当月、または当日が今日の場合、メイン画面のチェックインボタンのactiveも連動して点灯させる
+                const isTodayDaily = (type === 'tobacco' || type === 'beer') && (targetDateStr === getTodayStr());
+                const isCurrentMonthMonthly = (type === 'sub' || type === 'gacha') && (targetDateStr === currentMonthFirstStr);
+                if (isTodayDaily || isCurrentMonthMonthly) {
                     activeHabits[type] = true;
                     const btn = document.getElementById(`checkin-btn-${type}`);
                     if (btn) btn.classList.add('active');
@@ -7054,6 +7058,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (activeHabits.gacha) realMonthlySaving += gachaMonthly;
             realMonthlySaving = floorTo100Jpy(realMonthlySaving);
 
+            // 過去履歴からこれまでの累計節約額 (実績) を計算して初期元本 P とし、資産複利計算に反映
+            let totalEarned = 0;
+            history.forEach(item => {
+                totalEarned += item.amount;
+            });
+            const P = floorTo100Jpy(totalEarned);
+
             const annualYield = simulationSettings.yield / 100;
             const years = simulationSettings.years;
 
@@ -7068,12 +7079,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             for (let y = 1; y <= years; y++) {
                 labels.push(`${y}年`);
                 
-                totalSaving = monthlySaving * 12 * y;
+                // 元本にこれまでの累計実績 (P) を加え、将来の節約額を積み上げる
+                totalSaving = P + (monthlySaving * 12 * y);
                 savingData.push(floorTo100Jpy(totalSaving));
 
                 const months = y * 12;
                 if (monthlyRate > 0) {
-                    totalInvest = monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                    // 初期元本 P が複利運用され、かつ将来の毎月節約額が積み立てられる
+                    totalInvest = P * Math.pow(1 + monthlyRate, months) + monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
                 } else {
                     totalInvest = totalSaving;
                 }
