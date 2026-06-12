@@ -1467,6 +1467,26 @@
             opacity: 1;
             text-shadow: none;
         }
+        #pace-real-badge {
+            font-size: 0.62rem;
+            background: rgba(2, 132, 199, 0.1);
+            color: var(--neon-primary);
+            padding: 1px 5px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-weight: 800;
+        }
+        .theme-dark #pace-real-badge {
+            background: rgba(0, 243, 255, 0.15);
+        }
+        .pace-toggle-btn.active #pace-real-badge {
+            background: rgba(255, 255, 255, 0.25);
+            color: var(--btn-primary-text) !important;
+        }
+        .theme-dark .pace-toggle-btn.active #pace-real-badge {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--btn-primary-text) !important;
+        }
 
         /* 📅 カレンダー記録管理ボタンのスタイル */
         .cal-preview-btn {
@@ -1781,7 +1801,7 @@
                 <div class="pace-toggle-container">
                     <div id="pace-toggle-bg" class="pace-btn-sliding-bg"></div>
                     <button type="button" id="btn-pace-ideal" class="pace-toggle-btn active">理想目標 🏆</button>
-                    <button type="button" id="btn-pace-real" class="pace-toggle-btn">現実ペース 🏃 <span id="pace-real-badge" style="font-size: 0.62rem; background: rgba(0, 243, 255, 0.15); color: var(--neon-primary); padding: 1px 4px; border-radius: 4px; transition: all 0.2s;">---%</span></button>
+                    <button type="button" id="btn-pace-real" class="pace-toggle-btn">現実ペース 🏃 <span id="pace-real-badge">---%</span></button>
                 </div>
                 <div id="pace-explanation" style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-bottom: 14px; font-weight: 500; min-height: 2.8em; line-height: 1.45; padding: 0 16px;">
                     💡 理想目標: 習慣セーブの成功率を100%（毎日継続）と仮定した将来予測です
