@@ -1723,7 +1723,7 @@
                             <span style="font-size: 1.8rem; line-height: 1;">🍺</span>
                             <span style="position: absolute; font-size: 1.8rem; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; line-height: 1;">🚫</span>
                         </span>
-                        <span class="label">ビール・お酒</span>
+                        <span class="label">お酒</span>
                         <span class="price-badge" id="checkin-badge-beer">250円</span>
                     </button>
                     <button class="checkin-btn monthly" id="checkin-btn-sub" data-habit="sub">
@@ -6146,7 +6146,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     quantity = habitPrices.tobaccoCount;
                 } else if (type === 'beer') {
                     amount = floorTo100Jpy(Math.round(habitPrices.beerPrice * habitPrices.beerCount));
-                    label = "ビール・お酒をセーブ！ 🚫🍺";
+                    label = "お酒をセーブ！ 🚫";
                     quantity = habitPrices.beerCount;
                 } else if (type === 'sub') {
                     amount = floorTo100Jpy(habitPrices.subPrice * habitPrices.subCount);
@@ -6239,11 +6239,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             ${hasTobacco ? '🗑️ タバコ消去' : '🚭 タバコ追加'}
                         </button>
                         <button onclick="togglePastRecord('${dateStr}', 'beer')" class="cal-preview-btn cal-preview-btn-beer ${hasBeer ? 'active' : ''}">
-                            ${hasBeer ? '🗑️ ビール消去' : `
-                            <span style="position: relative; display: inline-flex; justify-content: center; align-items: center; width: 0.95rem; height: 0.95rem; margin-right: 2px;">
-                                <span style="font-size: 0.95rem; line-height: 1;">🍺</span>
-                                <span style="position: absolute; font-size: 0.95rem; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; line-height: 1;">🚫</span>
-                            </span>ビール追加`}
+                            ${hasBeer ? '🗑️ お酒消去' : '🍺 お酒追加'}
                         </button>
                         <button onclick="togglePastRecord('${dateStr}', 'sub')" class="cal-preview-btn cal-preview-btn-sub ${hasSub ? 'active' : ''}">
                             ${hasSub ? '🗑️ サブスク消去' : '📱 サブスク追加'}
@@ -6647,7 +6643,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 quantity = habitPrices.tobaccoCount; // 1日の消費箱数
             } else if (type === 'beer') {
                 amount = floorTo100Jpy(Math.round(habitPrices.beerPrice * habitPrices.beerCount));
-                label = "ビール・お酒をセーブ！ 🚫🍺";
+                label = "お酒をセーブ！ 🚫";
                 quantity = habitPrices.beerCount; // 1日の消費本数
             } else if (type === 'sub') {
                 amount = floorTo100Jpy(habitPrices.subPrice * habitPrices.subCount);
