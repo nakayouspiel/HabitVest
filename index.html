@@ -2178,7 +2178,7 @@
                         </div>
                         <div class="input-box">
                             <button type="button" class="spin-btn dec-btn" data-target="slider-yield">-</button>
-                            <input type="number" id="slider-yield" min="0" max="25" step="0.5" value="8">
+                            <input type="number" id="slider-yield" min="0" max="1000" step="0.5" value="8">
                             <button type="button" class="spin-btn inc-btn" data-target="slider-yield">+</button>
                             <span>％</span>
                         </div>
@@ -2390,7 +2390,7 @@
                         </div>
                         <div class="input-box">
                             <button type="button" class="spin-btn dec-btn" data-target="ob-slider-yield">-</button>
-                            <input type="number" id="ob-slider-yield" min="0" max="25" step="0.5" value="8.0">
+                            <input type="number" id="ob-slider-yield" min="0" max="1000" step="0.5" value="8.0">
                             <button type="button" class="spin-btn inc-btn" data-target="ob-slider-yield">+</button>
                             <span>％</span>
                         </div>
@@ -3232,7 +3232,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         // 🗓️ 連続チェックイン（Streak）計算
         function calculateStreak() {
-            const uniqueDateStrings = Array.from(new Set(history.map(item => item.date)));
+            const dailyHistory = history.filter(item => item.type === 'tobacco' || item.type === 'beer');
+            const uniqueDateStrings = Array.from(new Set(dailyHistory.map(item => item.date)));
             const dateObjects = uniqueDateStrings
                 .map(dStr => parseDateSafely(dStr))
                 .filter(d => d !== null);
@@ -6439,7 +6440,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     const targetId = btn.dataset.target;
                     const input = document.getElementById(targetId);
                     if (!input) return;
-                    const max = parseFloat(input.max) || Infinity;
+                    let max = parseFloat(input.max) || Infinity;
+                    if (targetId === 'slider-yield' || targetId === 'ob-slider-yield') {
+                        max = 25;
+                    }
                     const step = parseFloat(input.step) || 1;
                     let val = parseFloat(input.value) || 0;
                     val = Math.min(max, val + step);
@@ -7279,7 +7283,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             });
             totalEarned = floorTo100Jpy(totalEarned);
 
-            const uniqueDates = new Set(history.map(item => item.date));
+            const dailyHistory = history.filter(item => item.type === 'tobacco' || item.type === 'beer');
+            const uniqueDates = new Set(dailyHistory.map(item => item.date));
             const totalStatsDays = uniqueDates.size;
 
             // ライフタブのUI要素取得
