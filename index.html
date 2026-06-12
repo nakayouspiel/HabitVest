@@ -1416,6 +1416,102 @@
             color: #060913 !important;
             box-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
         }
+
+        /* 📲 PWA インストールバナー & iOS ガイド */
+        .pwa-install-banner {
+            margin-top: 10px;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(219, 39, 119, 0.05) 100%);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: none;
+            position: relative;
+            box-shadow: var(--card-shadow);
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .theme-dark .pwa-install-banner {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.08) 0%, rgba(255, 0, 127, 0.05) 100%);
+        }
+
+        .pwa-banner-close {
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 2px 8px;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .pwa-banner-close:hover {
+            color: var(--text-main);
+        }
+
+        /* iOS インストール案内オーバーレイ */
+        .ios-install-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 9, 19, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .ios-install-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 24px;
+            width: 90%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .ios-install-card h3 {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .ios-install-card p {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            line-height: 1.45;
+            text-align: left;
+        }
+
+        .ios-install-arrow {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.8rem;
+            line-height: 1;
+            z-index: 100000;
+            display: none;
+            animation: ios-arrow-float 1.8s infinite ease-in-out;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+        }
+
+        @keyframes ios-arrow-float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-12px); }
+        }
 </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1432,6 +1528,23 @@
                 <button id="theme-toggle" class="control-btn" title="テーマ切り替え">☀️</button>
             </div>
         </header>
+
+        <!-- 📲 PWA インストールバナー (ブラウザ起動時のみ表示) -->
+        <div id="pwa-install-banner" class="pwa-install-banner">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="font-size: 1.8rem; line-height: 1;">📱</div>
+                <div style="flex: 1;">
+                    <h4 style="font-size: 0.78rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px;">スマホアプリとして起動する</h4>
+                    <p id="pwa-install-instruction" style="font-size: 0.65rem; color: var(--text-sub); line-height: 1.35;">
+                        ホーム画面に追加すると、ブラウザの余計な枠が消えて、全画面で本物のアプリのように使えます。
+                    </p>
+                    <button id="pwa-btn-install" class="banner-action-btn" style="margin-top: 8px; padding: 8px 14px; font-size: 0.72rem; width: auto; font-weight: 800;">
+                        ホーム画面に追加する 📥
+                    </button>
+                </div>
+                <button id="pwa-banner-close" class="pwa-banner-close" title="閉じる">✕</button>
+            </div>
+        </div>
 
         <!-- ==========================================
              📋 タブ1: 習慣 (Habits) 入力欄 (チェックイン＆履歴)
@@ -7437,6 +7550,88 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 });
             }
 
+            // 📲 PWA インストールバナー & iOSガイドの制御
+            (function() {
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+                const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                
+                const pwaBanner = document.getElementById('pwa-install-banner');
+                const pwaBtnInstall = document.getElementById('pwa-btn-install');
+                const pwaBtnClose = document.getElementById('pwa-banner-close');
+                const iosOverlay = document.getElementById('ios-install-overlay');
+                const iosOverlayClose = document.getElementById('ios-overlay-close');
+                const iosArrow = document.getElementById('ios-install-arrow');
+                
+                // すでにインストール済みの場合は何も表示しない
+                if (isStandalone) return;
+                
+                let deferredPrompt = null;
+                
+                // Android/Chrome等のネイティブインストールプロンプト監視
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    
+                    if (pwaBanner && sessionStorage.getItem('pwa_banner_dismissed') !== 'true') {
+                        pwaBanner.style.display = 'block';
+                    }
+                });
+                
+                // iOSブラウザ向けにバナーを初期表示する
+                if (isiOS && pwaBanner && sessionStorage.getItem('pwa_banner_dismissed') !== 'true') {
+                    pwaBanner.style.display = 'block';
+                }
+                
+                // インストールボタンが押されたとき
+                if (pwaBtnInstall) {
+                    pwaBtnInstall.addEventListener('click', () => {
+                        if (isiOS) {
+                            // iOSの場合はガイド用オーバーレイを表示
+                            if (iosOverlay && iosArrow) {
+                                iosOverlay.style.display = 'flex';
+                                iosArrow.style.display = 'block';
+                            }
+                        } else if (deferredPrompt) {
+                            // Android/Chromeの場合はブラウザのインストールをトリガー
+                            deferredPrompt.prompt();
+                            deferredPrompt.userChoice.then((choiceResult) => {
+                                if (choiceResult.outcome === 'accepted') {
+                                    if (pwaBanner) pwaBanner.style.display = 'none';
+                                }
+                                deferredPrompt = null;
+                            });
+                        } else {
+                            // 何らかの理由でプロンプトが利用できない場合（PCブラウザ等）
+                            alert("ご利用のブラウザまたは設定は、直接インストールに対応していません。ブラウザメニューの「アプリをインストール」や「ホーム画面に追加」をお試しください。");
+                        }
+                    });
+                }
+                
+                // バナーを閉じる処理
+                if (pwaBtnClose) {
+                    pwaBtnClose.addEventListener('click', () => {
+                        if (pwaBanner) pwaBanner.style.display = 'none';
+                        sessionStorage.setItem('pwa_banner_dismissed', 'true');
+                    });
+                }
+                
+                // iOSオーバーレイを閉じる処理
+                if (iosOverlayClose) {
+                    iosOverlayClose.addEventListener('click', () => {
+                        if (iosOverlay) iosOverlay.style.display = 'none';
+                        if (iosArrow) iosArrow.style.display = 'none';
+                    });
+                }
+                if (iosOverlay) {
+                    iosOverlay.addEventListener('click', (e) => {
+                        if (e.target === iosOverlay) {
+                            iosOverlay.style.display = 'none';
+                            if (iosArrow) iosArrow.style.display = 'none';
+                        }
+                    });
+                }
+            })();
+
             // 📲 サービスワーカーの登録 (PWA対応)
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js')
@@ -7445,5 +7640,20 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
         });
     </script>
+
+    <!-- 📲 iOS 専用のインストールオーバーレイガイド -->
+    <div id="ios-install-overlay" class="ios-install-overlay">
+        <div class="ios-install-card">
+            <h3>📱 アプリとしてホーム画面に追加</h3>
+            <p>
+                iPhone/Safariをご利用の場合、システム制限のため自動インストールが行えません。<br><br>
+                大変お手数ですが、画面下のナビゲーションバー中央にある<strong>「共有ボタン 📤」</strong>（またはブラウザ下部の青い共有ボタン）をタップし、メニューから<strong>「ホーム画面に追加 ➕」</strong>を選択してください。
+            </p>
+            <button id="ios-overlay-close" class="banner-action-btn" style="padding: 10px; font-size: 0.75rem; background: var(--btn-secondary-bg); color: var(--btn-secondary-text) !important; box-shadow: none;">
+                閉じる
+            </button>
+        </div>
+        <div id="ios-install-arrow" class="ios-install-arrow">⬇️</div>
+    </div>
 </body>
 </html>
