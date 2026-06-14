@@ -6499,8 +6499,20 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const type = btn.dataset.habit;
 
                 if (type === 'gacha') {
-                    // 節約は常に金額選択モーダルを開き、今日何回でも追加できるようにする
-                    openFreeSavingModal();
+                    // もし今日すでに節約の履歴があるなら、ボタン押下でそれをすべて削除してトグル(非アクティブ化)
+                    const todayStr = getTodayStr();
+                    const hasGachaToday = history.some(item => item.date === todayStr && item.type === 'gacha');
+                    if (hasGachaToday) {
+                        removeTodayHistoryItem('gacha');
+                        // 計算と画面表示の更新
+                        saveSettings();
+                        calculate();
+                        renderCalendar();
+                        updateCheckinBtnStates();
+                    } else {
+                        // 今日まだ節約していなければ、金額選択モーダルを開く
+                        openFreeSavingModal();
+                    }
                     return;
                 }
 
@@ -6610,18 +6622,19 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     const targetItem = history.find(item => item.id === id);
                     history = history.filter(item => item.id !== id);
 
-                    // もし今日削除したのが 今日チェックインしていた日次項目 であれば、ボタンのactiveも外す
+                    // もし今日削除したのが 今日チェックインしていた日次項目 であれば、状態を同期
                     if (targetItem && targetItem.date === getTodayStr()) {
                         const type = targetItem.type;
                         if (type === 'tobacco' || type === 'beer') {
                             activeHabits[type] = false;
-                            document.getElementById(`checkin-btn-${type}`).classList.remove('active');
                         }
                     }
 
                     saveHistory();
                     renderHistoryList();
                     calculate();
+                    renderCalendar();
+                    updateCheckinBtnStates();
                 });
             });
         }
