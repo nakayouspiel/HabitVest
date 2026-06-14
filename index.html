@@ -6581,7 +6581,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
 
             history.forEach(item => {
-                const div = document.createElement 'div' ;
+                const div = document.createElement('div');
                 div.className = 'history-item';
                 div.innerHTML = `
                     <div class="history-info">
@@ -7400,7 +7400,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     }
 
                     let diffInvestText = "";
-                    if  diffInvestGoal > 100  {
+                    if (diffInvestGoal > 100) {
                         diffInvestText = `もしセーブ率を<strong>100% 完璧 </strong>に引き上げると、${years}年後の資産はさらに <span style="color: var(--neon-primary); font-weight:800; font-size: 0.82rem;">+${diffInvestGoal.toLocaleString()}円</span> アップし、合計 <span style="color: var(--neon-secondary); font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> に達します！💰`;
                     } else {
                         diffInvestText = `現在、<strong>完璧な100%のセーブペース</strong>を維持しています！このまま継続できれば、最高の未来 資産: <span style="color: var(--neon-secondary); font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> が確実に実現します！🎉`;
