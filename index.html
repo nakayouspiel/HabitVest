@@ -1686,7 +1686,7 @@
         <header>
             <div class="header-title">
                 <h1>HabitVest</h1>
-                <p>節制と投資で、未来の資産を育てる <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.3.1  2026.06.05 </span></p>
+                <p>節制による投資で、未来の資産を育てる <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.0  2026.06.14 </span></p>
             </div>
             <div class="header-controls">
                 <button id="settings-toggle" class="control-btn" title="設定を開く">⚙️</button>
@@ -1718,13 +1718,13 @@
             <!-- 💸 本日浮いたお金 -->
             <div class="saving-today-card" style="display: flex; justify-content: center; align-items: center; text-align: center; padding: 16px 20px; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 20px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
                 <div>
-                    <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">本日の投資・節制実績（日次）</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">本日の投資実績（日次）</div>
                     <div class="saving-today-val" id="val-saving-today" style="font-size: 1.8rem; font-weight: 800; color: var(--neon-secondary); margin-top: 4px;">0 円</div>
                 </div>
             </div>
 
             <div class="glass-card">
-                <h2 class="card-title">🚨 今日の投資・節制を記録する</h2>
+                <h2 class="card-title">🚨 今日の節制による投資を記録する</h2>
                 <div class="checkin-container">
                     <button class="checkin-btn daily" id="checkin-btn-tobacco" data-habit="tobacco">
                         <span class="emoji">🚭</span>
@@ -1741,7 +1741,7 @@
                     </button>
                     <button class="checkin-btn daily" id="checkin-btn-gacha" data-habit="gacha" style="grid-column: span 2;">
                         <span class="emoji">💰</span>
-                        <span class="label">何でも投資・節制（サブスク・ソシャゲ・博打回避等）</span>
+                        <span class="label">未来へ投資</span>
                         <span class="price-badge" id="checkin-badge-gacha">5,000円</span>
                     </button>
                 </div>
@@ -1756,7 +1756,7 @@
 
             <!-- 📜 これまでの履歴 -->
             <div class="glass-card history-card">
-                <h2 class="card-title" style="margin-bottom: 12px;">📜 これまでの投資・節制履歴</h2>
+                <h2 class="card-title" style="margin-bottom: 12px;">📜 これまでの投資履歴</h2>
                 <div class="history-list" id="history-list-container">
                     <div style="text-align: center; color: var(--text-sub); font-size: 0.72rem; padding: 20px;">
                         履歴がありません。上のボタンから記録しましょう。
@@ -1777,7 +1777,7 @@
                     <span style="font-size: 1rem;">💡</span>
                     <div>
                         <strong>シミュレーションの前提：</strong><br>
-                        この将来予測は、<strong>現在チェックイン（記録・節制）している習慣を今後も毎日・毎月継続し、</strong>浮いたお金を想定の利回りで投資に回し続けた場合を示しています。<br>
+                        この将来予測は、<strong>現在チェックイン（投資記録）している習慣を今後も毎日・毎月継続し、</strong>浮いたお金を想定の利回りで投資に回し続けた場合を示しています。<br>
                         初日の記録だけでも このまま毎日続けたら将来どうなるか の成果がひと目でわかるようになっています。
                     </div>
                 </div>
@@ -1792,7 +1792,7 @@
                     <button type="button" id="btn-pace-real" class="pace-toggle-btn active">現実ペース 🏃 <span id="pace-real-badge">---%</span></button>
                 </div>
                 <div id="pace-explanation" style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-bottom: 14px; font-weight: 500; min-height: 2.8em; line-height: 1.45; padding: 0 16px;">
-                    💡 理想目標: 投資・節制達成率を100%（毎日継続）と仮定した将来予測です
+                    💡 理想目標: 投資達成率を100%（毎日継続）と仮定した将来予測です
                 </div>
 
                 <div class="dashboard-grid">
@@ -1827,8 +1827,8 @@
                             </div>
                             
                             <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border-glass); font-size: 0.62rem; color: var(--text-muted); line-height: 1.5;">
-                                💡 <strong>その他投資・節制の計算ルール：</strong><br>
-                                これまでのすべての投資・節制履歴の合算額（フリー入力の合計）を、開始日（起点）から今日までの経過日数で割って「1日あたりの平均投資ペース」を自動算出しています。タバコやビールと同じように、毎日コツコツ積み立てているものとして理想・現実の双方の計算に組み込まれます。
+                                💡 <strong>その他投資の計算ルール：</strong><br>
+                                これまでのすべての投資履歴の合算額（フリー入力の合計）を、開始日（起点）から今日までの経過日数で割って「1日あたりの平均投資ペース」を自動算出しています。タバコやビールと同じように、毎日コツコツ積み立てているものとして理想・現実の双方の計算に組み込まれます。
                             </div>
                         </div>
                     </div>
@@ -2070,7 +2070,7 @@
                     <!-- 🚭 タバコ -->
                     <div class="form-group" style="margin-bottom: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                            <input type="checkbox" id="profile-track-tobacco"> 🚭 タバコを節制・投資する 
+                            <input type="checkbox" id="profile-track-tobacco"> 🚭 タバコ節制による投資 
                         </label>
                     </div>
                     <div class="form-group">
@@ -2101,7 +2101,7 @@
                     <!-- 🍺 お酒 -->
                     <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                            <input type="checkbox" id="profile-track-beer"> 🍺 お酒を節制・投資する 
+                            <input type="checkbox" id="profile-track-beer"> 🍺 お酒節制による投資 
                         </label>
                     </div>
                     <div class="form-group">
@@ -2132,7 +2132,7 @@
                     <!-- 💰 投資・節制（サブスク・ソシャゲ・博打等の回避を含む） -->
                     <div class="form-group" style="margin-top: 14px;">
                         <div class="label-wrapper">
-                            <label for="gacha-unit-price">💰 投資・節制（サブスク・ソシャゲ・博打回避等）</label>
+                            <label for="gacha-unit-price">💰 未来へ投資</label>
                             <span class="val-badge" id="gacha-price-badge">5,000円</span>
                         </div>
                         <div class="input-box">
@@ -2220,10 +2220,10 @@
     <div id="free-saving-modal" class="onboarding-overlay" style="display: none; align-items: center; justify-content: center; z-index: 1010; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
         <div class="glass-card" style="width: 100%; max-width: 320px; text-align: center; padding: 24px; position: relative;">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                💰 いくら投資・節制した？
+                💰 いくら未来へ投資した？
             </h3>
             <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 16px;">
-                1,000円単位で自由に今回の投資・節制額を入力できます。
+                1,000円単位で自由に今回の投資額を入力できます。
             </p>
             <div class="input-box" style="justify-content: center; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
                 <button type="button" class="spin-btn" id="free-saving-dec" style="width: 44px; height: 44px; font-size: 1.4rem; border-radius: 50%;">-</button>
@@ -2254,7 +2254,7 @@
                     </div>
                 </div>
                 <p class="step-desc">
-                    HabitVestは、あなたが日々の 投資・節制 を記録し、それを投資複利で運用した未来の資産を可視化するアプリです。<br>まずはあなたについて教えてください！
+                    HabitVestは、あなたが日々の 節制による投資 を記録し、それを投資複利で運用した未来の資産を可視化するアプリです。<br>まずはあなたについて教えてください！
                 </p>
                 <div class="form-group">
                     <label for="onboard-name">ニックネーム</label>
@@ -2298,7 +2298,7 @@
                     </div>
                 </div>
                 <div class="form-group" style="margin-top: 10px;">
-                    <label for="onboard-start-date">開始日  習慣をやめ始めた日 </label>
+                    <label for="onboard-start-date">開始日  節制による投資を始めた日 </label>
                     <input type="date" id="onboard-start-date" required style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main); font-weight: 600; font-family: var(--font-ui); outline: none;">
                 </div>
                 <button type="button" class="modal-btn" id="onboard-next-1">次へ進む ➔</button>
@@ -2307,7 +2307,7 @@
             <!-- ステップ 2: やめる習慣の設定 -->
             <div class="step-pane" id="onboard-step-2">
                 <div class="step-progress">
-                    <span class="step-title">投資・節制する習慣は？ 🚭</span>
+                    <span class="step-title">節制による投資を行う習慣は？ 🚭</span>
                     <div class="step-dot-container">
                         <div class="step-dot"></div>
                         <div class="step-dot active"></div>
@@ -2321,7 +2321,7 @@
                     <!-- タバコ -->
                     <div style="border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; text-align: left;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 6px; cursor: pointer;">
-                            <input type="checkbox" id="onboard-chk-tobacco" checked> 🚭 タバコを投資・節制する
+                            <input type="checkbox" id="onboard-chk-tobacco" checked> 🚭 タバコ節制による投資
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
                             <div class="label-wrapper"><label>1箱の価格</label><span class="val-badge" id="ob-tobacco-price-badge">600円</span></div>
@@ -2336,7 +2336,7 @@
                     <!-- ビール -->
                     <div style="border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; text-align: left;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 6px; cursor: pointer;">
-                            <input type="checkbox" id="onboard-chk-beer"> 🍺 お酒を投資・節制する
+                            <input type="checkbox" id="onboard-chk-beer"> 🍺 お酒節制による投資
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
                             <div class="label-wrapper"><label>1本の価格</label><span class="val-badge" id="ob-beer-price-badge">250円</span></div>
@@ -2351,10 +2351,10 @@
                     <!-- 投資・節制 -->
                     <div style="border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; text-align: left;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 6px; cursor: pointer;">
-                            <input type="checkbox" id="onboard-chk-gacha"> 💰 投資・節制を記録したい（サブスク・ソシャゲ・博打回避等）
+                            <input type="checkbox" id="onboard-chk-gacha"> 💰 未来へ投資を記録したい
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
-                            <div class="label-wrapper"><label>1回あたりの投資・節制額</label><span class="val-badge" id="ob-gacha-price-badge">5,000円</span></div>
+                            <div class="label-wrapper"><label>1回あたりの投資額</label><span class="val-badge" id="ob-gacha-price-badge">5,000円</span></div>
                             <div class="input-box">
                                 <button type="button" class="spin-btn dec-btn" data-target="ob-gacha-unit-price">-</button>
                                 <input type="number" id="ob-gacha-unit-price" min="500" max="100000" step="500" value="5000">
@@ -2381,7 +2381,7 @@
                     </div>
                 </div>
                 <p class="step-desc">
-                    投資・節制によって浮いたお金を投資に回した場合の利回りと、何年間シミュレーションするか設定しましょう。
+                    投資によって浮いたお金を投資に回した場合の利回りと、何年間シミュレーションするか設定しましょう。
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
                     <div class="form-group">
@@ -2661,7 +2661,7 @@ const settingsModal = document.getElementById('settings-modal');
             years: 20
         };
 
-        let history = []; // 過去の投資・節制履歴: [{ id, date, type, label, amount }]
+        let history = []; // 過去の投資履歴: [{ id, date, type, label, amount }]
         let lastSyncDate = ""; // 月額自動加算用の最終同期日 ('YYYY-MM-DD')
         let chart = null;
 
@@ -2686,7 +2686,7 @@ const settingsModal = document.getElementById('settings-modal');
                 btnPaceReal.classList.remove('active');
                 if (paceToggleBg) paceToggleBg.style.transform = 'translateX(0)';
                 const exp = document.getElementById('pace-explanation');
-                if (exp) exp.innerText = '💡 理想目標: 投資・節制達成率を100%（毎日継続）と仮定した将来予測です';
+                if (exp) exp.innerText = '💡 理想目標: 投資達成率を100%（毎日継続）と仮定した将来予測です';
                 calculate();
             });
 
@@ -2705,7 +2705,7 @@ const settingsModal = document.getElementById('settings-modal');
                 }
                 const percentStr = `${Math.round(avgRate * 100)}%`;
                 const exp = document.getElementById('pace-explanation');
-                if (exp) exp.innerText = `💡 現実ペース: 実際のあなたの平均投資・節制率 ${percentStr} を考慮した将来予測です`;
+                if (exp) exp.innerText = `💡 現実ペース: 実際のあなたの平均投資率 ${percentStr} を考慮した将来予測です`;
                 calculate();
             });
         }
@@ -5740,28 +5740,28 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 position: 'top',
                 arrowPos: 'center',
                 title: '① できた日はここをタップ！',
-                desc: '今日、節制や投資ができた習慣（タバコやお酒など）があれば、ボタンをタップして「記録」しましょう。投資・節制額が即時反映されます！'
+                desc: '今日、節制による投資ができた習慣（タバコやお酒など）があれば、ボタンをタップして「記録」しましょう。投資額が即時反映されます！'
             },
             {
                 tab: 'habits',
                 position: 'bottom',
                 arrowPos: 'left',
                 title: '②  記録 タブ',
-                desc: 'このタブでは、毎日の投資・節制記録や、過去の記録カレンダー、投資・節制履歴の確認・消去ができます。'
+                desc: 'このタブでは、毎日の投資記録や、過去の記録カレンダー、投資履歴の確認・消去ができます。'
             },
             {
                 tab: 'assets',
                 position: 'bottom',
                 arrowPos: 'center',
                 title: '③  資産 タブ',
-                desc: '投資・節制したお金を将来複利運用した場合の、20年後などの未来の資産形成をシミュレーションできます！'
+                desc: '投資したお金を将来複利運用した場合の、20年後などの未来の資産形成をシミュレーションできます！'
             },
             {
                 tab: 'life',
                 position: 'bottom',
                 arrowPos: 'right',
                 title: '④  ライフ タブ',
-                desc: '自己投資レベルや称号ツリー、投資・節制による健康・時間のメリット、未来のご褒表ロードマップを確認できます！'
+                desc: '自己投資レベルや称号ツリー、節制による健康・時間のメリット、未来のご褒美ロードマップを確認できます！'
             }
         ];
 
@@ -5999,7 +5999,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (recordsList.length > 0) {
                     recordText = recordsList.join('<br>');
                 } else {
-                    recordText = "<span style='color: var(--text-muted);'>この日の投資・節制記録はありません。</span>";
+                    recordText = "<span style='color: var(--text-muted);'>この日の投資記録はありません。</span>";
                 }
 
                 previewContent.innerHTML = `
@@ -6815,10 +6815,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const exp = document.getElementById('pace-explanation');
             if (exp) {
                 if (simulationPaceMode === 'ideal') {
-                    exp.innerText = '💡 理想目標: 投資・節制達成率を100%（毎日継続）と仮定した将来予測です（その他投資は非反映）';
+                    exp.innerText = '💡 理想目標: 投資達成率を100%（毎日継続）と仮定した将来予測です（その他投資は非反映）';
                 } else {
                     const percentStr = `${Math.round(avgRate * 100)}%`;
-                    exp.innerText = `💡 現実ペース: 実際のあなたの平均投資・節制率 ${percentStr} を考慮した、よりリアルな将来予測です`;
+                    exp.innerText = `💡 現実ペース: 実際のあなたの平均投資率 ${percentStr} を考慮した、よりリアルな将来予測です`;
                 }
             }
 
@@ -6956,7 +6956,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                                     </tr>` : ''}
                                     ${showGachaRow ? `
                                     <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">💰 その他投資・節制</td>
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">💰 未来へ投資</td>
                                         <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '理想目標 (非反映)' : '過去平均 (日割算数)'}</td>
                                         <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${gachaActiveMonthlyStr}</td>
                                     </tr>` : ''}
@@ -6995,7 +6995,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                                     </tr>` : ''}
                                     ${showGachaRow ? `
                                     <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">💰 その他投資・節制</td>
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">💰 未来へ投資</td>
                                         <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '理想目標 (非反映)' : '実際の全投資合計'}</td>
                                         <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${gachaActivePStr}</td>
                                     </tr>` : ''}
@@ -7228,8 +7228,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     placeholder.innerHTML = `
                         <span style="font-size: 2.2rem; display: block; margin-bottom: 10px;">🔒</span>
                         <strong>未来のロードマップがロックされています</strong><br>
-                        記録タブで今日の投資・節制を記録するか、設定で習慣の単価を設定してください。<br>
-                        投資・節制を記録し始めると、ここに健康と資産の未来予測タイムラインがアンロックされます！🚀
+                        記録タブで今日の投資を記録するか、設定で習慣の単価を設定してください。<br>
+                        投資を記録し始めると、ここに健康と資産の未来予測タイムラインがアンロックされます！🚀
                     `;
                     timelineContainer.parentNode.appendChild(placeholder);
                 } else {
@@ -7440,7 +7440,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     idealCumToday = floorTo100Jpy(idealCumToday);
                     const diffToday = floorTo100Jpy(idealCumToday - totalEarned);
 
-                    // 投資・節制達成率は実際の実績累計額と理想目標額の比率から計算 直感的で整合性がある形にする 
+                    // 投資達成率は実際の実績累計額と理想目標額の比率から計算 直感的で整合性がある形にする 
                     const ratePercent = idealCumToday > 0 ? Math.min(100, Math.round((totalEarned / idealCumToday) * 1000) / 10) : 100;
 
                     let totalInvestIdeal = 0;
@@ -7459,29 +7459,29 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     } else if (ratePercent >= 75) {
                         adviceMessage = `🌟 <strong>素晴らしいペースです！</strong> あと少しチェックイン日数を増やすだけで、理想との差 ${diffInvestGoal.toLocaleString()}円 を埋めることができます。小さな積み重ねが、将来驚くほどの大きな成果に化けますよ！💪`;
                     } else if (ratePercent >= 50) {
-                        adviceMessage = `📈 <strong>伸びしろ満点です！</strong> 現在約半分を投資・節制できています。2日に1回の成功を、3日に2回へとほんの少しだけ引き上げることで、将来手にする自由（資産）が数百万円レベルで変わってきます。まずは次の1回を投資・節制してみましょう！✨`;
+                        adviceMessage = `📈 <strong>伸びしろ満点です！</strong> 現在約半分を投資できています。2日に1回の成功を、3日に2回へとほんの少しだけ引き上げることで、将来手にする自由（資産）が数百万円レベルで変わってきます。まずは次の1回を投資してみましょう！✨`;
                     } else {
-                        adviceMessage = `🌱 <strong>一歩ずつ進めましょう！</strong> 最初は誰もがここからスタートします。焦らず、まずは週に数日の投資記録から習慣化していきましょう。少しでも投資・節制ができた日は自分を褒め、未来の資産を育てていきましょう！❤️`;
+                        adviceMessage = `🌱 <strong>一歩ずつ進めましょう！</strong> 最初は誰もがここからスタートします。焦らず、まずは週に数日の投資記録から習慣化していきましょう。少しでも投資ができた日は自分を褒め、未来の資産を育てていきましょう！❤️`;
                     }
 
                     let diffInvestText = "";
                     if (diffInvestGoal > 100) {
-                        diffInvestText = `もし投資・節制達成率を<strong>100%（完璧）</strong>に引き上げると、${years}年後の資産はさらに <span style="color: var(--neon-primary); font-weight:800; font-size: 0.82rem;">+${diffInvestGoal.toLocaleString()}円</span> アップし、合計 <span style="color: var(--neon-secondary); font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> に達します！💰`;
+                        diffInvestText = `もし投資達成率を<strong>100%（完璧）</strong>に引き上げると、${years}年後の資産はさらに <span style="color: var(--neon-primary); font-weight:800; font-size: 0.82rem;">+${diffInvestGoal.toLocaleString()}円</span> アップし、合計 <span style="color: var(--neon-secondary); font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> に達します！💰`;
                     } else {
                         diffInvestText = `現在、<strong>完璧な100%の投資ペース</strong>を維持しています！このまま継続できれば、最高の未来（資産）: <span style="color: var(--neon-secondary); font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> が確実に実現します！🎉`;
                     }
 
                     const microTips = [
                         "小さな一歩が未来を変えます。今日0.1%でも進んだ自分を誇りに思いましょう！🌟",
-                        "習慣化のコツは『完璧を目指さないこと』。今日の投資・節制は一生ものの財産になります！💎",
+                        "習慣化のコツは『完璧を目指さないこと』。今日の投資は一生ものの財産になります！💎",
                         "塵も積もれば山となる。このわずかな積み重ねが、将来驚くべき複利効果を生みます！📈",
                         "おめでとうございます！脳の自制神経が今、一歩ずつ強化されています！🧠🔥",
                         "無理せず、自分のペースで大丈夫。1ミリでも動いたなら、それは立派な大前進です！🌱",
-                        "投資・節制できたお金は未来の自由のチケット。少しずつ自由を引き寄せています！🎟️✨",
+                        "投資できたお金は未来の自由のチケット。少しずつ自由を引き寄せています！🎟️✨",
                         "意思の力に頼らず、仕組みで勝つ。HabitVestを開いた時点であなたの勝ちです！🏆",
                         "健康も、資産も、1日では作れません。今日の選択が1年後に大きな差となります！💪",
                         "他人のペースと比較する必要はありません。過去の自分より0.1%でも前進すれば大成功！🌈",
-                        "ゲーム感覚で楽しみながら投資・節制。このワクワク感が、継続の最大の秘訣です！🎮❤️"
+                        "ゲーム感覚で楽しみながら投資。このワクワク感が、継続の最大の秘訣です！🎮❤️"
                     ];
                     const tipIndex = Math.floor((ratePercent * 10) % 10);
                     const dailyTip = microTips[tipIndex];
@@ -7495,7 +7495,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                                 <strong> 開始日からの実績と理想 </strong><br>
                                 投資記録開始 ${profile.startDate || getTodayStr()} から今日まで：<br>
                                 ・理想目標額: <span style="color: var(--text-main); font-weight:700;">${idealCumToday.toLocaleString()}円</span> 継続時<br>
-                                ・あなたの実績: <span style="color: var(--neon-secondary); font-weight:700;">${totalEarned.toLocaleString()}円</span> (投資・節制達成率: <span style="color: var(--neon-primary); font-weight:700;">${ratePercent.toFixed(1)}%</span>)<br>
+                                ・あなたの実績: <span style="color: var(--neon-secondary); font-weight:700;">${totalEarned.toLocaleString()}円</span> (投資達成率: <span style="color: var(--neon-primary); font-weight:700;">${ratePercent.toFixed(1)}%</span>)<br>
                                 ${diffToday > 0 ? `・理想目標との差: <span style="color: var(--accent-pink); font-weight:700;">-${diffToday.toLocaleString()}円</span>
 ` : `・理想目標との差: <span style="color: var(--neon-primary); font-weight:700;">クリア！完璧です🔥</span>
 `}
@@ -7547,7 +7547,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     { min: 4000000, max: Infinity, emoji: "🏰", title: "世界中の最高峰グルメを思いのままにする自由！", desc: "キャビア、白トリュフ、シャトーブリアンなど、世界中の高級食材をいつでも日常として嗜む。世界各地の三ツ星レストランに名を連ね、生涯にわたり美味しいものを追求し続ける食の極致に到達します。" }
                 ],
                 invest: [
-                    { min: 0, max: 150000, emoji: "🪙", title: "不労所得を生み出す自動マネーマシンの芽生え！", desc: "習慣を投資・節制したお金で高配当株を買い、何もしなくても年間数千円〜数万円が自動入金される流れを作ります。 自分のお金が代わりに働いてくれる という投資の醍醐味と確かな安心感が得られます。" },
+                    { min: 0, max: 150000, emoji: "🪙", title: "不労所得を生み出す自動マネーマシンの芽生え！", desc: "習慣を投資したお金で高配当株を買い、何もしなくても年間数千円〜数万円が自動入金される流れを作ります。 自分のお金が代わりに働いてくれる という投資の醍醐味と確かな安心感が得られます。" },
                     { min: 150000, max: 500000, emoji: "📈", title: "将来数千万円に育つ積立インデックス資産の確固たる核！", desc: "S&P500や世界株式への投資額がグングン積み上がり、将来複利で雪だるま式に増える 資産の塊 が形成されます。口座の残高が着実に増えていくのを見るたび、将来へのお金の不安が消え去っていきます。" },
                     { min: 500000, max: 1500000, emoji: "🏛️", title: "複数の財布をもつ強固なポートフォリオの完成！", desc: "高配当個別株や不動産クラウドファンディングへ賢く分散投資。毎月いずれかの資産から配当や分配金があなたの口座に入金され、給与所得以外の 頼もしい第2の給料袋 として家計を強力にバックアップします。" },
                     { min: 1500000, max: 4000000, emoji: "🏢", title: "毎月の固定費を永久に賄う 自由の盾 の獲得！", desc: "資産から生み出される配当金や運用益だけで、家賃や水道光熱費などの基本生活費を永久に相殺できるステージへ到達。会社にしがみつかなくても生きていけるという、絶大な精神的余裕と自信が手に入ります。" },
@@ -7599,7 +7599,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             if (monthlySaving <= 0) {
                 bannerTitle.innerText = "複利運用を今すぐ始めよう";
-                bannerDesc.innerText = "投資・節制して浮いたお金で資産運用をスタート！まずは人気証券会社で口座開設無料";
+                bannerDesc.innerText = "投資して浮いたお金で資産運用をスタート！まずは人気証券会社で口座開設無料";
                 bannerLink.innerText = "口座を開く 🚀";
                 bannerLink.href = "https://px.a8.net/svt/ejp?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL";
                 return;
