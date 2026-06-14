@@ -5963,7 +5963,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     label = "サブスクを解約セーブ！ 📱";
                     quantity = habitPrices.subCount;
                 } else if (type === 'gacha') {
-                    amount = 5000; // カレンダーからトグル追加する場合は初期値5000円
+                    const inputAmount = window.prompt(`${targetDateStr} の節約金額を入力してください（円）:`, "5000");
+                    if (inputAmount === null) return; // キャンセル時は追加処理を中断
+                    const parsed = parseInt(inputAmount.replace(/,/g, ''), 10);
+                    if (isNaN(parsed) || parsed <= 0) {
+                        alert("有効な正の数値を入力してください。");
+                        return;
+                    }
+                    amount = floorTo100Jpy(parsed);
                     label = "節約 💰";
                     quantity = 1;
                 }
