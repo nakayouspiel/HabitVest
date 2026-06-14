@@ -1823,6 +1823,26 @@
                     複利効果によるボーナス： <span id="val-bonus" style="color: var(--neon-secondary); font-weight: 700;">--- 円</span>
                 </div>
 
+                <!-- 🧮 計算前提と月額内訳の自動可視化アコーディオン -->
+                <div class="simulation-detail-accordion" style="margin: 15px 0 20px 0; background: rgba(255, 255, 255, 0.015); border: 1px solid var(--border-glass); border-radius: 12px; overflow: hidden; transition: all 0.3s ease;">
+                    <button type="button" id="btn-toggle-sim-detail" style="width: 100%; padding: 12px 16px; background: transparent; border: none; color: var(--text-main); font-size: 0.72rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; outline: none;">
+                        <span style="display: flex; align-items: center; gap: 6px;">🧮 計算の前提と月額内訳を表示</span>
+                        <span id="sim-detail-chevron" style="font-size: 0.65rem; color: var(--text-sub); transition: transform 0.3s;">▼ 開く</span>
+                    </button>
+                    <div id="sim-detail-content" style="max-height: 0px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(0, 0, 0, 0.15);">
+                        <div style="padding: 16px; font-size: 0.7rem; color: var(--text-sub); line-height: 1.6; border-top: 1px solid var(--border-glass);">
+                            <div id="sim-detail-tables-container">
+                                <!-- 動的レンダリングエリア -->
+                            </div>
+                            
+                            <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border-glass); font-size: 0.62rem; color: var(--text-muted); line-height: 1.5;">
+                                💡 <strong>その他節約（ガチャ）の計算ルール：</strong><br>
+                                これまでのすべての節約履歴の合算額（フリー入力の合計）を、開始日（起点）から今日までの経過日数で割って「1日あたりの平均節約ペース」を自動算出しています。タバコやビールと同じように、毎日コツコツ貯めているものとして理想・現実の双方の計算に組み込まれます。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 折れ線グラフ -->
                 <div class="chart-container">
                     <canvas id="yieldChart"></canvas>
@@ -7037,6 +7057,118 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
 
             updateChart(labels, savingData, investData);
+
+            // 🧮 シミュレーション内訳の動的レンダリング
+            const detailContainer = document.getElementById('sim-detail-tables-container');
+            if (detailContainer) {
+                const tobaccoRate = profile.trackTobacco ? rates.tobacco : 0;
+                const tobaccoActiveMonthly = (simulationPaceMode === 'ideal') ? tobaccoMonthly : Math.round(tobaccoMonthly * tobaccoRate);
+                const tobaccoActiveP = (simulationPaceMode === 'ideal') ? (tobaccoDaily * elapsedDays) : (history.filter(item => item.type === 'tobacco').reduce((sum, item) => sum + item.amount, 0));
+
+                const beerRate = profile.trackBeer ? rates.beer : 0;
+                const beerActiveMonthly = (simulationPaceMode === 'ideal') ? beerMonthly : Math.round(beerMonthly * beerRate);
+                const beerActiveP = (simulationPaceMode === 'ideal') ? (beerDaily * elapsedDays) : (history.filter(item => item.type === 'beer').reduce((sum, item) => sum + item.amount, 0));
+
+                const subActiveMonthly = activeHabits.sub ? subMonthly : 0;
+                const subActiveP = activeHabits.sub ? (subMonthly * (elapsedDays / 30)) : (history.filter(item => item.type === 'sub').reduce((sum, item) => sum + item.amount, 0));
+
+                const gachaActiveMonthly = (hasGachaHistory || activeHabits.gacha) ? gachaMonthly : 0;
+                const gachaActiveP = totalGachaAmount;
+
+                detailContainer.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div>
+                            <div style="font-weight: 700; color: var(--neon-secondary); margin-bottom: 8px; font-size: 0.72rem; display: flex; align-items: center; gap: 4px;">
+                                📅 毎月の積立想定額（月額ペース内訳）
+                            </div>
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.68rem;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border-glass); color: var(--text-muted); font-size: 0.6rem;">
+                                        <th style="padding: 4px 0;">項目</th>
+                                        <th style="padding: 4px 0; text-align: right;">成功率 (設定)</th>
+                                        <th style="padding: 4px 0; text-align: right;">計算上の月額</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${profile.trackTobacco ? `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">🚭 タバコ</td>
+                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '100% (理想目標)' : `${Math.round(tobaccoRate * 100)}%`}</td>
+                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${tobaccoActiveMonthly.toLocaleString()} 円</td>
+                                    </tr>` : ''}
+                                    ${profile.trackBeer ? `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">🍺 ビール</td>
+                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '100% (理想目標)' : `${Math.round(beerRate * 100)}%`}</td>
+                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${beerActiveMonthly.toLocaleString()} 円</td>
+                                    </tr>` : ''}
+                                    ${activeHabits.sub ? `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">📱 サブスク</td>
+                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">100% (解約セーブ)</td>
+                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${subActiveMonthly.toLocaleString()} 円</td>
+                                    </tr>` : ''}
+                                    ${(hasGachaHistory || activeHabits.gacha) ? `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">💰 節約 (ガチャ)</td>
+                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">過去平均 (日割算数)</td>
+                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${gachaActiveMonthly.toLocaleString()} 円</td>
+                                    </tr>` : ''}
+                                    <tr style="border-top: 1px solid var(--border-glass);">
+                                        <td colspan="2" style="padding: 8px 0; font-weight: 700; color: var(--neon-primary);">🔥 合計積立想定額</td>
+                                        <td style="padding: 8px 0; text-align: right; font-weight: 800; color: var(--neon-primary); font-size: 0.75rem;">${monthlySaving.toLocaleString()} 円/月</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div>
+                            <div style="font-weight: 700; color: var(--neon-secondary); margin-bottom: 8px; font-size: 0.72rem; display: flex; align-items: center; gap: 4px;">
+                                🏦 初期元本（現在までの累積セーブ額内訳）
+                            </div>
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.68rem;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border-glass); color: var(--text-muted); font-size: 0.6rem;">
+                                        <th style="padding: 4px 0;">項目</th>
+                                        <th style="padding: 4px 0; text-align: right;">算出基準</th>
+                                        <th style="padding: 4px 0; text-align: right;">計算上の元本</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${profile.trackTobacco ? `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">🚭 タバコ</td>
+                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? `理想目標 (${elapsedDays}日×毎日)` : '実際のセーブ履歴'}</td>
+                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${floorTo100Jpy(tobaccoActiveP).toLocaleString()} 円</td>
+                                    </tr>` : ''}
+                                    ${profile.trackBeer ? `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">🍺 ビール</td>
+                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? `理想目標 (${elapsedDays}日×毎日)` : '実際のセーブ履歴'}</td>
+                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${floorTo100Jpy(beerActiveP).toLocaleString()} 円</td>
+                                    </tr>` : ''}
+                                    ${activeHabits.sub ? `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">📱 サブスク</td>
+                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '理想目標 (解約継続)' : '実際のセーブ履歴'}</td>
+                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${floorTo100Jpy(subActiveP).toLocaleString()} 円</td>
+                                    </tr>` : ''}
+                                    ${(hasGachaHistory || activeHabits.gacha) ? `
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
+                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">💰 節約 (ガチャ)</td>
+                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">実際の全節約合計</td>
+                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${floorTo100Jpy(gachaActiveP).toLocaleString()} 円</td>
+                                    </tr>` : ''}
+                                    <tr style="border-top: 1px solid var(--border-glass);">
+                                        <td colspan="2" style="padding: 8px 0; font-weight: 700; color: var(--neon-secondary);">🏦 合計初期元本</td>
+                                        <td style="padding: 8px 0; text-align: right; font-weight: 800; color: var(--neon-secondary); font-size: 0.75rem;">${activeP.toLocaleString()} 円</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         function floorTo100Jpy(num) {
@@ -7729,6 +7861,24 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             loadSettings(); 
             calculate();
             renderHistoryList();
+
+            // 🧮 シミュレーション内訳アコーディオンの開閉イベント
+            const simDetailBtn = document.getElementById('btn-toggle-sim-detail');
+            const simDetailContent = document.getElementById('sim-detail-content');
+            const simDetailChevron = document.getElementById('sim-detail-chevron');
+
+            if (simDetailBtn && simDetailContent && simDetailChevron) {
+                simDetailBtn.addEventListener('click', () => {
+                    const isOpen = simDetailContent.style.maxHeight !== '0px' && simDetailContent.style.maxHeight !== '';
+                    if (!isOpen) {
+                        simDetailContent.style.maxHeight = (simDetailContent.scrollHeight + 120) + 'px';
+                        simDetailChevron.innerText = '▲ 閉じる';
+                    } else {
+                        simDetailContent.style.maxHeight = '0px';
+                        simDetailChevron.innerText = '▼ 開く';
+                    }
+                });
+            }
 
             // 自己投資ステータスカードの開閉イベント
             const statusCard = document.getElementById('life-status-card');
