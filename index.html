@@ -7374,6 +7374,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     const beerMonthly = Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
                     const subMonthly = habitPrices.subPrice * habitPrices.subCount;
                     const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+                    const rates = getHabitSuccessRates();
                     const hasGachaHistory = (rates.gacha > 0);
 
                     let idealMonthlySaving = 0;
