@@ -1749,7 +1749,7 @@
                     </button>
                     <button class="checkin-btn daily" id="checkin-btn-gacha" data-habit="gacha">
                         <span class="emoji">💰</span>
-                        <span class="label">フリー節約</span>
+                        <span class="label">今日節約した</span>
                         <span class="price-badge" id="checkin-badge-gacha">5,000円</span>
                     </button>
                 </div>
@@ -2225,6 +2225,30 @@
             <!-- 🗑️ オールリセットボタン -->
             <button id="modal-reset" class="modal-btn-reset">🗑️ 設定とデータを完全に初期化する</button>
             <button id="modal-save" class="modal-btn">設定を保存して適用</button>
+        </div>
+    </div>
+
+    <!-- 💰 フリー節約金額選択モーダル -->
+    <div id="free-saving-modal" class="onboarding-overlay" style="display: none; align-items: center; justify-content: center; z-index: 1010; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+        <div class="glass-card" style="width: 100%; max-width: 320px; text-align: center; padding: 24px; position: relative;">
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                💰 今日いくら節約した？
+            </h3>
+            <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 16px;">
+                1,000円単位で自由に今回の節約・貯金・投資額を入力できます。
+            </p>
+            <div class="input-box" style="justify-content: center; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+                <button type="button" class="spin-btn" id="free-saving-dec" style="width: 44px; height: 44px; font-size: 1.4rem; border-radius: 50%;">-</button>
+                <div style="display: inline-flex; align-items: baseline; justify-content: center;">
+                    <span id="free-saving-val" style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); font-family: var(--font-ui);">5,000</span>
+                    <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-sub); margin-left: 4px;">円</span>
+                </div>
+                <button type="button" class="spin-btn" id="free-saving-inc" style="width: 44px; height: 44px; font-size: 1.4rem; border-radius: 50%;">+</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px;">
+                <button type="button" class="modal-btn-secondary" id="free-saving-cancel" style="margin-top: 0; padding: 12px; font-size: 0.8rem;">やめる</button>
+                <button type="button" class="modal-btn" id="free-saving-confirm" style="margin-top: 0; padding: 12px; font-size: 0.8rem;">決定する</button>
+            </div>
         </div>
     </div>
 
@@ -6228,7 +6252,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         window.togglePastRecord = function(dateStr, type) {
             let targetDateStr = dateStr;
-            if (type === 'sub' || type === 'gacha') {
+            if (type === 'sub') {
                 const parts = dateStr.split('/');
                 targetDateStr = `${parts[0]}/${parts[1]}/1`;
             }
@@ -6240,13 +6264,17 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (hasRecord) {
                 // 記録を削除
                 history = history.filter(item => !(item.date === targetDateStr && item.type === type));
-                // 選択月が当月、または当日が今日の場合、メイン画面のチェックインボタンのactiveも連動して外す
-                const isTodayDaily = (type === 'tobacco' || type === 'beer') && (targetDateStr === getTodayStr());
-                const isCurrentMonthMonthly = (type === 'sub' || type === 'gacha') && (targetDateStr === currentMonthFirstStr);
-                if (isTodayDaily || isCurrentMonthMonthly) {
-                    activeHabits[type] = false;
-                    const btn = document.getElementById(`checkin-btn-${type}`);
-                    if (btn) btn.classList.remove('active');
+                
+                // 選択日が今日の場合、メイン画面のチェックインボタンのactive状態を更新
+                const isToday = (targetDateStr === getTodayStr());
+                if (isToday) {
+                    if (type === 'tobacco' || type === 'beer' || type === 'sub') {
+                        activeHabits[type] = false;
+                        const btn = document.getElementById(`checkin-btn-${type}`);
+                        if (btn) btn.classList.remove('active');
+                    } else if (type === 'gacha') {
+                        updateCheckinBtnStates();
+                    }
                     saveSettings();
                 }
             } else {
@@ -6268,9 +6296,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     label = "サブスクを解約セーブ！ 📱";
                     quantity = habitPrices.subCount;
                 } else if (type === 'gacha') {
-                    amount = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
+                    amount = 5000; // カレンダーからトグル追加する場合は初期値5000円
                     label = "フリー節約をセーブ！ 💰";
-                    quantity = habitPrices.gachaCount;
+                    quantity = 1;
                 }
 
                 const item = {
@@ -6283,13 +6311,16 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 };
                 history.unshift(item);
 
-                // 選択月が当月、または当日が今日の場合、メイン画面のチェックインボタンのactiveも連動して点灯させる
-                const isTodayDaily = (type === 'tobacco' || type === 'beer') && (targetDateStr === getTodayStr());
-                const isCurrentMonthMonthly = (type === 'sub' || type === 'gacha') && (targetDateStr === currentMonthFirstStr);
-                if (isTodayDaily || isCurrentMonthMonthly) {
-                    activeHabits[type] = true;
-                    const btn = document.getElementById(`checkin-btn-${type}`);
-                    if (btn) btn.classList.add('active');
+                // 選択日が今日の場合、メイン画面のボタンを点灯
+                const isToday = (targetDateStr === getTodayStr());
+                if (isToday) {
+                    if (type === 'tobacco' || type === 'beer' || type === 'sub') {
+                        activeHabits[type] = true;
+                        const btn = document.getElementById(`checkin-btn-${type}`);
+                        if (btn) btn.classList.add('active');
+                    } else if (type === 'gacha') {
+                        updateCheckinBtnStates();
+                    }
                     saveSettings();
                 }
             }
@@ -6321,13 +6352,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const parts = dateStr.split('/');
                 const monthFirstStr = `${parts[0]}/${parts[1]}/1`;
 
-                const dayRecords = history.filter(item => item.date === dateStr && (item.type === 'tobacco' || item.type === 'beer'));
-                const monthRecords = history.filter(item => item.date === monthFirstStr && (item.type === 'sub' || item.type === 'gacha'));
+                const dayRecords = history.filter(item => item.date === dateStr && (item.type === 'tobacco' || item.type === 'beer' || item.type === 'gacha'));
+                const monthRecords = history.filter(item => item.date === monthFirstStr && item.type === 'sub');
 
                 const hasTobacco = history.some(item => item.date === dateStr && item.type === 'tobacco');
                 const hasBeer = history.some(item => item.date === dateStr && item.type === 'beer');
                 const hasSub = history.some(item => item.date === monthFirstStr && item.type === 'sub');
-                const hasGacha = history.some(item => item.date === monthFirstStr && item.type === 'gacha');
+                const hasGacha = history.some(item => item.date === dateStr && item.type === 'gacha');
 
                 let recordText = "";
                 const recordsList = [];
@@ -6717,10 +6748,83 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return `${y}/${m}/${d}`;
         }
 
+        // --- 💰 フリー節約金額選択モーダル制御 ---
+        const freeSavingModal = document.getElementById('free-saving-modal');
+        const freeSavingVal = document.getElementById('free-saving-val');
+        const freeSavingDec = document.getElementById('free-saving-dec');
+        const freeSavingInc = document.getElementById('free-saving-inc');
+        const freeSavingCancel = document.getElementById('free-saving-cancel');
+        const freeSavingConfirm = document.getElementById('free-saving-confirm');
+
+        let tempFreeSavingAmount = 5000; // 初期値 5,000円
+
+        function openFreeSavingModal() {
+            tempFreeSavingAmount = 5000; // 開くたびに初期値5,000円にリセット
+            updateFreeSavingModalDisplay();
+            if (freeSavingModal) {
+                freeSavingModal.style.display = 'flex';
+            }
+        }
+
+        function closeFreeSavingModal() {
+            if (freeSavingModal) {
+                freeSavingModal.style.display = 'none';
+            }
+        }
+
+        function updateFreeSavingModalDisplay() {
+            if (freeSavingVal) {
+                freeSavingVal.innerText = tempFreeSavingAmount.toLocaleString();
+            }
+        }
+
+        if (freeSavingDec) {
+            freeSavingDec.addEventListener('click', () => {
+                if (tempFreeSavingAmount > 1000) {
+                    tempFreeSavingAmount -= 1000;
+                    updateFreeSavingModalDisplay();
+                }
+            });
+        }
+
+        if (freeSavingInc) {
+            freeSavingInc.addEventListener('click', () => {
+                tempFreeSavingAmount += 1000;
+                updateFreeSavingModalDisplay();
+            });
+        }
+
+        if (freeSavingCancel) {
+            freeSavingCancel.addEventListener('click', () => {
+                closeFreeSavingModal();
+            });
+        }
+
+        if (freeSavingConfirm) {
+            freeSavingConfirm.addEventListener('click', () => {
+                // 決定時に指定額を履歴に追加
+                addHistoryItem('gacha', tempFreeSavingAmount);
+                closeFreeSavingModal();
+                
+                // 計算と画面表示の更新
+                saveSettings();
+                calculate();
+                renderHistoryList();
+                renderCalendar();
+                updateCheckinBtnStates();
+            });
+        }
+
         // --- 🆕 チェックインボタンの押下イベント登録 ---
         checkinBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const type = btn.dataset.habit;
+
+                if (type === 'gacha') {
+                    // フリー節約はトグルではなく、金額選択モーダルを開く
+                    openFreeSavingModal();
+                    return;
+                }
 
                 if (type === 'sub') {
                     // Toggle activeHabits (calculate() will run syncMonthlyLumpSavings() which manages history)
@@ -6749,7 +6853,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         });
 
         // 履歴に項目を追加
-        function addHistoryItem(type) {
+        function addHistoryItem(type, customAmount) {
             const dateStr = getTodayStr();
             let amount = 0;
             let label = "";
@@ -6768,9 +6872,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 label = "サブスクを解約セーブ！ 📱";
                 quantity = habitPrices.subCount;
             } else if (type === 'gacha') {
-                amount = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
+                amount = customAmount !== undefined ? customAmount : floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
                 label = "フリー節約をセーブ！ 💰";
-                quantity = habitPrices.gachaCount;
+                quantity = 1;
             }
 
             const item = {
@@ -6993,7 +7097,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (activeHabits.sub) checkinBtnSub.classList.add('active');
             else checkinBtnSub.classList.remove('active');
 
-            if (activeHabits.gacha) checkinBtnGacha.classList.add('active');
+            // gachaは「今日、1回でもフリー節約（gacha）の履歴があるか」で判定
+            const todayStr = getTodayStr();
+            const hasGachaToday = history.some(item => item.date === todayStr && item.type === 'gacha');
+            if (hasGachaToday) checkinBtnGacha.classList.add('active');
             else checkinBtnGacha.classList.remove('active');
         }
 
@@ -7045,36 +7152,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     saveHistory();
                 }
             }
-
-            // Sync Gacha
-            const hasGachaRecord = history.some(item => item.date === currentMonthFirstStr && item.type === 'gacha');
-            if (activeHabits.gacha) {
-                if (!hasGachaRecord) {
-                    const item = {
-                        id: Date.now() + 1,
-                        date: currentMonthFirstStr,
-                        type: 'gacha',
-                        label: "フリー節約をセーブ！ 💰",
-                        amount: floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount),
-                        quantity: habitPrices.gachaCount
-                    };
-                    history.unshift(item);
-                    saveHistory();
-                } else {
-                    // 同期済みの設定金額を最新化
-                    const gachaItem = history.find(item => item.date === currentMonthFirstStr && item.type === 'gacha');
-                    if (gachaItem) {
-                        gachaItem.amount = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
-                        gachaItem.quantity = habitPrices.gachaCount;
-                    }
-                    saveHistory();
-                }
-            } else {
-                if (hasGachaRecord) {
-                    history = history.filter(item => !(item.date === currentMonthFirstStr && item.type === 'gacha'));
-                    saveHistory();
-                }
-            }
         }
 
         function calculate() {
@@ -7090,7 +7167,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }));
 
             // 1. 本日浮いたお金の計算
-            // 日次項目（タバコ、ビール）のみを本日の節約実績（日次）に積算
+            // 日次項目（タバコ、ビール）と、手動で今日追加したフリー節約を合算
             let todaySaving = 0;
             if (activeHabits.tobacco) {
                 todaySaving += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
@@ -7098,16 +7175,19 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (activeHabits.beer) {
                 todaySaving += Math.round(habitPrices.beerPrice * habitPrices.beerCount);
             }
+            // 今日のフリー節約（gacha）の総額を加算
+            const todayGachaAmount = history
+                .filter(item => item.date === todayStr && item.type === 'gacha')
+                .reduce((sum, item) => sum + item.amount, 0);
+            todaySaving += todayGachaAmount;
+
             todaySaving = floorTo100Jpy(todaySaving);
             valSavingToday.innerText = `${todaySaving.toLocaleString()} 円`;
 
-            // 月次項目（サブスク、フリー節約）は別途、セーブ中の固定費（月次）として表示
+            // 月次項目（サブスク）は別途、セーブ中の固定費（月次）として表示
             let monthlyFixedSaving = 0;
             if (activeHabits.sub) {
                 monthlyFixedSaving += Math.round(habitPrices.subPrice * habitPrices.subCount);
-            }
-            if (activeHabits.gacha) {
-                monthlyFixedSaving += Math.round(habitPrices.gachaPrice * habitPrices.gachaCount);
             }
             monthlyFixedSaving = floorTo100Jpy(monthlyFixedSaving);
             if (valSavingMonthly) {
@@ -7120,7 +7200,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const tobaccoMonthly = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
             const beerMonthly = Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
             const subMonthly = habitPrices.subPrice * habitPrices.subCount;
-            const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
 
             const rates = getHabitSuccessRates();
 
@@ -7131,7 +7210,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (profile.trackTobacco) activeRates.push(rates.tobacco);
             if (profile.trackBeer) activeRates.push(rates.beer);
             if (activeHabits.sub) activeRates.push(1.0);
-            if (activeHabits.gacha) activeRates.push(1.0);
             
             if (activeRates.length > 0) {
                 avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
@@ -7155,21 +7233,18 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (profile.trackTobacco) monthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
                 if (profile.trackBeer) monthlySaving += Math.round(beerMonthly * rates.beer);
                 if (activeHabits.sub) monthlySaving += subMonthly;
-                if (activeHabits.gacha) monthlySaving += gachaMonthly;
             } else {
                 if (profile.trackTobacco) monthlySaving += tobaccoMonthly;
                 if (profile.trackBeer) monthlySaving += beerMonthly;
                 if (activeHabits.sub) monthlySaving += subMonthly;
-                if (activeHabits.gacha) monthlySaving += gachaMonthly;
             }
             monthlySaving = floorTo100Jpy(monthlySaving);
 
-            // ライフ（健康・未来ロードマップ）用に常に現実ペースの月間節約額を計算
+            // ライフ（健康・時間の実績＆メリット）用に常に現実ペースの月間節約額を計算
             let realMonthlySaving = 0;
             if (profile.trackTobacco) realMonthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
             if (profile.trackBeer) realMonthlySaving += Math.round(beerMonthly * rates.beer);
             if (activeHabits.sub) realMonthlySaving += subMonthly;
-            if (activeHabits.gacha) realMonthlySaving += gachaMonthly;
             realMonthlySaving = floorTo100Jpy(realMonthlySaving);
 
             // 過去履歴からこれまでの累計節約額 (実績) を計算して初期元本 P とし、資産複利計算に反映
