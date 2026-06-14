@@ -5739,7 +5739,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 tab: 'habits',
                 position: 'top',
                 arrowPos: 'center',
-                title: '① やめた日はここをタップ！',
+                title: '① できた日はここをタップ！',
                 desc: '今日、節制や投資ができた習慣（タバコやお酒など）があれば、ボタンをタップして「記録」しましょう。投資・節制額が即時反映されます！'
             },
             {
@@ -5761,7 +5761,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 position: 'bottom',
                 arrowPos: 'right',
                 title: '④  ライフ タブ',
-                desc: '自己投資レベルや称号ツリー、やめたことによる健康・時間のメリット、未来のご褒表ロードマップを確認できます！'
+                desc: '自己投資レベルや称号ツリー、投資・節制による健康・時間のメリット、未来のご褒表ロードマップを確認できます！'
             }
         ];
 
@@ -6534,7 +6534,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             sortHistoryByDate();
             historyListContainer.innerHTML = "";
             if (history.length === 0) {
-                historyListContainer.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 0.72rem; padding: 20px;">履歴がありません。上のボタンから 今日やめた！ を記録しましょう。</div>`;
+                historyListContainer.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 0.72rem; padding: 20px;">履歴がありません。上のボタンから記録しましょう。</div>`;
                 return;
             }
 
@@ -7547,7 +7547,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     { min: 4000000, max: Infinity, emoji: "🏰", title: "世界中の最高峰グルメを思いのままにする自由！", desc: "キャビア、白トリュフ、シャトーブリアンなど、世界中の高級食材をいつでも日常として嗜む。世界各地の三ツ星レストランに名を連ね、生涯にわたり美味しいものを追求し続ける食の極致に到達します。" }
                 ],
                 invest: [
-                    { min: 0, max: 150000, emoji: "🪙", title: "不労所得を生み出す自動マネーマシンの芽生え！", desc: "習慣をセーブしたお金で高配当株を買い、何もしなくても年間数千円〜数万円が自動入金される流れを作ります。 自分のお金が代わりに働いてくれる という投資の醍醐味と確かな安心感が得られます。" },
+                    { min: 0, max: 150000, emoji: "🪙", title: "不労所得を生み出す自動マネーマシンの芽生え！", desc: "習慣を投資・節制したお金で高配当株を買い、何もしなくても年間数千円〜数万円が自動入金される流れを作ります。 自分のお金が代わりに働いてくれる という投資の醍醐味と確かな安心感が得られます。" },
                     { min: 150000, max: 500000, emoji: "📈", title: "将来数千万円に育つ積立インデックス資産の確固たる核！", desc: "S&P500や世界株式への投資額がグングン積み上がり、将来複利で雪だるま式に増える 資産の塊 が形成されます。口座の残高が着実に増えていくのを見るたび、将来へのお金の不安が消え去っていきます。" },
                     { min: 500000, max: 1500000, emoji: "🏛️", title: "複数の財布をもつ強固なポートフォリオの完成！", desc: "高配当個別株や不動産クラウドファンディングへ賢く分散投資。毎月いずれかの資産から配当や分配金があなたの口座に入金され、給与所得以外の 頼もしい第2の給料袋 として家計を強力にバックアップします。" },
                     { min: 1500000, max: 4000000, emoji: "🏢", title: "毎月の固定費を永久に賄う 自由の盾 の獲得！", desc: "資産から生み出される配当金や運用益だけで、家賃や水道光熱費などの基本生活費を永久に相殺できるステージへ到達。会社にしがみつかなくても生きていけるという、絶大な精神的余裕と自信が手に入ります。" },
@@ -7599,7 +7599,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             if (monthlySaving <= 0) {
                 bannerTitle.innerText = "複利運用を今すぐ始めよう";
-                bannerDesc.innerText = "やめた習慣のお金で資産運用をスタート！まずは人気証券会社で口座開設無料";
+                bannerDesc.innerText = "投資・節制して浮いたお金で資産運用をスタート！まずは人気証券会社で口座開設無料";
                 bannerLink.innerText = "口座を開く 🚀";
                 bannerLink.href = "https://px.a8.net/svt/ejp?a8mat=4B5TC6+6SPA9M+3XCC+6FWRL";
                 return;
