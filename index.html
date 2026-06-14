@@ -7311,6 +7311,33 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const itemMonth = getHobbyItemForAmount(hobby, cumMonth, finalIdxMonth);
                 const itemYear = getHobbyItemForAmount(hobby, cumYear, finalIdxYear);
 
+                let healthDay = "";
+                let healthWeek = "";
+                let healthMonth = "";
+                let healthYear = "";
+
+                if (profile.trackTobacco && profile.trackBeer) {
+                    healthDay = "【心肺＆肝臓】心拍数・血圧が正常化し、アルコール分解負担がゼロに。ダブルの体内浄化が始まり、翌朝のだるさが消え去ります！";
+                    healthWeek = "【睡眠・味覚改善】ニコチンとアルコールが完全に抜け、睡眠効率が統計的に約30%向上！味覚が鋭くなり食事の美味しさが倍増します。";
+                    healthMonth = "【代謝爆上げ・肌ツヤ】肺機能が大幅回復し、肝細胞が劇的に修復。血流がスムーズになり、肌のツヤが戻り、ぽっこりお腹もスッキリ解消！";
+                    healthYear = "【生涯の健康体】心血管疾患リスクが統計的に50%以上減少、肝機能が完全に正常化。疲れを全く溜め込まない最強の体が定着します！";
+                } else if (profile.trackTobacco) {
+                    healthDay = "【呼吸器・心臓】やめて24時間で心臓発作リスクが下がり始め、肺がキレイに掃除され始めます。血中酸素レベルが統計的に正常化します！";
+                    healthWeek = "【睡眠・嗅覚復活】ニコチンが体内から完全に消え、嗅覚や味覚が劇的に改善。睡眠の質も向上し、朝の目覚めが驚くほど軽やかになります！";
+                    healthMonth = "【肺機能・肌改善】肺活量が最大30%回復し、咳や息切れが減少。肌の血流が改善し、くすみが消えて肌トーンが明るく若返ります！";
+                    healthYear = "【病気リスク半減】非喫煙者と比べて心臓病の生涯リスクが統計的に50%減少！免疫力も劇的に向上し、風邪を引きにくい強靭な体に。";
+                } else if (profile.trackBeer) {
+                    healthDay = "【睡眠・肝臓保護】アルコールによる脱水や睡眠障害から解放され、翌朝のだるさが大幅に軽減。肝臓の代謝負担がリセットされます！";
+                    healthWeek = "【脳疲労リセット】深い睡眠（レム睡眠）の割合が約20%増加し、脳の疲労が解消。脂肪燃焼効率が上がり、体重が減少傾向に入ります！";
+                    healthMonth = "【肝機能・むくみ解消】アルコール性脂肪肝リスクが統計的に約15%減少。肌の水分量が保たれて乾燥や毛穴トラブルが劇的に改善します！";
+                    healthYear = "【生活習慣病改善】高血圧や糖尿病リスクが劇的に低下し、コレステロール値が正常化。がん発症率も下がり免疫年齢が大きく若返ります！";
+                } else {
+                    healthDay = "【脳科学】『自分の力で支出をコントロールした』という自己決定感が脳の前頭葉を刺激し、朝のモチベーションが統計的に向上します！";
+                    healthWeek = "【ストレス低下】無意識の経済的焦りが解消され、ストレスホルモン（コルチゾール）が統計的に約10%低下。自律神経が整います。";
+                    healthMonth = "【自制心の強化】脳の前頭連合野の自制心回路が物理的に強化。目先の誘惑に負けない高い集中力とブレない自信が手に入ります！";
+                    healthYear = "【幸福度の向上】将来への強固な安心感が得られ、うつ傾向や将来不安が統計的に30%以上減少。日常の幸福度が最大化されます！";
+                }
+
                 // 1日後
                 const rmDayContainer = document.getElementById('rm-day-container');
                 if (rmDayContainer) {
@@ -7319,8 +7346,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 8px var(--neon-primary);"></div>
                         <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 現在から＋1日後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
-                            到達目標累計: <span style="font-weight: 700; color: var(--neon-primary);">${cumDay.toLocaleString()}</span>円 (現在から +${dailySaving.toLocaleString()}円)<br>
-                            <span style="color: var(--text-muted);">ご褒美：<strong>${itemDay.title}</strong>相当が手に入ります！${itemDay.desc} ${itemDay.emoji}</span>
+                            到達目標累計: <span style="font-weight: 700; color: var(--neon-primary);">${cumDay.toLocaleString()}</span>円 (現在から +s${dailySaving.toLocaleString()}円)<br>
+                            <span style="color: #00ff88; font-weight: 600; display: block; margin: 4px 0 2px 0;">❤️ 健康メリット：${healthDay}</span>
+                            <span style="color: var(--text-muted);">🎁 ご褒美：<strong>${itemDay.title}</strong>相当が手に入ります！${itemDay.desc} ${itemDay.emoji}</span>
                         </div>
                     `;
                 }
@@ -7333,8 +7361,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-secondary); box-shadow: 0 0 8px var(--neon-secondary);"></div>
                         <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 現在から＋1週間後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
-                            到達目標累計: <span style="font-weight: 700; color: var(--neon-secondary);">${cumWeek.toLocaleString()}</span>円 (現在から +${(dailySaving * 7).toLocaleString()}円)<br>
-                            <span style="color: var(--text-muted);">ご褒美：<strong>${itemWeek.title}</strong>相当が手に入ります！${itemWeek.desc} ${itemWeek.emoji}</span>
+                            到達目標累計: <span style="font-weight: 700; color: var(--neon-secondary);">${cumWeek.toLocaleString()}</span>円 (現在から +s${(dailySaving * 7).toLocaleString()}円)<br>
+                            <span style="color: #00ff88; font-weight: 600; display: block; margin: 4px 0 2px 0;">❤️ 健康メリット：${healthWeek}</span>
+                            <span style="color: var(--text-muted);">🎁 ご褒美：<strong>${itemWeek.title}</strong>相当が手に入ります！${itemWeek.desc} ${itemWeek.emoji}</span>
                         </div>
                     `;
                 }
@@ -7347,8 +7376,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-primary); box-shadow: 0 0 8px var(--neon-primary);"></div>
                         <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-primary);">📅 現在から＋1ヶ月後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
-                            到達目標累計: <span style="font-weight: 700; color: var(--neon-primary);">${cumMonth.toLocaleString()}</span>円 (現在から +${monthlySaving.toLocaleString()}円)<br>
-                            <span style="color: var(--text-muted);">ご褒美：欲しかった<strong>${itemMonth.title}</strong>が購入できます！${itemMonth.desc} ${itemMonth.emoji}</span>
+                            到達目標累計: <span style="font-weight: 700; color: var(--neon-primary);">${cumMonth.toLocaleString()}</span>円 (現在から +s${monthlySaving.toLocaleString()}円)<br>
+                            <span style="color: #00ff88; font-weight: 600; display: block; margin: 4px 0 2px 0;">❤️ 健康メリット：${healthMonth}</span>
+                            <span style="color: var(--text-muted);">🎁 ご褒美：欲しかった<strong>${itemMonth.title}</strong>が購入できます！${itemMonth.desc} ${itemMonth.emoji}</span>
                         </div>
                     `;
                 }
@@ -7361,8 +7391,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-secondary); box-shadow: 0 0 8px var(--neon-secondary);"></div>
                         <div style="font-weight: 700; font-size: 0.85rem; color: var(--neon-secondary);">📅 現在から＋1年後</div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.5;">
-                            到達目標累計: <span style="font-weight: 700; color: var(--neon-secondary);">${cumYear.toLocaleString()}</span>円 (現在から +${(monthlySaving * 12).toLocaleString()}円)<br>
-                            <span style="color: var(--text-muted);">ご褒美：なんと<strong>${itemYear.title}</strong>相当を実現！${itemYear.desc} ${itemYear.emoji}</span>
+                            到達目標累計: <span style="font-weight: 700; color: var(--neon-secondary);">${cumYear.toLocaleString()}</span>円 (現在から +s${(monthlySaving * 12).toLocaleString()}円)<br>
+                            <span style="color: #00ff88; font-weight: 600; display: block; margin: 4px 0 2px 0;">❤️ 健康メリット：${healthYear}</span>
+                            <span style="color: var(--text-muted);">🎁 ご褒美：なんと<strong>${itemYear.title}</strong>相当を実現！${itemYear.desc} ${itemYear.emoji}</span>
                         </div>
                     `;
                 }
@@ -7410,7 +7441,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     const diffToday = floorTo100Jpy(idealCumToday - totalEarned);
 
                     // セーブ率は実際の実績累計額と理想目標額の比率から計算 直感的で整合性がある形にする 
-                    const ratePercent = idealCumToday > 0 ? Math.min(100, Math.round((totalEarned / idealCumToday) * 100)) : 100;
+                    const ratePercent = idealCumToday > 0 ? Math.min(100, Math.round((totalEarned / idealCumToday) * 1000) / 10) : 100;
 
                     let totalInvestIdeal = 0;
                     const P_ideal = idealCumToday; // 理想目標の現在までの累積を初期元本とする
@@ -7440,6 +7471,21 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         diffInvestText = `現在、<strong>完璧な100%のセーブペース</strong>を維持しています！このまま継続できれば、最高の未来 資産: <span style="color: var(--neon-secondary); font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> が確実に実現します！🎉`;
                     }
 
+                    const microTips = [
+                        "小さな一歩が未来を変えます。今日0.1%でも進んだ自分を誇りに思いましょう！🌟",
+                        "習慣化のコツは『完璧を目指さないこと』。今日のセーブは一生ものの財産になります！💎",
+                        "塵も積もれば山となる。このわずかな積み重ねが、将来驚くべき複利効果を生みます！📈",
+                        "おめでとうございます！脳の自制神経が今、一歩ずつ強化されています！🧠🔥",
+                        "無理せず、自分のペースで大丈夫。1ミリでも動いたなら、それは立派な大前進です！🌱",
+                        "セーブできたお金は未来の自由のチケット。少しずつ自由を引き寄せています！🎟️✨",
+                        "意思の力に頼らず、仕組みで勝つ。HabitVestを開いた時点であなたの勝ちです！🏆",
+                        "健康も、資産も、1日では作れません。今日の選択が1年後に大きな差となります！💪",
+                        "他人のペースと比較する必要はありません。過去の自分より0.1%でも前進すれば大成功！🌈",
+                        "ゲーム感覚で楽しみながらセーブ。このワクワク感が、継続の最大の秘訣です！🎮❤️"
+                    ];
+                    const tipIndex = Math.floor((ratePercent * 10) % 10);
+                    const dailyTip = microTips[tipIndex];
+
                     rmGoalAdvice.innerHTML = `
                         <div style="background: rgba(0, 243, 255, 0.02); border: 1px dashed rgba(0, 243, 255, 0.25); border-radius: 12px; padding: 12px; margin-top: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
                             <div style="font-weight: 700; color: var(--neon-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
@@ -7449,9 +7495,15 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                                 <strong> 開始日からの実績と理想 </strong><br>
                                 セーブ開始 ${profile.startDate || getTodayStr()} から今日まで：<br>
                                 ・理想目標額: <span style="color: var(--text-main); font-weight:700;">${idealCumToday.toLocaleString()}円</span> 継続時<br>
-                                ・あなたの実績: <span style="color: var(--neon-secondary); font-weight:700;">${totalEarned.toLocaleString()}円</span> (セーブ率: <span style="color: var(--neon-primary); font-weight:700;">${ratePercent}%</span>)<br>
-                                ${diffToday > 0 ? `・理想目標との差: <span style="color: var(--accent-pink); font-weight:700;">-${diffToday.toLocaleString()}円</span><br>` : `・理想目標との差: <span style="color: var(--neon-primary); font-weight:700;">クリア！完璧です🔥</span><br>`}
+                                ・あなたの実績: <span style="color: var(--neon-secondary); font-weight:700;">${totalEarned.toLocaleString()}円</span> (セーブ率: <span style="color: var(--neon-primary); font-weight:700;">${ratePercent.toFixed(1)}%</span>)<br>
+                                ${diffToday > 0 ? `・理想目標との差: <span style="color: var(--accent-pink); font-weight:700;">-${diffToday.toLocaleString()}円</span>
+` : `・理想目標との差: <span style="color: var(--neon-primary); font-weight:700;">クリア！完璧です🔥</span>
+`}
                                 <br>
+                                <div style="margin-bottom: 12px; padding: 10px; background: rgba(0, 255, 136, 0.05); border-left: 3px solid #00ff88; border-radius: 4px; line-height: 1.4; font-size: 0.72rem; color: #ffffff;">
+                                    <div style="font-weight: 700; color: #00ff88; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em;">🎯 0.1%刻みの今日の一言アドバイス</div>
+                                    <strong>[進捗率 ${ratePercent.toFixed(1)}%]</strong> ${dailyTip}
+                                </div>
                                 <strong> 将来の伸びしろ予測 </strong><br>
                                 ${diffInvestText}<br>
                                 <span style="color: var(--text-muted); display: block; margin-top: 8px; border-left: 2px solid var(--neon-primary); padding-left: 8px; line-height: 1.5;">
@@ -7825,11 +7877,121 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 }, 850);
             }
 
-            // 📲 サービスワーカーの登録 (PWA対応)
+            // 📲 サービスワーカーの登録 (PWA対応 ＆ 即時適用・自動リロード・キャッシュバイパス設計)
             if ('serviceWorker' in navigator) {
+                // アップデート検出時に表示するトースト関数
+                function showUpdateToast() {
+                    if (document.getElementById('sw-update-toast')) return;
+                    
+                    const toast = document.createElement('div');
+                    toast.id = 'sw-update-toast';
+                    toast.style.position = 'fixed';
+                    toast.style.bottom = '80px'; // ボトムナビの上
+                    toast.style.left = '50%';
+                    toast.style.transform = 'translateX(-50%)';
+                    toast.style.width = 'calc(100% - 32px)';
+                    toast.style.maxWidth = '400px';
+                    toast.style.background = 'rgba(15, 23, 42, 0.9)';
+                    toast.style.backdropFilter = 'blur(16px)';
+                    toast.style.webkitBackdropFilter = 'blur(16px)';
+                    toast.style.border = '1px solid #00ff88';
+                    toast.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.25)';
+                    toast.style.borderRadius = '16px';
+                    toast.style.padding = '16px';
+                    toast.style.zIndex = '10000';
+                    toast.style.display = 'flex';
+                    toast.style.flexDirection = 'column';
+                    toast.style.gap = '10px';
+                    toast.style.animation = 'swSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                    
+                    if (!document.getElementById('sw-toast-style')) {
+                        const style = document.createElement('style');
+                        style.id = 'sw-toast-style';
+                        style.innerHTML = `
+                            @keyframes swSlideUp {
+                                from { transform: translate(-50%, 50px); opacity: 0; }
+                                to { transform: translate(-50%, 0); opacity: 1; }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                    
+                    toast.innerHTML = `
+                        <div style="display: flex; align-items: flex-start; gap: 10px;">
+                            <span style="font-size: 1.25rem;">⚡</span>
+                            <div style="flex: 1; text-align: left;">
+                                <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; margin-bottom: 2px;">最新のアップデートが届いています！</div>
+                                <div style="font-size: 0.7rem; color: #94a3b8; line-height: 1.4;">HabitVestがより快適にアップグレードされました。最新の変更をすぐに反映できます。</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px;">
+                            <button id="sw-update-ignore-btn" style="background: transparent; border: none; padding: 6px 12px; font-size: 0.72rem; color: #94a3b8; font-weight: 600; cursor: pointer;">後で</button>
+                            <button id="sw-update-now-btn" style="background: #00ff88; border: none; border-radius: 8px; padding: 6px 14px; font-size: 0.72rem; color: #000000; font-weight: 700; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);">今すぐ更新</button>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(toast);
+                    
+                    document.getElementById('sw-update-ignore-btn').addEventListener('click', () => {
+                        toast.style.display = 'none';
+                    });
+                    
+                    document.getElementById('sw-update-now-btn').addEventListener('click', () => {
+                        if (window.swWaitingWorker) {
+                            window.swWaitingWorker.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                        toast.style.display = 'none';
+                    });
+                }
+
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+                    .then(reg => {
+                        console.log('Service Worker registered successfully:', reg.scope);
+                        
+                        // 起動直後に即時チェック
+                        reg.update().catch(err => console.log('SW manual update check failed on startup:', err));
+
+                        // 30秒ごとにバックグラウンドで更新を強制チェック
+                        setInterval(() => {
+                            reg.update().catch(err => console.log('SW manual update check failed in background:', err));
+                        }, 30000);
+                        
+                        function trackInstalling(worker) {
+                            worker.addEventListener('statechange', () => {
+                                if (worker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
+                                        window.swWaitingWorker = worker;
+                                        showUpdateToast();
+                                    }
+                                }
+                            });
+                        }
+
+                        if (reg.waiting) {
+                            window.swWaitingWorker = reg.waiting;
+                            showUpdateToast();
+                        }
+
+                        if (reg.installing) {
+                            trackInstalling(reg.installing);
+                        }
+
+                        reg.addEventListener('updatefound', () => {
+                            if (reg.installing) {
+                                trackInstalling(reg.installing);
+                            }
+                        });
+                    })
                     .catch(err => console.error('Service Worker registration failed:', err));
+
+                // 制御するサービスワーカーが切り替わった場合、瞬時に自動リロード
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
             }
         });
     </script>

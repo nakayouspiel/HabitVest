@@ -1,4 +1,4 @@
-const CACHE_NAME = 'habitvest-v73';
+const CACHE_NAME = 'habitvest-v74';
 const ASSETS = [
   './',
   'index.html',
@@ -33,6 +33,14 @@ self.addEventListener('activate', (e) => {
     }).then(() => self.clients.claim())
   );
 });
+
+// 制御切り替えのためのメッセージリスナー
+self.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 
 // ローカルホスト開発時はキャッシュをバイパスし、通常はキャッシュファースト
 self.addEventListener('fetch', (e) => {
