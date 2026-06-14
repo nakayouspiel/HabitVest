@@ -1749,7 +1749,7 @@
                     </button>
                     <button class="checkin-btn daily" id="checkin-btn-gacha" data-habit="gacha">
                         <span class="emoji">💰</span>
-                        <span class="label">今日節約した</span>
+                        <span class="label">節約</span>
                         <span class="price-badge" id="checkin-badge-gacha">5,000円</span>
                     </button>
                 </div>
@@ -2143,10 +2143,10 @@
                         </div>
                     </div>
 
-                    <!-- 💰 節約した！！ -->
+                    <!-- 💰 節約 -->
                     <div class="form-group" style="margin-top: 14px;">
                         <div class="label-wrapper">
-                            <label for="gacha-unit-price">💰 節約した！！ 1回あたりの額</label>
+                            <label for="gacha-unit-price">💰 節約 1回あたりの額</label>
                             <span class="val-badge" id="gacha-price-badge">5,000円</span>
                         </div>
                         <div class="input-box">
@@ -2230,11 +2230,11 @@
         </div>
     </div>
 
-    <!-- 💰 節約した！！金額選択モーダル -->
+    <!-- 💰 節約金額選択モーダル -->
     <div id="free-saving-modal" class="onboarding-overlay" style="display: none; align-items: center; justify-content: center; z-index: 1010; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
         <div class="glass-card" style="width: 100%; max-width: 320px; text-align: center; padding: 24px; position: relative;">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                💰 今日いくら節約した？
+                💰 いくら節約した？
             </h3>
             <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 16px;">
                 1,000円単位で自由に今回の節約・貯金・投資額を入力できます。
@@ -2377,10 +2377,10 @@
                             </div>
                         </div>
                     </div>
-                    <!-- 節約した！！ -->
+                    <!-- 節約 -->
                     <div style="border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; text-align: left;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 6px; cursor: pointer;">
-                            <input type="checkbox" id="onboard-chk-gacha"> 💰 節約した！！を記録したい
+                            <input type="checkbox" id="onboard-chk-gacha"> 💰 節約を記録したい
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
                             <div class="label-wrapper"><label>1回あたりの節約・貯金額</label><span class="val-badge" id="ob-gacha-price-badge">5,000円</span></div>
@@ -2807,15 +2807,17 @@ const settingsModal = document.getElementById('settings-modal');
 
         // 📅 習慣ごとの継続率 成功率 を算出する関数 (開始日から現在までの日数ベース)
         function getHabitSuccessRates() {
-            const rates = { tobacco: 1.0, beer: 1.0 };
+            const rates = { tobacco: 1.0, beer: 1.0, gacha: 0.0 };
             const todayDate = parseDateSafely(getTodayStr()) || new Date();
             const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
 
             let oldestTobaccoDate = null;
             let oldestBeerDate = null;
+            let oldestGachaDate = null;
 
             const tobaccoDates = new Set();
             const beerDates = new Set();
+            const gachaDates = new Set();
 
             history.forEach(item => {
                 if (item.date) {
@@ -2833,14 +2835,18 @@ const settingsModal = document.getElementById('settings-modal');
                             if (!oldestBeerDate || d < oldestBeerDate) oldestBeerDate = d;
                         }
                     }
+                    if (item.type === 'gacha') {
+                        gachaDates.add(item.date);
+                        const d = parseDateSafely(item.date);
+                        if (d) {
+                            if (!oldestGachaDate || d < oldestGachaDate) oldestGachaDate = d;
+                        }
+                    }
                 }
             });
 
             // タバコの継続率計算
-            let effectiveStartTobacco = startTrackingDate;
-            if (oldestTobaccoDate && oldestTobaccoDate < effectiveStartTobacco) {
-                effectiveStartTobacco = oldestTobaccoDate;
-            }
+            let effectiveStartTobacco = oldestTobaccoDate || startTrackingDate;
             if (tobaccoDates.size > 0 || activeHabits.tobacco) {
                 const diffTime = todayDate.getTime() - effectiveStartTobacco.getTime();
                 const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
@@ -2850,16 +2856,24 @@ const settingsModal = document.getElementById('settings-modal');
             }
 
             // ビールの継続率計算
-            let effectiveStartBeer = startTrackingDate;
-            if (oldestBeerDate && oldestBeerDate < effectiveStartBeer) {
-                effectiveStartBeer = oldestBeerDate;
-            }
+            let effectiveStartBeer = oldestBeerDate || startTrackingDate;
             if (beerDates.size > 0 || activeHabits.beer) {
                 const diffTime = todayDate.getTime() - effectiveStartBeer.getTime();
                 const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
                 rates.beer = diffDays > 0 ? Math.min(1.0, beerDates.size / diffDays) : 1.0;
             } else {
                 rates.beer = 0.0;
+            }
+
+            // ガチャ(フリー節約)の継続率計算
+            let effectiveStartGacha = oldestGachaDate || startTrackingDate;
+            const hasGachaToday = history.some(item => item.date === getTodayStr() && item.type === 'gacha');
+            if (gachaDates.size > 0 || hasGachaToday) {
+                const diffTime = todayDate.getTime() - effectiveStartGacha.getTime();
+                const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
+                rates.gacha = diffDays > 0 ? Math.min(1.0, gachaDates.size / diffDays) : 1.0;
+            } else {
+                rates.gacha = 0.0;
             }
 
             return rates;
@@ -5949,7 +5963,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     quantity = habitPrices.subCount;
                 } else if (type === 'gacha') {
                     amount = 5000; // カレンダーからトグル追加する場合は初期値5000円
-                    label = "節約した！！ 💰";
+                    label = "節約 💰";
                     quantity = 1;
                 }
 
@@ -6043,7 +6057,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             ${hasSub ? '🗑️ サブスク消去' : '📱 サブスク追加'}
                         </button>
                         <button onclick="togglePastRecord('${dateStr}', 'gacha')" class="cal-preview-btn cal-preview-btn-gacha ${hasGacha ? 'active' : ''}">
-                            ${hasGacha ? '🗑️ 節約した！！消去' : '💰 節約した！！追加'}
+                            ${hasGacha ? '🗑️ 節約消去' : '💰 節約追加'}
                         </button>
                     </div>
                 `;
@@ -6064,7 +6078,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (activeHabits.sub) {
                 monthlySaving += habitPrices.subPrice * habitPrices.subCount;
             }
-            if (activeHabits.gacha) {
+            if (activeHabits.gacha || history.some(item => item.type === 'gacha')) {
                 monthlySaving += habitPrices.gachaPrice * habitPrices.gachaCount;
             }
 
@@ -6400,7 +6414,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return `${y}/${m}/${d}`;
         }
 
-        // --- 💰 節約した！！金額選択モーダル制御 ---
+        // --- 💰 節約金額選択モーダル制御 ---
         const freeSavingModal = document.getElementById('free-saving-modal');
         const freeSavingVal = document.getElementById('free-saving-val');
         const freeSavingDec = document.getElementById('free-saving-dec');
@@ -6415,12 +6429,19 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             updateFreeSavingModalDisplay();
             if (freeSavingModal) {
                 freeSavingModal.style.display = 'flex';
+                freeSavingModal.offsetHeight; // リフローを強制してアニメーションを適用
+                freeSavingModal.classList.add('active');
             }
         }
 
         function closeFreeSavingModal() {
             if (freeSavingModal) {
-                freeSavingModal.style.display = 'none';
+                freeSavingModal.classList.remove('active');
+                setTimeout(() => {
+                    if (!freeSavingModal.classList.contains('active')) {
+                        freeSavingModal.style.display = 'none';
+                    }
+                }, 300);
             }
         }
 
@@ -6459,12 +6480,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 isSavingConfirming = true;
                 setTimeout(() => { isSavingConfirming = false; }, 500);
 
-                // 安全ガード：今日すでに登録されている場合は追加しない
-                const todayStr = getTodayStr();
-                const hasGachaToday = history.some(item => item.date === todayStr && item.type === 'gacha');
-                if (!hasGachaToday) {
-                    addHistoryItem('gacha', tempFreeSavingAmount);
-                }
+                // 節約は今日何回でも追加できるようにする
+                addHistoryItem('gacha', tempFreeSavingAmount);
                 closeFreeSavingModal();
                 
                 // 計算と画面表示の更新
@@ -6482,19 +6499,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const type = btn.dataset.habit;
 
                 if (type === 'gacha') {
-                    // 節約した！！はトグル処理 今日すでに記録があれば削除、なければ金額選択モーダルを開く 
-                    const todayStr = getTodayStr();
-                    const hasGachaToday = history.some(item => item.date === todayStr && item.type === 'gacha');
-                    if (hasGachaToday) {
-                        removeTodayHistoryItem('gacha');
-                        saveSettings();
-                        calculate();
-                        renderHistoryList();
-                        renderCalendar();
-                        updateCheckinBtnStates();
-                    } else {
-                        openFreeSavingModal();
-                    }
+                    // 節約は常に金額選択モーダルを開き、今日何回でも追加できるようにする
+                    openFreeSavingModal();
                     return;
                 }
 
@@ -6545,7 +6551,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 quantity = habitPrices.subCount;
             } else if (type === 'gacha') {
                 amount = customAmount !== undefined ? customAmount : floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
-                label = "節約した！！ 💰";
+                label = "節約 💰";
                 quantity = 1;
             }
 
@@ -6769,11 +6775,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (activeHabits.sub) checkinBtnSub.classList.add('active');
             else checkinBtnSub.classList.remove('active');
 
-            // gachaは 今日、1回でも節約した！！ gacha の履歴があるか で判定
+            // gachaは 今日、1回でも節約 gacha の履歴があるか で判定
             const todayStr = getTodayStr();
             const hasGachaToday = history.some(item => item.date === todayStr && item.type === 'gacha');
             if (hasGachaToday) checkinBtnGacha.classList.add('active');
             else checkinBtnGacha.classList.remove('active');
+
+            // activeHabitsの状態も同期
+            activeHabits.gacha = hasGachaToday;
         }
 
         function updateCheckinBtnVisibility() {
@@ -6839,7 +6848,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }));
 
             // 1. 本日浮いたお金の計算
-            // 日次項目 タバコ、ビール と、手動で今日追加した節約した！！を合算
+            // 日次項目 タバコ、ビール と、手動で今日追加した節約を合算
             let todaySaving = 0;
             if (activeHabits.tobacco) {
                 todaySaving += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
@@ -6847,7 +6856,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (activeHabits.beer) {
                 todaySaving += Math.round(habitPrices.beerPrice * habitPrices.beerCount);
             }
-            // 今日の節約した！！ gacha の総額を加算
+            // 今日の節約 gacha の総額を加算
             const todayGachaAmount = history
                 .filter(item => item.date === todayStr && item.type === 'gacha')
                 .reduce((sum, item) => sum + item.amount, 0);
@@ -6872,8 +6881,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const tobaccoMonthly = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
             const beerMonthly = Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
             const subMonthly = habitPrices.subPrice * habitPrices.subCount;
+            const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
 
             const rates = getHabitSuccessRates();
+            const hasGachaHistory = (rates.gacha > 0);
 
             // スイッチ表示用の実質継続率を計算してバッジに反映
             const paceRealBadge = document.getElementById('pace-real-badge');
@@ -6882,6 +6893,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (profile.trackTobacco) activeRates.push(rates.tobacco);
             if (profile.trackBeer) activeRates.push(rates.beer);
             if (activeHabits.sub) activeRates.push(1.0);
+            if (hasGachaHistory || activeHabits.gacha) activeRates.push(rates.gacha);
             
             if (activeRates.length > 0) {
                 avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
@@ -6905,10 +6917,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (profile.trackTobacco) monthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
                 if (profile.trackBeer) monthlySaving += Math.round(beerMonthly * rates.beer);
                 if (activeHabits.sub) monthlySaving += subMonthly;
+                if (hasGachaHistory || activeHabits.gacha) monthlySaving += Math.round(gachaMonthly * rates.gacha);
             } else {
                 if (profile.trackTobacco) monthlySaving += tobaccoMonthly;
                 if (profile.trackBeer) monthlySaving += beerMonthly;
                 if (activeHabits.sub) monthlySaving += subMonthly;
+                if (hasGachaHistory || activeHabits.gacha) monthlySaving += gachaMonthly;
             }
             monthlySaving = floorTo100Jpy(monthlySaving);
 
@@ -6917,6 +6931,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (profile.trackTobacco) realMonthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
             if (profile.trackBeer) realMonthlySaving += Math.round(beerMonthly * rates.beer);
             if (activeHabits.sub) realMonthlySaving += subMonthly;
+            if (hasGachaHistory || activeHabits.gacha) realMonthlySaving += Math.round(gachaMonthly * rates.gacha);
             realMonthlySaving = floorTo100Jpy(realMonthlySaving);
 
             // 過去履歴からこれまでの累計節約額 (実績) を計算して初期元本 P とし、資産複利計算に反映
@@ -7010,10 +7025,27 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // 過去履歴から累計実績を計算する
             let totalEarned = 0; // 累計節約額
             let counts = { tobacco: 0, beer: 0, sub: 0, gacha: 0 };
+            let oldestTobaccoDate = null;
+            let oldestBeerDate = null;
+            let oldestSubDate = null;
+            let oldestGachaDate = null;
             
             history.forEach(item => {
                 totalEarned += item.amount;
                 
+                const d = parseDateSafely(item.date);
+                if (d) {
+                    if (item.type === 'tobacco') {
+                        if (!oldestTobaccoDate || d < oldestTobaccoDate) oldestTobaccoDate = d;
+                    } else if (item.type === 'beer') {
+                        if (!oldestBeerDate || d < oldestBeerDate) oldestBeerDate = d;
+                    } else if (item.type === 'sub') {
+                        if (!oldestSubDate || d < oldestSubDate) oldestSubDate = d;
+                    } else if (item.type === 'gacha') {
+                        if (!oldestGachaDate || d < oldestGachaDate) oldestGachaDate = d;
+                    }
+                }
+
                 // 過去の数量 quantity を取得。無ければ現在の設定値やデフォルト値で補完
                 let q = 1;
                 if (item.type === 'tobacco') {
@@ -7342,38 +7374,51 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     const beerMonthly = Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
                     const subMonthly = habitPrices.subPrice * habitPrices.subCount;
                     const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+                    const hasGachaHistory = (rates.gacha > 0);
 
                     let idealMonthlySaving = 0;
                     if (profile.trackTobacco) idealMonthlySaving += tobaccoMonthly;
                     if (profile.trackBeer) idealMonthlySaving += beerMonthly;
                     if (activeHabits.sub) idealMonthlySaving += subMonthly;
-                    if (activeHabits.gacha) idealMonthlySaving += gachaMonthly;
+                    if (hasGachaHistory || activeHabits.gacha) idealMonthlySaving += gachaMonthly;
 
                     const todayDate = parseDateSafely(getTodayStr()) || new Date();
                     const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
                     
-                    // 日次項目と月次項目を分離して理想目標額を計算
-                    const elapsedDiffTime = todayDate.getTime() - startTrackingDate.getTime();
-                    const elapsedDays = Math.max(1, Math.floor(elapsedDiffTime / (1000 * 3600 * 24)) + 1);
-                    const elapsedMonths = (todayDate.getFullYear() - startTrackingDate.getFullYear()) * 12 + (todayDate.getMonth() - startTrackingDate.getMonth()) + 1;
+                    // 日次項目と月次項目を分離し、かつそれぞれの習慣の最初の記録日に基づいて理想目標累積額を計算
+                    let idealCumToday = 0;
 
-                    let idealDailyPart = 0;
                     if (profile.trackTobacco) {
-                        idealDailyPart += Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+                        const effStart = oldestTobaccoDate || startTrackingDate;
+                        const diffTime = todayDate.getTime() - effStart.getTime();
+                        const days = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
+                        const dailyPrice = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+                        idealCumToday += dailyPrice * days;
                     }
+
                     if (profile.trackBeer) {
-                        idealDailyPart += Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+                        const effStart = oldestBeerDate || startTrackingDate;
+                        const diffTime = todayDate.getTime() - effStart.getTime();
+                        const days = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
+                        const dailyPrice = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+                        idealCumToday += dailyPrice * days;
                     }
 
-                    let idealMonthlyPart = 0;
                     if (activeHabits.sub) {
-                        idealMonthlyPart += habitPrices.subPrice * habitPrices.subCount;
-                    }
-                    if (activeHabits.gacha) {
-                        idealMonthlyPart += habitPrices.gachaPrice * habitPrices.gachaCount;
+                        const effStart = oldestSubDate || startTrackingDate;
+                        const elapsedMonths = (todayDate.getFullYear() - effStart.getFullYear()) * 12 + (todayDate.getMonth() - effStart.getMonth()) + 1;
+                        const monthlyPrice = habitPrices.subPrice * habitPrices.subCount;
+                        idealCumToday += monthlyPrice * elapsedMonths;
                     }
 
-                    const idealCumToday = floorTo100Jpy((idealDailyPart * elapsedDays) + (idealMonthlyPart * elapsedMonths));
+                    if (hasGachaHistory || activeHabits.gacha) {
+                        const effStart = oldestGachaDate || startTrackingDate;
+                        const elapsedMonths = (todayDate.getFullYear() - effStart.getFullYear()) * 12 + (todayDate.getMonth() - effStart.getMonth()) + 1;
+                        const monthlyPrice = habitPrices.gachaPrice * habitPrices.gachaCount;
+                        idealCumToday += monthlyPrice * elapsedMonths;
+                    }
+
+                    idealCumToday = floorTo100Jpy(idealCumToday);
                     const diffToday = floorTo100Jpy(idealCumToday - totalEarned);
 
                     // セーブ率は実際の実績累計額と理想目標額の比率から計算 直感的で整合性がある形にする 
