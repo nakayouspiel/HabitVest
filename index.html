@@ -1747,10 +1747,10 @@
                         <span class="label">無駄なサブスク</span>
                         <span class="price-badge" id="checkin-badge-sub">1,000円 / 月</span>
                     </button>
-                    <button class="checkin-btn monthly" id="checkin-btn-gacha" data-habit="gacha">
-                        <span class="emoji">🎮</span>
-                        <span class="label">ソシャゲ課金</span>
-                        <span class="price-badge" id="checkin-badge-gacha">3,000円 / 月</span>
+                    <button class="checkin-btn daily" id="checkin-btn-gacha" data-habit="gacha">
+                        <span class="emoji">💰</span>
+                        <span class="label">フリー節約</span>
+                        <span class="price-badge" id="checkin-badge-gacha">5,000円</span>
                     </button>
                 </div>
             </div>
@@ -2028,6 +2028,7 @@
                     <div class="form-group">
                         <label for="profile-age">年齢</label>
                         <select id="profile-age">
+                            <option value="10">10代</option>
                             <option value="20">20代</option>
                             <option value="30" selected>30代</option>
                             <option value="40">40代</option>
@@ -2140,27 +2141,27 @@
                         </div>
                     </div>
 
-                    <!-- 🎮 ソシャゲ課金 -->
+                    <!-- 💰 フリー節約 -->
                     <div class="form-group" style="margin-top: 14px;">
                         <div class="label-wrapper">
-                            <label for="gacha-unit-price">🎮 ソシャゲ 1回/月額</label>
-                            <span class="val-badge" id="gacha-price-badge">3,000円</span>
+                            <label for="gacha-unit-price">💰 フリー節約 1回あたりの額</label>
+                            <span class="val-badge" id="gacha-price-badge">5,000円</span>
                         </div>
                         <div class="input-box">
                             <button type="button" class="spin-btn dec-btn" data-target="gacha-unit-price">-</button>
-                            <input type="number" id="gacha-unit-price" min="1000" max="10000" step="500" value="3000">
+                            <input type="number" id="gacha-unit-price" min="500" max="100000" step="500" value="5000">
                             <button type="button" class="spin-btn inc-btn" data-target="gacha-unit-price">+</button>
                             <span>円</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
-                            <label for="gacha-count">1ヶ月あたりの回数</label>
+                            <label for="gacha-count">1ヶ月あたりの想定回数</label>
                             <span class="val-badge" id="gacha-count-badge">1回</span>
                         </div>
                         <div class="input-box">
                             <button type="button" class="spin-btn dec-btn" data-target="gacha-count">-</button>
-                            <input type="number" id="gacha-count" min="1" max="10" step="1" value="1">
+                            <input type="number" id="gacha-count" min="1" max="30" step="1" value="1">
                             <button type="button" class="spin-btn inc-btn" data-target="gacha-count">+</button>
                             <span>回</span>
                         </div>
@@ -2265,6 +2266,7 @@
                         <label for="onboard-age">年齢</label>
                         <select id="onboard-age" required>
                             <option value="" disabled selected>選択してください</option>
+                            <option value="10">10代</option>
                             <option value="20">20代</option>
                             <option value="30">30代</option>
                             <option value="40">40代</option>
@@ -2347,16 +2349,16 @@
                             </div>
                         </div>
                     </div>
-                    <!-- ソシャゲ -->
+                    <!-- フリー節約 -->
                     <div style="border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; text-align: left;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 6px; cursor: pointer;">
-                            <input type="checkbox" id="onboard-chk-gacha"> 🎮 ソシャゲ課金をセーブしたい
+                            <input type="checkbox" id="onboard-chk-gacha"> 💰 フリー節約を記録したい
                         </label>
                         <div class="form-group" style="margin-left: 20px;">
-                            <div class="label-wrapper"><label>1回あたりの額</label><span class="val-badge" id="ob-gacha-price-badge">3,000円</span></div>
+                            <div class="label-wrapper"><label>1回あたりの節約・貯金額</label><span class="val-badge" id="ob-gacha-price-badge">5,000円</span></div>
                             <div class="input-box">
                                 <button type="button" class="spin-btn dec-btn" data-target="ob-gacha-unit-price">-</button>
-                                <input type="number" id="ob-gacha-unit-price" min="1000" max="10000" step="500" value="3000">
+                                <input type="number" id="ob-gacha-unit-price" min="500" max="100000" step="500" value="5000">
                                 <button type="button" class="spin-btn inc-btn" data-target="ob-gacha-unit-price">+</button>
                                 <span>円</span>
                             </div>
@@ -2657,7 +2659,7 @@ const settingsModal = document.getElementById('settings-modal');
             beerCount: 2.0,
             subPrice: 1000,
             subCount: 1,
-            gachaPrice: 3000,
+            gachaPrice: 5000,
             gachaCount: 1
         };
 
@@ -2862,7 +2864,7 @@ const settingsModal = document.getElementById('settings-modal');
             habitPrices.beerCount = validateAndParse(beerUnitsPerDay, 2.0, true);
             habitPrices.subPrice = validateAndParse(subUnitPrice, 1000);
             habitPrices.subCount = validateAndParse(subCount, 1);
-            habitPrices.gachaPrice = validateAndParse(gachaUnitPrice, 3000);
+            habitPrices.gachaPrice = validateAndParse(gachaUnitPrice, 5000);
             habitPrices.gachaCount = validateAndParse(gachaCount, 1);
 
             simulationSettings.yield = validateAndParse(sliderYield, 8.0, true);
@@ -6267,7 +6269,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     quantity = habitPrices.subCount;
                 } else if (type === 'gacha') {
                     amount = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
-                    label = "ソシャゲ課金をセーブ！ 🎮";
+                    label = "フリー節約をセーブ！ 💰";
                     quantity = habitPrices.gachaCount;
                 }
 
@@ -6358,7 +6360,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             ${hasSub ? '🗑️ サブスク消去' : '📱 サブスク追加'}
                         </button>
                         <button onclick="togglePastRecord('${dateStr}', 'gacha')" class="cal-preview-btn cal-preview-btn-gacha ${hasGacha ? 'active' : ''}">
-                            ${hasGacha ? '🗑️ ガチャ消去' : '🎮 ガチャ追加'}
+                            ${hasGacha ? '🗑️ フリー節約消去' : '💰 フリー節約追加'}
                         </button>
                     </div>
                 `;
@@ -6607,7 +6609,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 beerCount: 2.0,
                 subPrice: validateAndParse(obSubUnitPrice, 1000),
                 subCount: 1,
-                gachaPrice: validateAndParse(obGachaUnitPrice, 3000),
+                gachaPrice: validateAndParse(obGachaUnitPrice, 5000),
                 gachaCount: 1
             };
 
@@ -6720,7 +6722,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             btn.addEventListener('click', () => {
                 const type = btn.dataset.habit;
 
-                if (type === 'sub' || type === 'gacha') {
+                if (type === 'sub') {
                     // Toggle activeHabits (calculate() will run syncMonthlyLumpSavings() which manages history)
                     activeHabits[type] = !activeHabits[type];
                     if (activeHabits[type]) {
@@ -6767,7 +6769,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 quantity = habitPrices.subCount;
             } else if (type === 'gacha') {
                 amount = floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount);
-                label = "ソシャゲ課金をセーブ！ 🎮";
+                label = "フリー節約をセーブ！ 💰";
                 quantity = habitPrices.gachaCount;
             }
 
@@ -7052,7 +7054,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         id: Date.now() + 1,
                         date: currentMonthFirstStr,
                         type: 'gacha',
-                        label: "ソシャゲ課金をセーブ！ 🎮",
+                        label: "フリー節約をセーブ！ 💰",
                         amount: floorTo100Jpy(habitPrices.gachaPrice * habitPrices.gachaCount),
                         quantity: habitPrices.gachaCount
                     };
@@ -7099,7 +7101,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             todaySaving = floorTo100Jpy(todaySaving);
             valSavingToday.innerText = `${todaySaving.toLocaleString()} 円`;
 
-            // 月次項目（サブスク、ソシャゲ）は別途、セーブ中の固定費（月次）として表示
+            // 月次項目（サブスク、フリー節約）は別途、セーブ中の固定費（月次）として表示
             let monthlyFixedSaving = 0;
             if (activeHabits.sub) {
                 monthlyFixedSaving += Math.round(habitPrices.subPrice * habitPrices.subCount);

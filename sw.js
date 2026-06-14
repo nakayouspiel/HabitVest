@@ -1,4 +1,4 @@
-const CACHE_NAME = 'habitvest-v62';
+const CACHE_NAME = 'habitvest-v63';
 const ASSETS = [
   './',
   'index.html',
@@ -36,7 +36,12 @@ self.addEventListener('activate', (e) => {
 
 // ローカルホスト開発時はキャッシュをバイパスし、通常はキャッシュファースト
 self.addEventListener('fetch', (e) => {
-  const isLocal = e.request.url.includes('localhost') || e.request.url.includes('127.0.0.1') || e.request.url.startsWith('file:///');
+  const isLocal = e.request.url.includes('localhost') || 
+                  e.request.url.includes('127.0.0.1') || 
+                  e.request.url.includes('192.168.') || 
+                  e.request.url.includes('10.') || 
+                  e.request.url.includes('172.') || 
+                  e.request.url.startsWith('file:///');
   
   if (isLocal) {
     e.respondWith(
