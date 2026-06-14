@@ -6897,12 +6897,24 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
 
             // 2. 将来予測シミュレーションの月間元本 targetSaving の計算
+            // 起点（startDate）から今日までの経過日数を算出
+            const todayDate = parseDateSafely(getTodayStr()) || new Date();
+            const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
+            const diffTime = todayDate.getTime() - startTrackingDate.getTime();
+            const elapsedDays = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
+
             let monthlySaving = 0;
 
-            const tobaccoMonthly = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
-            const beerMonthly = Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
+            const tobaccoDaily = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+            const beerDaily = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+
+            const tobaccoMonthly = tobaccoDaily * 30;
+            const beerMonthly = beerDaily * 30;
             const subMonthly = habitPrices.subPrice * habitPrices.subCount;
-            const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+
+            // 節約（フリー入力）については過去の全履歴の合算額から1日の平均を出し、それを月額換算する
+            const totalGachaAmount = history.filter(item => item.type === 'gacha').reduce((sum, item) => sum + item.amount, 0);
+            const gachaMonthly = Math.round((totalGachaAmount / elapsedDays) * 30);
 
             const rates = getHabitSuccessRates();
             const hasGachaHistory = (rates.gacha > 0);
@@ -6938,12 +6950,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (profile.trackTobacco) monthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
                 if (profile.trackBeer) monthlySaving += Math.round(beerMonthly * rates.beer);
                 if (activeHabits.sub) monthlySaving += subMonthly;
-                if (hasGachaHistory || activeHabits.gacha) monthlySaving += Math.round(gachaMonthly * rates.gacha);
+                if (hasGachaHistory || activeHabits.gacha) monthlySaving += gachaMonthly; // 節約は過去実績のペースをそのまま適用
             } else {
                 if (profile.trackTobacco) monthlySaving += tobaccoMonthly;
                 if (profile.trackBeer) monthlySaving += beerMonthly;
                 if (activeHabits.sub) monthlySaving += subMonthly;
-                if (hasGachaHistory || activeHabits.gacha) monthlySaving += gachaMonthly;
+                if (hasGachaHistory || activeHabits.gacha) monthlySaving += gachaMonthly; // 理想でも節約は実績ペースベース
             }
             monthlySaving = floorTo100Jpy(monthlySaving);
 
@@ -6952,15 +6964,27 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (profile.trackTobacco) realMonthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
             if (profile.trackBeer) realMonthlySaving += Math.round(beerMonthly * rates.beer);
             if (activeHabits.sub) realMonthlySaving += subMonthly;
-            if (hasGachaHistory || activeHabits.gacha) realMonthlySaving += Math.round(gachaMonthly * rates.gacha);
+            if (hasGachaHistory || activeHabits.gacha) realMonthlySaving += gachaMonthly;
             realMonthlySaving = floorTo100Jpy(realMonthlySaving);
 
-            // 過去履歴からこれまでの累計節約額 (実績) を計算して初期元本 P とし、資産複利計算に反映
+            // 過去履歴からこれまでの累計節約額 (実績) を計算して初期元本 P とする（現実ペース用）
             let totalEarned = 0;
             history.forEach(item => {
                 totalEarned += item.amount;
             });
             const P = floorTo100Jpy(totalEarned);
+
+            // 理想目標用の初期元本 P_ideal：
+            // タバコ・ビールは起点（startDate）から今日まで100%毎日やめたと仮定（サブスクも経過月分100%）
+            // 節約（フリー）については実際の実績合算を加算
+            let P_ideal = totalGachaAmount;
+            if (profile.trackTobacco) P_ideal += tobaccoDaily * elapsedDays;
+            if (profile.trackBeer) P_ideal += beerDaily * elapsedDays;
+            if (activeHabits.sub) P_ideal += subMonthly * (elapsedDays / 30);
+            P_ideal = floorTo100Jpy(P_ideal);
+
+            // シミュレーションモードに応じて初期元本を切り替える
+            const activeP = (simulationPaceMode === 'ideal') ? P_ideal : P;
 
             const annualYield = simulationSettings.yield / 100;
             const years = simulationSettings.years;
@@ -6976,14 +7000,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             for (let y = 1; y <= years; y++) {
                 labels.push(`${y}年`);
                 
-                // 元本にこれまでの累計実績 (P) を加え、将来の節約額を積み上げる
-                totalSaving = P + (monthlySaving * 12 * y);
+                // シミュレーション用の初期元本 activeP に、将来の節約額を積み上げる
+                totalSaving = activeP + (monthlySaving * 12 * y);
                 savingData.push(floorTo100Jpy(totalSaving));
 
                 const months = y * 12;
                 if (monthlyRate > 0) {
-                    // 初期元本 P が複利運用され、かつ将来の毎月節約額が積み立てられる
-                    totalInvest = P * Math.pow(1 + monthlyRate, months) + monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                    // 初期元本 activeP が複利運用され、かつ将来の毎月節約額が積み立てられる
+                    totalInvest = activeP * Math.pow(1 + monthlyRate, months) + monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
                 } else {
                     totalInvest = totalSaving;
                 }
@@ -7391,10 +7415,22 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const rmGoalAdvice = document.getElementById('rm-goal-advice');
             if (rmGoalAdvice) {
                 if (monthlySaving > 0) {
-                    const tobaccoMonthly = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount) * 30;
-                    const beerMonthly = Math.round(habitPrices.beerPrice * habitPrices.beerCount) * 30;
+                    const todayDate = parseDateSafely(getTodayStr()) || new Date();
+                    const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
+                    const diffTime = todayDate.getTime() - startTrackingDate.getTime();
+                    const elapsedDays = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
+
+                    const tobaccoDaily = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+                    const beerDaily = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+
+                    const tobaccoMonthly = tobaccoDaily * 30;
+                    const beerMonthly = beerDaily * 30;
                     const subMonthly = habitPrices.subPrice * habitPrices.subCount;
-                    const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+
+                    // 節約（ガチャ）の月額は、これまでの全実績合計から日割りを算出して30倍（calculate() と完全に同期）
+                    const totalGachaAmount = history.filter(item => item.type === 'gacha').reduce((sum, item) => sum + item.amount, 0);
+                    const gachaMonthly = Math.round((totalGachaAmount / elapsedDays) * 30);
+
                     const rates = getHabitSuccessRates();
                     const hasGachaHistory = (rates.gacha > 0);
 
@@ -7404,41 +7440,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     if (activeHabits.sub) idealMonthlySaving += subMonthly;
                     if (hasGachaHistory || activeHabits.gacha) idealMonthlySaving += gachaMonthly;
 
-                    const todayDate = parseDateSafely(getTodayStr()) || new Date();
-                    const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
-                    
-                    // 日次項目と月次項目を分離し、かつそれぞれの習慣の最初の記録日に基づいて理想目標累積額を計算
-                    let idealCumToday = 0;
-
-                    if (profile.trackTobacco) {
-                        const effStart = oldestTobaccoDate || startTrackingDate;
-                        const diffTime = todayDate.getTime() - effStart.getTime();
-                        const days = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
-                        const dailyPrice = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
-                        idealCumToday += dailyPrice * days;
-                    }
-
-                    if (profile.trackBeer) {
-                        const effStart = oldestBeerDate || startTrackingDate;
-                        const diffTime = todayDate.getTime() - effStart.getTime();
-                        const days = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
-                        const dailyPrice = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
-                        idealCumToday += dailyPrice * days;
-                    }
-
-                    if (activeHabits.sub) {
-                        const effStart = oldestSubDate || startTrackingDate;
-                        const elapsedMonths = (todayDate.getFullYear() - effStart.getFullYear()) * 12 + (todayDate.getMonth() - effStart.getMonth()) + 1;
-                        const monthlyPrice = habitPrices.subPrice * habitPrices.subCount;
-                        idealCumToday += monthlyPrice * elapsedMonths;
-                    }
-
-                    if (hasGachaHistory || activeHabits.gacha) {
-                        const effStart = oldestGachaDate || startTrackingDate;
-                        const elapsedMonths = (todayDate.getFullYear() - effStart.getFullYear()) * 12 + (todayDate.getMonth() - effStart.getMonth()) + 1;
-                        const monthlyPrice = habitPrices.gachaPrice * habitPrices.gachaCount;
-                        idealCumToday += monthlyPrice * elapsedMonths;
-                    }
+                    // 理想目標累積額（これまでの理想の累積）：タバコ、ビール、サブスクは起点（startDate）から100%成功と仮定
+                    // 節約（フリー）については実際の実績合計（totalGachaAmount）をそのまま加算
+                    let idealCumToday = totalGachaAmount;
+                    if (profile.trackTobacco) idealCumToday += tobaccoDaily * elapsedDays;
+                    if (profile.trackBeer) idealCumToday += beerDaily * elapsedDays;
+                    if (activeHabits.sub) idealCumToday += subMonthly * (elapsedDays / 30);
 
                     idealCumToday = floorTo100Jpy(idealCumToday);
                     const diffToday = floorTo100Jpy(idealCumToday - totalEarned);
@@ -7447,10 +7454,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     const ratePercent = idealCumToday > 0 ? Math.min(100, Math.round((totalEarned / idealCumToday) * 100)) : 100;
 
                     let totalInvestIdeal = 0;
+                    const P_ideal = idealCumToday; // 理想目標の現在までの累積を初期元本とする
                     if (monthlyRate > 0) {
-                        totalInvestIdeal = P * Math.pow(1 + monthlyRate, months) + idealMonthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                        totalInvestIdeal = P_ideal * Math.pow(1 + monthlyRate, months) + idealMonthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
                     } else {
-                        totalInvestIdeal = P + (idealMonthlySaving * 12 * years);
+                        totalInvestIdeal = P_ideal + (idealMonthlySaving * 12 * years);
                     }
                     totalInvestIdeal = floorTo100Jpy(totalInvestIdeal);
                     const diffInvestGoal = floorTo100Jpy(Math.max(0, totalInvestIdeal - totalInvestGoal));
