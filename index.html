@@ -1816,25 +1816,7 @@
                     複利効果によるボーナス： <span id="val-bonus" style="color: var(--neon-secondary); font-weight: 700;">--- 円</span>
                 </div>
 
-                <!-- 🧮 計算前提と月額内訳の自動可視化アコーディオン -->
-                <div class="simulation-detail-accordion" style="margin: 15px 0 20px 0; background: rgba(255, 255, 255, 0.015); border: 1px solid var(--border-glass); border-radius: 12px; overflow: hidden; transition: all 0.3s ease;">
-                    <button type="button" id="btn-toggle-sim-detail" style="width: 100%; padding: 12px 16px; background: transparent; border: none; color: var(--text-main); font-size: 0.72rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; outline: none;">
-                        <span style="display: flex; align-items: center; gap: 6px;">🧮 計算の前提と月額内訳を表示</span>
-                        <span id="sim-detail-chevron" style="font-size: 0.65rem; color: var(--text-sub); transition: transform 0.3s;">▼ 開く</span>
-                    </button>
-                    <div id="sim-detail-content" style="max-height: 0px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(0, 0, 0, 0.15);">
-                        <div style="padding: 16px; font-size: 0.7rem; color: var(--text-sub); line-height: 1.6; border-top: 1px solid var(--border-glass);">
-                            <div id="sim-detail-tables-container">
-                                <!-- 動的レンダリングエリア -->
-                            </div>
-                            
-                            <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border-glass); font-size: 0.62rem; color: var(--text-muted); line-height: 1.5;">
-                                💡 <strong>その他投資の計算ルール：</strong><br>
-                                これまでのすべての投資履歴の合算額（フリー入力の合計）を、開始日（起点）から今日までの経過日数で割って「1日あたりの平均投資ペース」を自動算出しています。タバコやビールと同じように、毎日コツコツ積み立てているものとして理想・現実の双方の計算に組み込まれます。
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- 折れ線グラフ -->
                 <div class="chart-container">
@@ -2132,9 +2114,14 @@
                     </div>
 
                     <!-- 💰 投資・節制（サブスク・ソシャゲ・博打等の回避を含む） -->
-                    <div class="form-group" style="margin-top: 14px;">
+                    <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
+                            <input type="checkbox" id="profile-track-gacha"> 💰 未来へ投資を記録する
+                        </label>
+                    </div>
+                    <div class="form-group">
                         <div class="label-wrapper">
-                            <label for="gacha-unit-price">💰 未来へ投資</label>
+                            <label for="gacha-unit-price">💰 未来へ投資 1回あたりの額</label>
                             <span class="val-badge" id="gacha-price-badge">5,000円</span>
                         </div>
                         <div class="input-box">
@@ -2543,6 +2530,7 @@ const settingsModal = document.getElementById('settings-modal');
         const profileStartDate = document.getElementById('profile-start-date');
         const profileTrackTobacco = document.getElementById('profile-track-tobacco');
         const profileTrackBeer = document.getElementById('profile-track-beer');
+        const profileTrackGacha = document.getElementById('profile-track-gacha');
 
         // 設定スライダー settings-modal内に引っ越したもの 
         const tobaccoPackPrice = document.getElementById('tobacco-pack-price');
@@ -2639,6 +2627,7 @@ const settingsModal = document.getElementById('settings-modal');
             startDate: "",
             trackTobacco: true,
             trackBeer: true,
+            trackGacha: true,
             onboarded: false
         };
 
@@ -2777,14 +2766,14 @@ const settingsModal = document.getElementById('settings-modal');
             const rates = { tobacco: 1.0, beer: 1.0, gacha: 0.0 };
             const todayDate = parseDateSafely(getTodayStr()) || new Date();
             const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
+            const diffTime = todayDate.getTime() - startTrackingDate.getTime();
+            const elapsedDays = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
 
             let oldestTobaccoDate = null;
             let oldestBeerDate = null;
-            let oldestGachaDate = null;
 
             const tobaccoDates = new Set();
             const beerDates = new Set();
-            const gachaDates = new Set();
 
             history.forEach(item => {
                 if (item.date) {
@@ -2802,22 +2791,15 @@ const settingsModal = document.getElementById('settings-modal');
                             if (!oldestBeerDate || d < oldestBeerDate) oldestBeerDate = d;
                         }
                     }
-                    if (item.type === 'gacha') {
-                        gachaDates.add(item.date);
-                        const d = parseDateSafely(item.date);
-                        if (d) {
-                            if (!oldestGachaDate || d < oldestGachaDate) oldestGachaDate = d;
-                        }
-                    }
                 }
             });
 
             // タバコの継続率計算
             let effectiveStartTobacco = oldestTobaccoDate || startTrackingDate;
             if (tobaccoDates.size > 0 || activeHabits.tobacco) {
-                const diffTime = todayDate.getTime() - effectiveStartTobacco.getTime();
-                const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
-                rates.tobacco = diffDays > 0 ? Math.min(1.0, tobaccoDates.size / diffDays) : 1.0;
+                const diffTimeT = todayDate.getTime() - effectiveStartTobacco.getTime();
+                const diffDaysT = Math.floor(diffTimeT / (1000 * 3600 * 24)) + 1;
+                rates.tobacco = diffDaysT > 0 ? Math.min(1.0, tobaccoDates.size / diffDaysT) : 1.0;
             } else {
                 rates.tobacco = 0.0;
             }
@@ -2825,20 +2807,26 @@ const settingsModal = document.getElementById('settings-modal');
             // ビールの継続率計算
             let effectiveStartBeer = oldestBeerDate || startTrackingDate;
             if (beerDates.size > 0 || activeHabits.beer) {
-                const diffTime = todayDate.getTime() - effectiveStartBeer.getTime();
-                const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
-                rates.beer = diffDays > 0 ? Math.min(1.0, beerDates.size / diffDays) : 1.0;
+                const diffTimeB = todayDate.getTime() - effectiveStartBeer.getTime();
+                const diffDaysB = Math.floor(diffTimeB / (1000 * 3600 * 24)) + 1;
+                rates.beer = diffDaysB > 0 ? Math.min(1.0, beerDates.size / diffDaysB) : 1.0;
             } else {
                 rates.beer = 0.0;
             }
 
-            // ガチャ(フリー節約)の継続率計算
-            let effectiveStartGacha = oldestGachaDate || startTrackingDate;
-            const hasGachaToday = history.some(item => item.date === getTodayStr() && item.type === 'gacha');
-            if (gachaDates.size > 0 || hasGachaToday) {
-                const diffTime = todayDate.getTime() - effectiveStartGacha.getTime();
-                const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)) + 1;
-                rates.gacha = diffDays > 0 ? Math.min(1.0, gachaDates.size / diffDays) : 1.0;
+            // 投資（ガチャ）の達成率（カレンダー当月基準）
+            const targetGachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+            if (targetGachaMonthly > 0) {
+                const currentYear = todayDate.getFullYear();
+                const currentMonth = todayDate.getMonth();
+                const totalGachaAmountThisMonth = history
+                    .filter(item => {
+                        if (item.type !== 'gacha') return false;
+                        const itemDate = parseDateSafely(item.date);
+                        return itemDate && itemDate.getFullYear() === currentYear && itemDate.getMonth() === currentMonth;
+                    })
+                    .reduce((sum, item) => sum + item.amount, 0);
+                rates.gacha = totalGachaAmountThisMonth / targetGachaMonthly;
             } else {
                 rates.gacha = 0.0;
             }
@@ -2863,6 +2851,7 @@ const settingsModal = document.getElementById('settings-modal');
             }
             profile.trackTobacco = profileTrackTobacco ? profileTrackTobacco.checked : false;
             profile.trackBeer = profileTrackBeer ? profileTrackBeer.checked : false;
+            profile.trackGacha = profileTrackGacha ? profileTrackGacha.checked : false;
             if (!profile.trackTobacco) activeHabits.tobacco = false;
             if (!profile.trackBeer) activeHabits.beer = false;
             updateCheckinBtnVisibility();
@@ -3242,7 +3231,15 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         // 🗓️ 連続チェックイン Streak 計算
         function calculateStreak() {
-            const dailyHistory = history.filter(item => item.type === 'tobacco' || item.type === 'beer');
+            // トラッキングしている習慣のタイプ
+            const trackedTypes = [];
+            if (profile.trackTobacco) trackedTypes.push('tobacco');
+            if (profile.trackBeer) trackedTypes.push('beer');
+            if (profile.trackGacha) trackedTypes.push('gacha');
+
+            if (trackedTypes.length === 0) return 0;
+
+            const dailyHistory = history.filter(item => trackedTypes.includes(item.type));
             const uniqueDateStrings = Array.from(new Set(dailyHistory.map(item => item.date)));
             const dateObjects = uniqueDateStrings
                 .map(dStr => parseDateSafely(dStr))
@@ -6038,18 +6035,17 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const tobaccoMonthly = tobaccoDaily * 30;
             const beerMonthly = beerDaily * 30;
 
-            const totalGachaAmount = history.filter(item => item.type === 'gacha').reduce((sum, item) => sum + item.amount, 0);
-            const gachaMonthly = Math.round((totalGachaAmount / elapsedDays) * 30);
-            const hasGachaHistory = (rates.gacha > 0);
+            const targetGachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
 
             let monthlySaving = 0;
             if (simulationPaceMode === 'ideal') {
                 if (profile.trackTobacco) monthlySaving += tobaccoMonthly;
                 if (profile.trackBeer) monthlySaving += beerMonthly;
+                if (profile.trackGacha) monthlySaving += targetGachaMonthly;
             } else {
                 if (profile.trackTobacco) monthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
                 if (profile.trackBeer) monthlySaving += Math.round(beerMonthly * rates.beer);
-                if (hasGachaHistory || activeHabits.gacha) monthlySaving += gachaMonthly;
+                if (profile.trackGacha) monthlySaving += Math.round(targetGachaMonthly * rates.gacha);
             }
 
             const dailySaving = Math.round(monthlySaving / 30);
@@ -6259,6 +6255,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 startDate: obStartDateVal,
                 trackTobacco: obChkTobacco.checked,
                 trackBeer: obChkBeer.checked,
+                trackGacha: obChkGacha.checked,
                 onboarded: true
             };
 
@@ -6315,6 +6312,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
             if (profileTrackBeer) {
                 profileTrackBeer.checked = (profile.trackBeer !== false);
+            }
+            if (profileTrackGacha) {
+                profileTrackGacha.checked = (profile.trackGacha !== false);
             }
             if (profileStartDate) {
                 if (!profile.startDate) {
@@ -6632,6 +6632,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (profile.trackBeer === undefined) {
                     profile.trackBeer = true;
                 }
+                if (profile.trackGacha === undefined) {
+                    profile.trackGacha = true;
+                }
             }
             if (settingsStr) habitPrices = JSON.parse(settingsStr);
             if (statesStr) activeHabits = JSON.parse(statesStr);
@@ -6742,12 +6745,16 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         function updateCheckinBtnVisibility() {
             const btnTobacco = document.getElementById('checkin-btn-tobacco');
             const btnBeer = document.getElementById('checkin-btn-beer');
+            const btnGacha = document.getElementById('checkin-btn-gacha');
 
             if (btnTobacco) {
-                btnTobacco.style.display = 'flex';
+                btnTobacco.style.display = (profile.trackTobacco !== false) ? 'flex' : 'none';
             }
             if (btnBeer) {
-                btnBeer.style.display = 'flex';
+                btnBeer.style.display = (profile.trackBeer !== false) ? 'flex' : 'none';
+            }
+            if (btnGacha) {
+                btnGacha.style.display = (profile.trackGacha !== false) ? 'flex' : 'none';
             }
         }
 
@@ -6805,7 +6812,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             let activeRates = [];
             if (profile.trackTobacco) activeRates.push(rates.tobacco);
             if (profile.trackBeer) activeRates.push(rates.beer);
-            if (hasGachaHistory || activeHabits.gacha) activeRates.push(rates.gacha);
+            if (profile.trackGacha) activeRates.push(Math.min(1.0, rates.gacha));
             
             if (activeRates.length > 0) {
                 avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
@@ -6818,21 +6825,24 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const exp = document.getElementById('pace-explanation');
             if (exp) {
                 if (simulationPaceMode === 'ideal') {
-                    exp.innerText = '💡 理想目標: 投資達成率を100%（毎日継続）と仮定した将来予測です（その他投資は非反映）';
+                    exp.innerText = '💡 理想目標: 投資達成率を100%（毎日継続）と仮定した将来予測です';
                 } else {
                     const percentStr = `${Math.round(avgRate * 100)}%`;
                     exp.innerText = `💡 現実ペース: 実際のあなたの平均投資率 ${percentStr} を考慮した、よりリアルな将来予測です`;
                 }
             }
 
+            const targetGachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+            const gachaDaily = targetGachaMonthly / 30;
+
             if (simulationPaceMode === 'real') {
                 if (profile.trackTobacco) monthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
                 if (profile.trackBeer) monthlySaving += Math.round(beerMonthly * rates.beer);
-                if (hasGachaHistory || activeHabits.gacha) monthlySaving += gachaMonthly; // 節約は過去実績のペースをそのまま適用
+                if (profile.trackGacha) monthlySaving += Math.round(targetGachaMonthly * rates.gacha);
             } else {
                 if (profile.trackTobacco) monthlySaving += tobaccoMonthly;
                 if (profile.trackBeer) monthlySaving += beerMonthly;
-                // 理想目標（ideal）では、gacha（節約）は0（非反映）とする
+                if (profile.trackGacha) monthlySaving += targetGachaMonthly;
             }
             monthlySaving = floorTo100Jpy(monthlySaving);
 
@@ -6840,7 +6850,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             let realMonthlySaving = 0;
             if (profile.trackTobacco) realMonthlySaving += Math.round(tobaccoMonthly * rates.tobacco);
             if (profile.trackBeer) realMonthlySaving += Math.round(beerMonthly * rates.beer);
-            if (hasGachaHistory || activeHabits.gacha) realMonthlySaving += gachaMonthly;
+            if (profile.trackGacha) realMonthlySaving += Math.round(targetGachaMonthly * rates.gacha);
             realMonthlySaving = floorTo100Jpy(realMonthlySaving);
 
             // 過去履歴からこれまでの累計節約額 (実績) を計算して初期元本 P とする（現実ペース用、サブスクは除外）
@@ -6854,10 +6864,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             // 理想目標用の初期元本 P_ideal：
             // タバコ・ビールは起点（startDate）から今日まで100%毎日やめたと仮定
-            // 節約（フリー）については理想目標では 0 とし、非反映とする
+            // 投資についても、理想目標（分母）として経過日数分を自動で計上する
             let P_ideal = 0;
             if (profile.trackTobacco) P_ideal += tobaccoDaily * elapsedDays;
             if (profile.trackBeer) P_ideal += beerDaily * elapsedDays;
+            if (profile.trackGacha) P_ideal += gachaDaily * elapsedDays;
             P_ideal = floorTo100Jpy(P_ideal);
 
             // シミュレーションモードに応じて初期元本を切り替える
@@ -6915,103 +6926,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             updateChart(labels, savingData, investData);
 
-            // 🧮 シミュレーション内訳の動的レンダリング
-            const detailContainer = document.getElementById('sim-detail-tables-container');
-            if (detailContainer) {
-                const tobaccoRate = profile.trackTobacco ? rates.tobacco : 0;
-                const tobaccoActiveMonthly = (simulationPaceMode === 'ideal') ? tobaccoMonthly : Math.round(tobaccoMonthly * tobaccoRate);
-                const tobaccoActiveP = (simulationPaceMode === 'ideal') ? (tobaccoDaily * elapsedDays) : (history.filter(item => item.type === 'tobacco').reduce((sum, item) => sum + item.amount, 0));
 
-                const beerRate = profile.trackBeer ? rates.beer : 0;
-                const beerActiveMonthly = (simulationPaceMode === 'ideal') ? beerMonthly : Math.round(beerMonthly * beerRate);
-                const beerActiveP = (simulationPaceMode === 'ideal') ? (beerDaily * elapsedDays) : (history.filter(item => item.type === 'beer').reduce((sum, item) => sum + item.amount, 0));
-
-                const showGachaRow = (hasGachaHistory || activeHabits.gacha);
-                const gachaActiveMonthlyStr = (simulationPaceMode === 'ideal') ? "0 円 (理想目標: 非反映)" : `${gachaMonthly.toLocaleString()} 円`;
-                const gachaActivePStr = (simulationPaceMode === 'ideal') ? "0 円 (理想目標: 非反映)" : `${floorTo100Jpy(totalGachaAmount).toLocaleString()} 円`;
-
-                detailContainer.innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <div>
-                            <div style="font-weight: 700; color: var(--neon-secondary); margin-bottom: 8px; font-size: 0.72rem; display: flex; align-items: center; gap: 4px;">
-                                📅 毎月の積立想定額（月額ペース内訳）
-                            </div>
-                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.68rem;">
-                                <thead>
-                                    <tr style="border-bottom: 1px solid var(--border-glass); color: var(--text-muted); font-size: 0.6rem;">
-                                        <th style="padding: 4px 0;">項目</th>
-                                        <th style="padding: 4px 0; text-align: right;">成功率 (設定)</th>
-                                        <th style="padding: 4px 0; text-align: right;">計算上の月額</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${profile.trackTobacco ? `
-                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">🚭 タバコ</td>
-                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '100% (理想目標)' : `${Math.round(tobaccoRate * 100)}%`}</td>
-                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${tobaccoActiveMonthly.toLocaleString()} 円</td>
-                                    </tr>` : ''}
-                                    ${profile.trackBeer ? `
-                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">🍺 ビール</td>
-                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '100% (理想目標)' : `${Math.round(beerRate * 100)}%`}</td>
-                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${beerActiveMonthly.toLocaleString()} 円</td>
-                                    </tr>` : ''}
-                                    ${showGachaRow ? `
-                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">💰 未来へ投資</td>
-                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '理想目標 (非反映)' : '過去平均 (日割算数)'}</td>
-                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${gachaActiveMonthlyStr}</td>
-                                    </tr>` : ''}
-                                    <tr style="border-top: 1px solid var(--border-glass);">
-                                        <td colspan="2" style="padding: 8px 0; font-weight: 700; color: var(--neon-primary);">🔥 合計積立想定額</td>
-                                        <td style="padding: 8px 0; text-align: right; font-weight: 800; color: var(--neon-primary); font-size: 0.75rem;">${monthlySaving.toLocaleString()} 円/月</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div>
-                            <div style="font-weight: 700; color: var(--neon-secondary); margin-bottom: 8px; font-size: 0.72rem; display: flex; align-items: center; gap: 4px;">
-                                🏦 初期元本（現在までの累積投資額内訳）
-                            </div>
-                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.68rem;">
-                                <thead>
-                                    <tr style="border-bottom: 1px solid var(--border-glass); color: var(--text-muted); font-size: 0.6rem;">
-                                        <th style="padding: 4px 0;">項目</th>
-                                        <th style="padding: 4px 0; text-align: right;">算出基準</th>
-                                        <th style="padding: 4px 0; text-align: right;">計算上の元本</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${profile.trackTobacco ? `
-                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">🚭 タバコ</td>
-                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? `理想目標 (${elapsedDays}日×毎日)` : '実際の投資履歴'}</td>
-                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${floorTo100Jpy(tobaccoActiveP).toLocaleString()} 円</td>
-                                    </tr>` : ''}
-                                    ${profile.trackBeer ? `
-                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">🍺 ビール</td>
-                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? `理想目標 (${elapsedDays}日×毎日)` : '実際の投資履歴'}</td>
-                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${floorTo100Jpy(beerActiveP).toLocaleString()} 円</td>
-                                    </tr>` : ''}
-                                    ${showGachaRow ? `
-                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding: 6px 0; font-weight: 500; color: var(--text-main);">💰 未来へ投資</td>
-                                        <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${simulationPaceMode === 'ideal' ? '理想目標 (非反映)' : '実際の全投資合計'}</td>
-                                        <td style="padding: 6px 0; text-align: right; font-weight: 700; color: var(--text-main);">${gachaActivePStr}</td>
-                                    </tr>` : ''}
-                                    <tr style="border-top: 1px solid var(--border-glass);">
-                                        <td colspan="2" style="padding: 8px 0; font-weight: 700; color: var(--neon-secondary);">🏦 合計初期元本</td>
-                                        <td style="padding: 8px 0; text-align: right; font-weight: 800; color: var(--neon-secondary); font-size: 0.75rem;">${activeP.toLocaleString()} 円</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-            }
         }
 
         function floorTo100Jpy(num) {
@@ -7443,6 +7358,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
                     const tobaccoDaily = Math.round(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
                     const beerDaily = Math.round(habitPrices.beerPrice * habitPrices.beerCount);
+                    const gachaMonthly = habitPrices.gachaPrice * habitPrices.gachaCount;
+                    const gachaDaily = gachaMonthly / 30;
 
                     const tobaccoMonthly = tobaccoDaily * 30;
                     const beerMonthly = beerDaily * 30;
@@ -7450,11 +7367,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     let idealMonthlySaving = 0;
                     if (profile.trackTobacco) idealMonthlySaving += tobaccoMonthly;
                     if (profile.trackBeer) idealMonthlySaving += beerMonthly;
+                    idealMonthlySaving += gachaMonthly;
 
-                    // 理想目標累積額（これまでの理想の累積）：タバコ、ビールは起点（startDate）から100%成功と仮定。節約は非反映
+                    // 理想目標累積額（これまでの理想の累積）：タバコ、ビールは100%自動で経過日数分、投資も月間目標の経過日数分を自動で
                     let idealCumToday = 0;
                     if (profile.trackTobacco) idealCumToday += tobaccoDaily * elapsedDays;
                     if (profile.trackBeer) idealCumToday += beerDaily * elapsedDays;
+                    idealCumToday += gachaDaily * elapsedDays;
 
                     idealCumToday = floorTo100Jpy(idealCumToday);
                     const diffToday = floorTo100Jpy(idealCumToday - totalEarned);
@@ -7490,38 +7409,86 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         diffInvestText = `現在、<strong style="color: ${colorTextMain};">完璧な100%の投資ペース</strong>を維持しています！このまま継続できれば、最高の未来（資産）: <span style="color: ${colorSecondary}; font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> が確実に実現します！🎉`;
                     }
 
+                    // 💰 金銭・投資・資産形成に特化した今日の一言アドバイス
                     const microTips = [
-                        "小さな一歩が未来を変えます。今日0.1%でも進んだ自分を誇りに思いましょう！🌟",
-                        "習慣化のコツは『完璧を目指さないこと』。今日の投資は一生ものの財産になります！💎",
-                        "塵も積もれば山となる。このわずかな積み重ねが、将来驚くべき複利効果を生みます！📈",
-                        "おめでとうございます！脳の自制神経が今、一歩ずつ強化されています！🧠🔥",
-                        "無理せず、自分のペースで大丈夫。1ミリでも動いたなら、それは立派な大前進です！🌱",
-                        "投資できたお金は未来の自由のチケット。少しずつ自由を引き寄せています！🎟️✨",
-                        "意思の力に頼らず、仕組みで勝つ。HabitVestを開いた時点であなたの勝ちです！🏆",
-                        "健康も、資産も、1日では作れません。今日の選択が1年後に大きな差となります！💪",
-                        "他人のペースと比較する必要はありません。過去の自分より0.1%でも前進すれば大成功！🌈",
-                        "ゲーム感覚で楽しみながら投資。このワクワク感が、継続の最大の秘訣です！🎮❤️"
+                        "今日浮かせたお金は、未来への大切な種銭です。複利の力で10倍、20倍に育てていきましょう！💰",
+                        "無駄な支出を削ることは、利回り100%の非課税投資と同じ価値があります。最高の資産形成です！📈",
+                        "塵も積もれば山となる。日々の小さなチェックインが、将来の莫大な不労所得（配当金）の土台を作ります。💎",
+                        "お金を消費に回すか、未来の自由に投資するか。今日のあなたの選択が、10年後の自由時間を買い取っています！🎟️",
+                        "支出コントロール能力は一生ものの無形資産です。市場の暴落にも負けない最強の『マネーリテラシー』が身についています。🧠🔥",
+                        "浮いたお金を利回り5%で複利運用すると、20年後には投資元本が約2.6倍に膨れ上がります。今日の節約は未来の倍増マネーです！✨",
+                        "習慣投資は『意思の力』ではなく『仕組み』です。HabitVestに記録をつけた時点で、あなたのマネーゲームは勝利確定です！🏆",
+                        "消費は一瞬の快楽ですが、投資は一生の安心と自由を生み出します。今日も自由な未来を一歩引き寄せました！🌈",
+                        "もし毎日500円投資に回せば、20年後には年利5%で約200万円の金利ボーナスが生まれます。今日の一歩が大きな利息を生みます！💰📈",
+                        "お金に働いてもらう仕組み（複利）を稼働させるには、まず種銭が必要です。今日の投資が、将来あなたのために働く忠実な兵隊になります！💂‍♂️✨"
                     ];
                     const tipIndex = Math.floor((ratePercent * 10) % 10);
                     const dailyTip = microTips[tipIndex];
-
                     const dailyTipBg = isDark ? colorBgBase : '#e2e8f0';
+
+                    // ONになっている習慣のリストを作成
+                    let activeHabitListHtml = `
+                        <div style="margin: 12px 0; padding: 12px; background: ${dailyTipBg}; border: 1.5px solid ${colorBorder}; border-radius: 8px;">
+                            <div style="font-weight: 700; color: ${colorTextMain}; font-size: 0.72rem; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+                                📊 今月の取り組み状況
+                            </div>
+                            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.7rem;">
+                    `;
+
+                    let hasAnyTracked = false;
+                    if (profile.trackTobacco) {
+                        hasAnyTracked = true;
+                        const tobaccoPercent = Math.round(rates.tobacco * 100);
+                        activeHabitListHtml += `
+                            <li style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: ${colorTextSub};">🚭 タバコ節制 (継続率)</span>
+                                <span style="font-weight: 700; color: ${tobaccoPercent >= 80 ? colorGreen : tobaccoPercent >= 50 ? colorPrimary : colorSecondary};">${tobaccoPercent}%</span>
+                            </li>
+                        `;
+                    }
+                    if (profile.trackBeer) {
+                        hasAnyTracked = true;
+                        const beerPercent = Math.round(rates.beer * 100);
+                        activeHabitListHtml += `
+                            <li style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: ${colorTextSub};">🍺 お酒節制 (継続率)</span>
+                                <span style="font-weight: 700; color: ${beerPercent >= 80 ? colorGreen : beerPercent >= 50 ? colorPrimary : colorSecondary};">${beerPercent}%</span>
+                            </li>
+                        `;
+                    }
+                    if (profile.trackGacha) {
+                        hasAnyTracked = true;
+                        const gachaPercent = Math.round(rates.gacha * 100);
+                        activeHabitListHtml += `
+                            <li style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: ${colorTextSub};">💰 未来への投資 (今月目標達成率)</span>
+                                <span style="font-weight: 700; color: ${gachaPercent >= 100 ? colorGreen : gachaPercent >= 50 ? colorPrimary : colorSecondary};">${gachaPercent}%</span>
+                            </li>
+                        `;
+                    }
+                    
+                    if (!hasAnyTracked) {
+                        activeHabitListHtml += `
+                            <li style="color: ${colorTextSub}; font-style: italic; text-align: center;">設定で習慣の記録をONにしてください</li>
+                        `;
+                    }
+
+                    activeHabitListHtml += `
+                            </ul>
+                        </div>
+                    `;
+
                     rmGoalAdvice.innerHTML = `
                         <div style="background: ${colorBgCard}; border: 1px dashed ${colorBorder}; border-radius: 12px; padding: 12px; margin-top: 12px; box-shadow: var(--card-shadow); transition: background-color 0.4s ease, border-color 0.4s ease;">
                             <div style="font-weight: 700; color: ${colorSecondary}; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
                                 💡 ${years}年後の自分への特別アドバイス
                             </div>
                             <div style="line-height: 1.6; font-size: 0.7rem; color: ${colorTextSub};">
-                                <strong style="color: dots ${colorTextMain};"> 開始日からの実績と理想 </strong><br>
-                                投資記録開始 ${profile.startDate || getTodayStr()} から今日まで：<br>
-                                ・理想目標額: <span style="color: ${colorTextMain}; font-weight:700;">${idealCumToday.toLocaleString()}円</span> 継続時<br>
-                                ・あなたの実績: <span style="color: ${colorSecondary}; font-weight:700;">${totalEarned.toLocaleString()}円</span> (投資達成率: <span style="color: ${colorPrimary}; font-weight:700;">${ratePercent.toFixed(1)}%</span>)<br>
-                                ${diffToday > 0 ? `・理想目標との差: <span style="color: var(--accent-pink); font-weight:700;">-${diffToday.toLocaleString()}円</span>` : `・理想目標との差: <span style="color: ${colorPrimary}; font-weight:700;">クリア！完璧です🔥</span>`}
-                                <br>
                                 <div style="margin-bottom: 12px; padding: 10px; background: ${dailyTipBg}; border-left: 3px solid ${colorGreen}; border-radius: 4px; line-height: 1.4; font-size: 0.72rem; color: ${colorTextMain};">
-                                    <div style="font-weight: 700; color: ${colorGreen}; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em;">🎯 0.1%刻みの今日の一言アドバイス</div>
-                                    <strong style="color: ${colorTextMain};">[進捗率 ${ratePercent.toFixed(1)}%]</strong> ${dailyTip}
+                                    <div style="font-weight: 700; color: ${colorGreen}; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em;">🎯 今日の投資アドバイス</div>
+                                    ${dailyTip}
                                 </div>
+                                ${activeHabitListHtml}
                                 <strong style="color: ${colorTextMain};"> 将来の伸びしろ予測 </strong><br>
                                 ${diffInvestText}<br>
                                 <span style="color: ${colorTextSub}; display: block; margin-top: 8px; border-left: 2px solid ${colorPrimary}; padding-left: 8px; line-height: 1.5;">
@@ -7759,23 +7726,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             calculate();
             renderHistoryList();
 
-            // 🧮 シミュレーション内訳アコーディオンの開閉イベント
-            const simDetailBtn = document.getElementById('btn-toggle-sim-detail');
-            const simDetailContent = document.getElementById('sim-detail-content');
-            const simDetailChevron = document.getElementById('sim-detail-chevron');
 
-            if (simDetailBtn && simDetailContent && simDetailChevron) {
-                simDetailBtn.addEventListener('click', () => {
-                    const isOpen = simDetailContent.style.maxHeight !== '0px' && simDetailContent.style.maxHeight !== '';
-                    if (!isOpen) {
-                        simDetailContent.style.maxHeight = (simDetailContent.scrollHeight + 120) + 'px';
-                        simDetailChevron.innerText = '▲ 閉じる';
-                    } else {
-                        simDetailContent.style.maxHeight = '0px';
-                        simDetailChevron.innerText = '▼ 開く';
-                    }
-                });
-            }
 
             // 自己投資ステータスカードの開閉イベント
             const statusCard = document.getElementById('life-status-card');
