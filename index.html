@@ -6957,6 +6957,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         // 🍀 ライフデータ更新 (健康・時間の実績＆メリット)
         function updateLifeData(years, monthlySaving) {
             const name = profile.name || "あなた";
+            const rates = getHabitSuccessRates();
             
             // 過去履歴から累計実績を計算する
             let totalEarned = 0; // 累計節約額
