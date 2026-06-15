@@ -1140,6 +1140,39 @@
             position: relative;
             overflow: hidden;
         }
+        .checkin-btn .status-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 4px;
+            line-height: 1;
+            z-index: 2;
+        }
+        /* 設定中 (目標対象) */
+        .checkin-btn .status-badge.tracked {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+        /* 記録のみ */
+        .checkin-btn .status-badge.log-only {
+            background: rgba(100, 116, 139, 0.08);
+            color: var(--text-sub);
+            border: 1px solid rgba(100, 116, 139, 0.2);
+        }
+        .theme-dark .checkin-btn .status-badge.tracked {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .theme-dark .checkin-btn .status-badge.log-only {
+            background: rgba(255, 255, 255, 0.03);
+            color: #94a3b8;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
         .theme-dark .checkin-btn {
             background: rgba(255, 255, 255, 0.03);
             border-color: rgba(255, 255, 255, 0.1);
@@ -1746,6 +1779,10 @@
                         <span class="label">未来へ投資</span>
                         <span class="price-badge" id="checkin-badge-gacha">5,000円</span>
                     </button>
+                </div>
+                <div style="margin-top: 12px; font-size: 0.68rem; color: var(--text-sub); line-height: 1.5; text-align: left; display: flex; align-items: flex-start; gap: 4px; border-top: 1px dashed var(--border-glass); padding-top: 10px;">
+                    <span style="font-size: 0.8rem; line-height: 1;">💡</span>
+                    <span><strong>【シミュレーション計算について】</strong><br>「🎯設定中」の習慣のみ、ライフや資産将来予測の計算に自動反映されます。設定画面（歯車マーク）のチェックのON/OFFで対象を切り替えることができます。</span>
                 </div>
             </div>
 
@@ -6742,6 +6779,23 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             activeHabits.gacha = hasGachaToday;
         }
 
+        function updateStatusBadge(btnElement, isTracked) {
+            if (!btnElement) return;
+            let badge = btnElement.querySelector('.status-badge');
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'status-badge';
+                btnElement.appendChild(badge);
+            }
+            if (isTracked) {
+                badge.textContent = '🎯設定中';
+                badge.className = 'status-badge tracked';
+            } else {
+                badge.textContent = '記録のみ';
+                badge.className = 'status-badge log-only';
+            }
+        }
+
         function updateCheckinBtnVisibility() {
             const btnTobacco = document.getElementById('checkin-btn-tobacco');
             const btnBeer = document.getElementById('checkin-btn-beer');
@@ -6749,12 +6803,15 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             if (btnTobacco) {
                 btnTobacco.style.display = 'flex';
+                updateStatusBadge(btnTobacco, profile.trackTobacco !== false);
             }
             if (btnBeer) {
                 btnBeer.style.display = 'flex';
+                updateStatusBadge(btnBeer, profile.trackBeer !== false);
             }
             if (btnGacha) {
                 btnGacha.style.display = 'flex';
+                updateStatusBadge(btnGacha, profile.trackGacha !== false);
             }
         }
 
@@ -7351,17 +7408,61 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // 趣味に合わせた具体的なメッセージをゴールに表示
             if (rmGoalDesc) {
                 let hobbyTarget = "資産形成";
-                switch (hobby) {
-                    
-                    case 'travel': hobbyTarget = "最高の旅 ✈️"; break;
-                    case 'gadget': hobbyTarget = "最高のデスク環境 💻"; break;
-                    case 'gourmet': hobbyTarget = "至高のグルメ 🍣"; break;
-                    case 'invest': hobbyTarget = "お金に縛られない自由な暮らしと不労所得 📈"; break;
-                    case 'gaming': hobbyTarget = "夢のゲーミング/ホビールーム構築 🎮"; break;
-                    case 'beauty': hobbyTarget = "至高の美容と自己投資 💄"; break;
+                let freedomText = "日々の選択肢を広げてくれる心強い支えとなります！";
+
+                if (totalInvestGoal >= 100000000) {
+                    freedomText = "何にも縛られない完全な自由と、経済的自立（FIRE）を実現することができます！";
+                    switch (hobby) {
+                        case 'travel': hobbyTarget = "世界一周や世界中の超豪華ホテルを巡る極上の長期旅 ✈️"; break;
+                        case 'gadget': hobbyTarget = "最高峰の機材と専用ルームを完備した究極のワーク・クリエイティブ環境 💻"; break;
+                        case 'gourmet': hobbyTarget = "世界各地のミシュラン星付きレストランや至高の名店を堪能する極上グルメ 🍣"; break;
+                        case 'invest': hobbyTarget = "莫大な資産収入（不労所得）による完全な経済的自由 📈"; break;
+                        case 'gaming': hobbyTarget = "防音室や最高スペック設備を詰め込んだ夢のプライベートゲームパラダイス 🎮"; break;
+                        case 'beauty': hobbyTarget = "一生もののプレミアムな美容・健康ケアと最高峰の自己投資 💄"; break;
+                    }
+                } else if (totalInvestGoal >= 50000000) {
+                    freedomText = "早期リタイア（セミリタイア）や働き方の自由な選択肢を広げ、生活の自由度を劇的に向上させることができます！";
+                    switch (hobby) {
+                        case 'travel': hobbyTarget = "世界各地をゆったり巡る定期的な海外旅行や優雅な長期の旅 ✈️"; break;
+                        case 'gadget': hobbyTarget = "最新・最上位スペックで統一した誰もが憧れる最高峰 of デスクセットアップ 💻"; break;
+                        case 'gourmet': hobbyTarget = "毎週の高級レストランディナーや日本中の絶品グルメ巡り 🍣"; break;
+                        case 'invest': hobbyTarget = "毎月の固定費や生活費の大半を十分にカバーできる頼もしい資産配当（不労所得） 📈"; break;
+                        case 'gaming': hobbyTarget = "ハイエンド機材と最高クラスのAV設備を備えたこだわりのゲーム専用ルーム 🎮"; break;
+                        case 'beauty': hobbyTarget = "先進的な美容施術や上質なスキンケア、心身ともに極上のセルフ投資 💄"; break;
+                    }
+                } else if (totalInvestGoal >= 10000000) {
+                    freedomText = "長期の生活防衛資金やサイドFIREの確かな土台を築き、人生の大きな安心感と選択の自由を手に入れることができます！";
+                    switch (hobby) {
+                        case 'travel': hobbyTarget = "定期的な海外リゾート旅行や国内の贅沢なスイートルームでの宿泊 ✈️"; break;
+                        case 'gadget': hobbyTarget = "作業効率と満足度を極限まで引き上げるハイスペックなデスク環境 💻"; break;
+                        case 'gourmet': hobbyTarget = "日常に彩りを添える週末の贅沢なグルメや高級レストランでの特別な食事 🍣"; break;
+                        case 'invest': hobbyTarget = "将来に向けた本格的な資産形成と、家計を支える安定した配当収入 📈"; break;
+                        case 'gaming': hobbyTarget = "最高峰のゲーミングPCや複数の高リフレッシュレートモニターを揃えたゲーム環境 🎮"; break;
+                        case 'beauty': hobbyTarget = "定期的なエステや医療美容、自分を高めるための上質な自己研鑽 💄"; break;
+                    }
+                } else if (totalInvestGoal >= 3000000) {
+                    freedomText = "数年分の生活費をカバーする確かな蓄えや積極的な投資資金となり、新しい挑戦への勇気や日々の安心感を得られます！";
+                    switch (hobby) {
+                        case 'travel': hobbyTarget = "国内のちょっとリッチな温泉旅館巡りや週末の贅沢な旅行 ✈️"; break;
+                        case 'gadget': hobbyTarget = "日々の作業を快適にするハイスペックPCや最新の人気周辺機器 💻"; break;
+                        case 'gourmet': hobbyTarget = "美味しい人気レストランや話題の名店でのちょっと特別なグルメ体験 🍣"; break;
+                        case 'invest': hobbyTarget = "さらなる資産拡大に向けた力強い投資用種銭（ポートフォリオ） 📈"; break;
+                        case 'gaming': hobbyTarget = "最新のゲームハードと快適なゲーミングチェア・大型液晶モニターの導入 🎮"; break;
+                        case 'beauty': hobbyTarget = "美しさと健康をキープする上質なスキンケアやフィットネスへの投資 💄"; break;
+                    }
+                } else {
+                    freedomText = "急な出費への備えや数ヶ月分の生活の余裕となり、日々の生活設計に精神的なゆとりをもたらしてくれます！";
+                    switch (hobby) {
+                        case 'travel': hobbyTarget = "気軽に行けてしっかりリフレッシュできる週末の楽しい小旅行 ✈️"; break;
+                        case 'gadget': hobbyTarget = "日常の作業効率を高めてくれる便利なキーボードやデザイン性の高いガジェット 💻"; break;
+                        case 'gourmet': hobbyTarget = "日頃の頑張りを労うちょっと贅沢で美味しいランチやディナー 🍣"; break;
+                        case 'invest': hobbyTarget = "資産形成の一歩を踏み出すための最初の大切な元本（タネ銭） 📈"; break;
+                        case 'gaming': hobbyTarget = "遊びたかった最新ゲームソフトや快適なコントローラー・ヘッドセットの購入 🎮"; break;
+                        case 'beauty': hobbyTarget = "日々のセルフケアをワンランク上にする美容アイテムやフィットネス体験 💄"; break;
+                    }
                 }
 
-                rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める ${totalSavingGoal.toLocaleString()}円 よりも <strong>${(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${totalInvestGoal.toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、 <strong>${hobbyTarget}</strong> を実現し、何にも縛られない自由な人生を手に入れることができます！`;
+                rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める ${totalSavingGoal.toLocaleString()}円 よりも <strong>${(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${totalInvestGoal.toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、 <strong>${hobbyTarget}</strong> を実現し、${freedomText}`;
             }
 
             const rmGoalAdvice = document.getElementById('rm-goal-advice');
