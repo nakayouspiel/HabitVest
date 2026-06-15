@@ -6748,13 +6748,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const btnGacha = document.getElementById('checkin-btn-gacha');
 
             if (btnTobacco) {
-                btnTobacco.style.display = (profile.trackTobacco !== false) ? 'flex' : 'none';
+                btnTobacco.style.display = 'flex';
             }
             if (btnBeer) {
-                btnBeer.style.display = (profile.trackBeer !== false) ? 'flex' : 'none';
+                btnBeer.style.display = 'flex';
             }
             if (btnGacha) {
-                btnGacha.style.display = (profile.trackGacha !== false) ? 'flex' : 'none';
+                btnGacha.style.display = 'flex';
             }
         }
 
@@ -6857,6 +6857,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             let totalEarned = 0;
             history.forEach(item => {
                 if (item.type !== 'sub') {
+                    if (item.type === 'tobacco' && !profile.trackTobacco) return;
+                    if (item.type === 'beer' && !profile.trackBeer) return;
+                    if (item.type === 'gacha' && !profile.trackGacha) return;
                     totalEarned += item.amount;
                 }
             });
@@ -6968,7 +6971,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             let oldestGachaDate = null;
             
             history.forEach(item => {
-                if (item.type !== 'sub') {
+                let keep = true;
+                if (item.type === 'tobacco' && !profile.trackTobacco) keep = false;
+                if (item.type === 'beer' && !profile.trackBeer) keep = false;
+                if (item.type === 'gacha' && !profile.trackGacha) keep = false;
+
+                if (item.type !== 'sub' && keep) {
                     totalEarned += item.amount;
                 }
                 
@@ -7000,7 +7008,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             });
             totalEarned = floorTo100Jpy(totalEarned);
 
-            const dailyHistory = history.filter(item => item.type === 'tobacco' || item.type === 'beer');
+            const dailyHistory = history.filter(item => {
+                if (item.type === 'tobacco' && !profile.trackTobacco) return false;
+                if (item.type === 'beer' && !profile.trackBeer) return false;
+                return item.type === 'tobacco' || item.type === 'beer';
+            });
             const uniqueDates = new Set(dailyHistory.map(item => item.date));
             const totalStatsDays = uniqueDates.size;
 
@@ -7259,17 +7271,20 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 let healthMonth = "";
                 let healthYear = "";
 
-                if (profile.trackTobacco && profile.trackBeer) {
+                const isTobaccoActive = profile.trackTobacco && counts.tobacco > 0;
+                const isBeerActive = profile.trackBeer && counts.beer > 0;
+
+                if (isTobaccoActive && isBeerActive) {
                     healthDay = "【心肺＆肝臓】心拍数・血圧が正常化し、アルコール分解負担がゼロに。ダブルの体内浄化が始まり、翌朝のだるさが消え去ります！";
                     healthWeek = "【睡眠・味覚改善】ニコチンとアルコールが完全に抜け、睡眠効率が統計的に約30%向上！味覚が鋭くなり食事の美味しさが倍増します。";
                     healthMonth = "【代謝爆上げ・肌ツヤ】肺機能が大幅回復し、肝細胞が劇的に修復。血流がスムーズになり、肌のツヤが戻り、ぽっこりお腹もスッキリ解消！";
                     healthYear = "【生涯の健康体】心血管疾患リスクが統計的に50%以上減少、肝機能が完全に正常化。疲れを全く溜め込まない最強の体が定着します！";
-                } else if (profile.trackTobacco) {
+                } else if (isTobaccoActive) {
                     healthDay = "【呼吸器・心臓】やめて24時間で心臓発作リスクが下がり始め、肺がキレイに掃除され始めます。血中酸素レベルが統計的に正常化します！";
                     healthWeek = "【睡眠・嗅覚復活】ニコチンが体内から完全に消え、嗅覚や味覚が劇的に改善。睡眠の質も向上し、朝の目覚めが驚くほど軽やかになります！";
                     healthMonth = "【肺機能・肌改善】肺活量が最大30%回復し、咳や息切れが減少。肌の血流が改善し、くすみが消えて肌トーンが明るく若返ります！";
                     healthYear = "【病気リスク半減】非喫煙者と比べて心臓病の生涯リスクが統計的に50%減少！免疫力も劇的に向上し、風邪を引きにくい強靭な体に。";
-                } else if (profile.trackBeer) {
+                } else if (isBeerActive) {
                     healthDay = "【睡眠・肝臓保護】アルコールによる脱水や睡眠障害から解放され、翌朝のだるさが大幅に軽減。肝臓の代謝負担がリセットされます！";
                     healthWeek = "【脳疲労リセット】深い睡眠（レム睡眠）の割合が約20%増加し、脳の疲労が解消。脂肪燃焼効率が上がり、体重が減少傾向に入ります！";
                     healthMonth = "【肝機能・むくみ解消】アルコール性脂肪肝リスクが統計的に約15%減少。肌の水分量が保たれて乾燥や毛穴トラブルが劇的に改善します！";
@@ -7437,7 +7452,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     `;
 
                     let hasAnyTracked = false;
-                    if (profile.trackTobacco) {
+                    if (profile.trackTobacco && counts.tobacco > 0) {
                         hasAnyTracked = true;
                         const tobaccoPercent = Math.round(rates.tobacco * 100);
                         activeHabitListHtml += `
@@ -7447,7 +7462,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             </li>
                         `;
                     }
-                    if (profile.trackBeer) {
+                    if (profile.trackBeer && counts.beer > 0) {
                         hasAnyTracked = true;
                         const beerPercent = Math.round(rates.beer * 100);
                         activeHabitListHtml += `
@@ -7457,7 +7472,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             </li>
                         `;
                     }
-                    if (profile.trackGacha) {
+                    if (profile.trackGacha && counts.gacha > 0) {
                         hasAnyTracked = true;
                         const gachaPercent = Math.round(rates.gacha * 100);
                         activeHabitListHtml += `
@@ -7468,10 +7483,17 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         `;
                     }
                     
+                    let hasAnyEnabled = profile.trackTobacco || profile.trackBeer || profile.trackGacha;
                     if (!hasAnyTracked) {
-                        activeHabitListHtml += `
-                            <li style="color: ${colorTextSub}; font-style: italic; text-align: center;">設定で習慣の記録をONにしてください</li>
-                        `;
+                        if (hasAnyEnabled) {
+                            activeHabitListHtml += `
+                                <li style="color: ${colorTextSub}; font-style: italic; text-align: center;">習慣の記録がありません。記録タブから記録してください。</li>
+                            `;
+                        } else {
+                            activeHabitListHtml += `
+                                <li style="color: ${colorTextSub}; font-style: italic; text-align: center;">設定で習慣の記録をONにしてください</li>
+                            `;
+                        }
                     }
 
                     activeHabitListHtml += `
@@ -7687,16 +7709,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             labels: { color: tickColor, font: { size: 9, family: 'Outfit' } }
                         },
                         tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) label += ': ';
-                                    if (context.parsed.y !== null) label += formatCurrency(context.parsed.y);
-                                    return label;
-                                }
-                            }
+                            enabled: false
                         }
                     },
                     scales: {
