@@ -7015,7 +7015,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
 
         function floorTo100Jpy(num) {
-            return Math.floor(num / 100) * 100;
+            // 10円単位の設定が反映されるように 10円単位での切り捨て に修正しました
+            return Math.floor(num / 10) * 10;
         }
 
         function formatCurrency(num) {
@@ -7369,12 +7370,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (rmDayContainer) {
                     rmDayContainer.style.opacity = '1';
                     rmDayContainer.innerHTML = `
-                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorPrimary}; box-shadow: 0 0 8px ${isDark ? colorPrimary : 'transparent'};"></div>
-                        <div style="font-weight: 700; font-size: 0.85rem; color: ${colorPrimary};">📅 現在から＋1日後</div>
-                        <div style="font-size: 0.72rem; color: ${colorTextSub}; margin-top: 4px; line-height: 1.5;">
-                            到達目標累計: <span style="font-weight: 700; color: ${colorPrimary};">${cumDay.toLocaleString()}</span>円 (現在から +${dailySaving.toLocaleString()}円)<br>
-                            <span style="display: block; margin: 4px 0 2px 0; line-height: 1.4; color: ${colorTextMain};"><strong style="color: ${colorGreen}; font-weight: 700;">❤️ 健康メリット：</strong>${healthDay}</span>
-                            <span style="color: ${colorTextSub};">🎁 ご褒美：<strong style="color: ${colorTextMain};">${itemDay.title}</strong>相当が手に入ります！${itemDay.desc} ${itemDay.emoji}</span>
+                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorPrimary};"></div>
+                        <div style="font-size: 0.78rem; line-height: 1.5; color: ${colorTextMain};">
+                            <strong style="color: ${colorPrimary};">📅 1日後 :</strong> 累計目標 <strong>${cumDay.toLocaleString()}円</strong> (+${dailySaving.toLocaleString()}円)
+                            <span style="display: block; font-size: 0.72rem; color: ${colorTextSub}; margin-top: 2px;">🎁 ご褒美: <strong>${itemDay.title}</strong> 相当 (${itemDay.desc} ${itemDay.emoji})</span>
                         </div>
                     `;
                 }
@@ -7384,12 +7383,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (rmWeekContainer) {
                     rmWeekContainer.style.opacity = '1';
                     rmWeekContainer.innerHTML = `
-                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorSecondary}; box-shadow: 0 0 8px dots ${isDark ? colorSecondary : 'transparent'};"></div>
-                        <div style="font-weight: 700; font-size: 0.85rem; color: ${colorSecondary};">📅 現在から＋1週間後</div>
-                        <div style="font-size: 0.72rem; color: ${colorTextSub}; margin-top: 4px; line-height: 1.5;">
-                            到達目標累計: <span style="font-weight: 700; color: dots ${colorSecondary};">${cumWeek.toLocaleString()}</span>円 (現在から +${(dailySaving * 7).toLocaleString()}円)<br>
-                            <span style="display: block; margin: 4px 0 2px 0; line-height: 1.4; color: ${colorTextMain};"><strong style="color: ${colorGreen}; font-weight: 700;">❤️ 健康メリット：</strong>${healthWeek}</span>
-                            <span style="color: ${colorTextSub};">🎁 ご褒美：<strong style="color: ${colorTextMain};">${itemWeek.title}</strong>相当が手に入ります！${itemWeek.desc} ${itemWeek.emoji}</span>
+                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorSecondary};"></div>
+                        <div style="font-size: 0.78rem; line-height: 1.5; color: ${colorTextMain};">
+                            <strong style="color: ${colorSecondary};">📅 1週間後 :</strong> 累計目標 <strong>${cumWeek.toLocaleString()}円</strong> (+${(dailySaving * 7).toLocaleString()}円)
+                            <span style="display: block; font-size: 0.72rem; color: ${colorTextSub}; margin-top: 2px;">🎁 ご褒美: <strong>${itemWeek.title}</strong> 相当 (${itemWeek.desc} ${itemWeek.emoji})</span>
                         </div>
                     `;
                 }
@@ -7399,12 +7396,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (rmMonthContainer) {
                     rmMonthContainer.style.opacity = '1';
                     rmMonthContainer.innerHTML = `
-                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorPrimary}; box-shadow: 0 0 8px ${isDark ? colorPrimary : 'transparent'};"></div>
-                        <div style="font-weight: 700; font-size: 0.85rem; color: ${colorPrimary};">📅 現在から＋1ヶ月後</div>
-                        <div style="font-size: 0.72rem; color: dots ${colorTextSub}; margin-top: 4px; line-height: 1.5;">
-                            到達目標累計: <span style="font-weight: 700; color: ${colorPrimary};">${cumMonth.toLocaleString()}</span>円 (現在から +${monthlySaving.toLocaleString()}円)<br>
-                            <span style="display: block; margin: 4px 0 2px 0; line-height: 1.4; color: ${colorTextMain};"><strong style="color: ${colorGreen}; font-weight: 700;">❤️ 健康メリット：</strong>${healthMonth}</span>
-                            <span style="color: ${colorTextSub};">🎁 ご褒美：欲しかった<strong style="color: ${colorTextMain};">${itemMonth.title}</strong>が購入できます！${itemMonth.desc} ${itemMonth.emoji}</span>
+                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorPrimary};"></div>
+                        <div style="font-size: 0.78rem; line-height: 1.5; color: ${colorTextMain};">
+                            <strong style="color: ${colorPrimary};">📅 1ヶ月後 :</strong> 累計目標 <strong>${cumMonth.toLocaleString()}円</strong> (+${monthlySaving.toLocaleString()}円)
+                            <span style="display: block; font-size: 0.72rem; color: ${colorTextSub}; margin-top: 2px;">🎁 ご褒美: <strong>${itemMonth.title}</strong> 相当 (${itemMonth.desc} ${itemMonth.emoji})</span>
                         </div>
                     `;
                 }
@@ -7414,12 +7409,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (rmYearContainer) {
                     rmYearContainer.style.opacity = '1';
                     rmYearContainer.innerHTML = `
-                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorSecondary}; box-shadow: 0 0 8px ${isDark ? colorSecondary : 'transparent'};"></div>
-                        <div style="font-weight: 700; font-size: 0.85rem; color: ${colorSecondary};">📅 現在から＋1年後</div>
-                        <div style="font-size: 0.72rem; color: dots ${colorTextSub}; margin-top: 4px; line-height: 1.5;">
-                            到達目標累計: <span style="font-weight: 700; color: ${colorSecondary};">${cumYear.toLocaleString()}</span>円 (現在から +${(monthlySaving * 12).toLocaleString()}円)<br>
-                            <span style="display: block; margin: 4px 0 2px 0; line-height: 1.4; color: ${colorTextMain};"><strong style="color: ${colorGreen}; font-weight: 700;">❤️ 健康メリット：</strong>${healthYear}</span>
-                            <span style="color: var(--text-sub);">🎁 ご褒美：なんと<strong style="color: ${colorTextMain};">${itemYear.title}</strong>相当を実現！${itemYear.desc} ${itemYear.emoji}</span>
+                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorSecondary};"></div>
+                        <div style="font-size: 0.78rem; line-height: 1.5; color: ${colorTextMain};">
+                            <strong style="color: ${colorSecondary};">📅 1年後 :</strong> 累計目標 <strong>${cumYear.toLocaleString()}円</strong> (+${(monthlySaving * 12).toLocaleString()}円)
+                            <span style="display: block; font-size: 0.72rem; color: ${colorTextSub}; margin-top: 2px;">🎁 ご褒美: <strong>${itemYear.title}</strong> 相当 (${itemYear.desc} ${itemYear.emoji})</span>
                         </div>
                     `;
                 }
