@@ -7721,11 +7721,132 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             });
         }
 
+        // 📲 サービスワーカーの登録 (PWA対応 ＆ 即時適用・自動リロード・キャッシュバイパス設計)
+        function registerSW() {
+            if ('serviceWorker' in navigator) {
+                // アップデート検出時に表示するトースト関数
+                function showUpdateToast() {
+                    if (document.getElementById('sw-update-toast')) return;
+                    
+                    const toast = document.createElement('div');
+                    toast.id = 'sw-update-toast';
+                    toast.style.position = 'fixed';
+                    toast.style.bottom = '80px'; // ボトムナビの上
+                    toast.style.left = '50%';
+                    toast.style.transform = 'translateX(-50%)';
+                    toast.style.width = 'calc(100% - 32px)';
+                    toast.style.maxWidth = '400px';
+                    toast.style.background = 'rgba(15, 23, 42, 0.9)';
+                    toast.style.backdropFilter = 'blur(16px)';
+                    toast.style.webkitBackdropFilter = 'blur(16px)';
+                    toast.style.border = '1px solid #00ff88';
+                    toast.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.25)';
+                    toast.style.borderRadius = '16px';
+                    toast.style.padding = '16px';
+                    toast.style.zIndex = '10000';
+                    toast.style.display = 'flex';
+                    toast.style.flexDirection = 'column';
+                    toast.style.gap = '10px';
+                    toast.style.animation = 'swSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                    
+                    if (!document.getElementById('sw-toast-style')) {
+                        const style = document.createElement('style');
+                        style.id = 'sw-toast-style';
+                        style.innerHTML = `
+                            @keyframes swSlideUp {
+                                from { transform: translate(-50%, 50px); opacity: 0; }
+                                to { transform: translate(-50%, 0); opacity: 1; }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                    
+                    toast.innerHTML = `
+                        <div style="display: flex; align-items: flex-start; gap: 10px;">
+                            <span style="font-size: 1.25rem;">⚡</span>
+                            <div style="flex: 1; text-align: left;">
+                                <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; margin-bottom: 2px;">最新のアップデートが届いています！</div>
+                                <div style="font-size: 0.7rem; color: #94a3b8; line-height: 1.4;">HabitVestがより快適にアップグレードされました。最新の変更をすぐに反映できます。</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px;">
+                            <button id="sw-update-ignore-btn" style="background: transparent; border: none; padding: 6px 12px; font-size: 0.72rem; color: #94a3b8; font-weight: 600; cursor: pointer;">後で</button>
+                            <button id="sw-update-now-btn" style="background: #00ff88; border: none; border-radius: 8px; padding: 6px 14px; font-size: 0.72rem; color: #000000; font-weight: 700; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);">今すぐ更新</button>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(toast);
+                    
+                    document.getElementById('sw-update-ignore-btn').addEventListener('click', () => {
+                        toast.style.display = 'none';
+                    });
+                    
+                    document.getElementById('sw-update-now-btn').addEventListener('click', () => {
+                        if (window.swWaitingWorker) {
+                            window.swWaitingWorker.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                        toast.style.display = 'none';
+                    });
+                }
+
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => {
+                        console.log('Service Worker registered successfully:', reg.scope);
+                        
+                        // 起動直後に即時チェック
+                        reg.update().catch(err => console.log('SW manual update check failed on startup:', err));
+
+                        // 30秒ごとにバックグラウンドで更新を強制チェック
+                        setInterval(() => {
+                            reg.update().catch(err => console.log('SW manual update check failed in background:', err));
+                        }, 30000);
+                        
+                        function trackInstalling(worker) {
+                            worker.addEventListener('statechange', () => {
+                                if (worker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
+                                        window.swWaitingWorker = worker;
+                                        showUpdateToast();
+                                    }
+                                }
+                            });
+                        }
+
+                        if (reg.waiting) {
+                            window.swWaitingWorker = reg.waiting;
+                            showUpdateToast();
+                        }
+
+                        if (reg.installing) {
+                            trackInstalling(reg.installing);
+                        }
+
+                        reg.addEventListener('updatefound', () => {
+                            if (reg.installing) {
+                                trackInstalling(reg.installing);
+                            }
+                        });
+                    })
+                    .catch(err => console.error('Service Worker registration failed:', err));
+
+                // 制御するサービスワーカーが切り替わった場合、瞬時に自動リロード
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
         // 🚀 起動初期化
         window.addEventListener('load', () => {
-            loadSettings(); 
-            calculate();
-            renderHistoryList();
+            registerSW();
+            try {
+                loadSettings(); 
+                calculate();
+                renderHistoryList();
 
 
 
@@ -7846,122 +7967,30 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     splash.style.visibility = 'hidden';
                 }, 850);
             }
-
-            // 📲 サービスワーカーの登録 (PWA対応 ＆ 即時適用・自動リロード・キャッシュバイパス設計)
-            if ('serviceWorker' in navigator) {
-                // アップデート検出時に表示するトースト関数
-                function showUpdateToast() {
-                    if (document.getElementById('sw-update-toast')) return;
-                    
-                    const toast = document.createElement('div');
-                    toast.id = 'sw-update-toast';
-                    toast.style.position = 'fixed';
-                    toast.style.bottom = '80px'; // ボトムナビの上
-                    toast.style.left = '50%';
-                    toast.style.transform = 'translateX(-50%)';
-                    toast.style.width = 'calc(100% - 32px)';
-                    toast.style.maxWidth = '400px';
-                    toast.style.background = 'rgba(15, 23, 42, 0.9)';
-                    toast.style.backdropFilter = 'blur(16px)';
-                    toast.style.webkitBackdropFilter = 'blur(16px)';
-                    toast.style.border = '1px solid #00ff88';
-                    toast.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.25)';
-                    toast.style.borderRadius = '16px';
-                    toast.style.padding = '16px';
-                    toast.style.zIndex = '10000';
-                    toast.style.display = 'flex';
-                    toast.style.flexDirection = 'column';
-                    toast.style.gap = '10px';
-                    toast.style.animation = 'swSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-                    
-                    if (!document.getElementById('sw-toast-style')) {
-                        const style = document.createElement('style');
-                        style.id = 'sw-toast-style';
-                        style.innerHTML = `
-                            @keyframes swSlideUp {
-                                from { transform: translate(-50%, 50px); opacity: 0; }
-                                to { transform: translate(-50%, 0); opacity: 1; }
-                            }
-                        `;
-                        document.head.appendChild(style);
-                    }
-                    
-                    toast.innerHTML = `
-                        <div style="display: flex; align-items: flex-start; gap: 10px;">
-                            <span style="font-size: 1.25rem;">⚡</span>
-                            <div style="flex: 1; text-align: left;">
-                                <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; margin-bottom: 2px;">最新のアップデートが届いています！</div>
-                                <div style="font-size: 0.7rem; color: #94a3b8; line-height: 1.4;">HabitVestがより快適にアップグレードされました。最新の変更をすぐに反映できます。</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px;">
-                            <button id="sw-update-ignore-btn" style="background: transparent; border: none; padding: 6px 12px; font-size: 0.72rem; color: #94a3b8; font-weight: 600; cursor: pointer;">後で</button>
-                            <button id="sw-update-now-btn" style="background: #00ff88; border: none; border-radius: 8px; padding: 6px 14px; font-size: 0.72rem; color: #000000; font-weight: 700; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);">今すぐ更新</button>
+        } catch (error) {
+            console.error("Application initialization failed:", error);
+                
+                // 🛠️ エラー復旧用の画面表示 (スプラッシュ画面を再利用してリカバリーUIを表示)
+                const splash = document.getElementById('app-splash-screen');
+                if (splash) {
+                    splash.style.opacity = '1';
+                    splash.style.visibility = 'visible';
+                    splash.innerHTML = `
+                        <div style="text-align: center; padding: 24px; color: #ffffff; font-family: 'Noto Sans JP', sans-serif; max-width: 360px; box-sizing: border-box;">
+                            <span style="font-size: 3.2rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(255,0,127,0.5));">⚠️</span>
+                            <h2 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: #ff007f;">アプリの起動中にエラーが発生しました</h2>
+                            <p style="font-size: 0.68rem; color: #94a3b8; line-height: 1.6; margin-bottom: 24px; text-align: left; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-family: monospace; overflow-x: auto;">
+                                ${error.toString()}
+                            </p>
+                            <p style="font-size: 0.7rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 24px;">
+                                最新の修正プログラムを適用するため、以下の「アプリを再起動する」ボタンを押すか、ブラウザの更新を行ってください。
+                            </p>
+                            <button onclick="window.location.reload(true)" style="background: linear-gradient(135deg, #00f3ff 0%, #ff007f 100%); border: none; border-radius: 12px; padding: 12px 28px; font-size: 0.78rem; font-weight: 800; color: #ffffff; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3); width: 100%; text-transform: uppercase; letter-spacing: 0.05em; transition: transform 0.2s;">
+                                アプリを再起動する (Reload)
+                            </button>
                         </div>
                     `;
-                    
-                    document.body.appendChild(toast);
-                    
-                    document.getElementById('sw-update-ignore-btn').addEventListener('click', () => {
-                        toast.style.display = 'none';
-                    });
-                    
-                    document.getElementById('sw-update-now-btn').addEventListener('click', () => {
-                        if (window.swWaitingWorker) {
-                            window.swWaitingWorker.postMessage({ type: 'SKIP_WAITING' });
-                        }
-                        toast.style.display = 'none';
-                    });
                 }
-
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => {
-                        console.log('Service Worker registered successfully:', reg.scope);
-                        
-                        // 起動直後に即時チェック
-                        reg.update().catch(err => console.log('SW manual update check failed on startup:', err));
-
-                        // 30秒ごとにバックグラウンドで更新を強制チェック
-                        setInterval(() => {
-                            reg.update().catch(err => console.log('SW manual update check failed in background:', err));
-                        }, 30000);
-                        
-                        function trackInstalling(worker) {
-                            worker.addEventListener('statechange', () => {
-                                if (worker.state === 'installed') {
-                                    if (navigator.serviceWorker.controller) {
-                                        window.swWaitingWorker = worker;
-                                        showUpdateToast();
-                                    }
-                                }
-                            });
-                        }
-
-                        if (reg.waiting) {
-                            window.swWaitingWorker = reg.waiting;
-                            showUpdateToast();
-                        }
-
-                        if (reg.installing) {
-                            trackInstalling(reg.installing);
-                        }
-
-                        reg.addEventListener('updatefound', () => {
-                            if (reg.installing) {
-                                trackInstalling(reg.installing);
-                            }
-                        });
-                    })
-                    .catch(err => console.error('Service Worker registration failed:', err));
-
-                // 制御するサービスワーカーが切り替わった場合、瞬時に自動リロード
-                let refreshing = false;
-                navigator.serviceWorker.addEventListener('controllerchange', () => {
-                    if (!refreshing) {
-                        refreshing = true;
-                        window.location.reload();
-                    }
-                });
             }
         });
     </script>
