@@ -1,4 +1,4 @@
-const CACHE_NAME = 'habitvest-v87';
+const CACHE_NAME = 'habitvest-v88';
 const ASSETS = [
   './',
   'index.html',
@@ -41,31 +41,30 @@ self.addEventListener('message', (e) => {
   }
 });
 
-
-// ローカルホスト開発時はキャッシュをバイパスし、通常はキャッシュファースト
+// 開発・本番共通で「ネットワークファースト」を適用
+// 常に最新データを取得し、オフラインのときだけキャッシュを返す
 self.addEventListener('fetch', (e) => {
-  const isLocal = e.request.url.includes('localhost') || 
-                  e.request.url.includes('127.0.0.1') || 
-                  e.request.url.includes('192.168.') || 
-                  e.request.url.includes('10.') || 
-                  e.request.url.includes('172.') || 
-                  e.request.url.startsWith('file:///');
-  
-  if (isLocal) {
-    e.respondWith(
-      fetch(e.request).catch(() => caches.match(e.request))
-    );
+  // GET以外のメソッド（POSTなど）や外部の特定APIなどはキャッシュ対象外にする
+  if (e.request.method !== 'GET') {
+    e.respondWith(fetch(e.request));
     return;
   }
 
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(e.request).then((response) => {
+    fetch(e.request)
+      .then((response) => {
+        // レスポンスが正常な場合、キャッシュを更新
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, responseToCache);
+          });
+        }
         return response;
-      });
-    })
+      })
+      .catch(() => {
+        // オフラインなどで通信できない場合はキャッシュから返す
+        return caches.match(e.request);
+      })
   );
 });

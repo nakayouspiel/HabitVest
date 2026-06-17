@@ -7905,7 +7905,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js')
+                navigator.serviceWorker.register('./sw.js?v=88')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
