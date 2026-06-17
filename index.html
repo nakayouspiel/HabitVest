@@ -109,13 +109,16 @@
         :root:has(body.sz-medium) { --fs-base: 20px; }
         :root:has(body.sz-large) { --fs-base: 23px; }
 
-        /*
-        body.sz-small .checkin-container,
-        body.sz-medium .checkin-container,
-        body.sz-large .checkin-container {
-            display: flex;
-            flex-direction: column;
-        */
+        #checkin-btn-tobacco,
+        #checkin-btn-beer {
+            aspect-ratio: 1 / 1;
+        }
+
+
+
+
+
+
 
         /* 文字サイズ選択アクティブ状態のボタンスタイル */
         .font-size-btn.active {
@@ -1154,6 +1157,7 @@
         .checkin-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: 1fr;
             gap: 10px;
             margin-bottom: 8px;
         }
@@ -1174,6 +1178,8 @@
             box-shadow: var(--card-shadow);
             position: relative;
             overflow: hidden;
+            width: 100%;
+            height: 100%;
         }
         .status-badge-area {
             position: absolute;
@@ -7910,7 +7916,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=91')
+                navigator.serviceWorker.register('./sw.js?v=92')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
