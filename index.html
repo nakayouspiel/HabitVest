@@ -1491,15 +1491,15 @@
             justify-content: center;
             align-items: center;
             background: rgba(0, 0, 0, 0.04);
-            padding: 4px;
+            padding: 0.25rem;
             border-radius: 12px;
             border: 1px solid var(--border-glass);
             margin-bottom: 8px;
-            max-width: 320px;
+            max-width: 24rem;
             margin-left: auto;
             margin-right: auto;
             overflow: hidden;
-            height: 40px;
+            height: 2.8rem;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);
         }
         .theme-dark .pace-toggle-container {
@@ -1508,10 +1508,10 @@
         }
         .pace-btn-sliding-bg {
             position: absolute;
-            top: 4px;
-            left: 4px;
-            width: calc(50% - 4px);
-            height: calc(100% - 8px);
+            top: 0.25rem;
+            left: 0.25rem;
+            width: calc(50% - 0.25rem);
+            height: calc(100% - 0.5rem);
             background: var(--btn-primary-bg);
             border-radius: 8px;
             transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -1766,7 +1766,7 @@
         <header>
             <div class="header-title">
                 <h1>HabitVest</h1>
-                <p>節制による投資で、未来の資産を育てる <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.0  2026.06.14 </span></p>
+                <p>投資で未来を！ <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.0  2026.06.14 </span></p>
             </div>
             <div class="header-controls">
                 <button id="settings-toggle" class="control-btn" title="設定を開く">⚙️</button>
@@ -1804,7 +1804,7 @@
             </div>
 
             <div class="glass-card">
-                <h2 class="card-title">🚨 今日の節制による投資を記録する</h2>
+                <h2 class="card-title">🚨 今日の記録</h2>
                 <div class="checkin-container">
                     <button class="checkin-btn daily" id="checkin-btn-tobacco" data-habit="tobacco">
                         <div class="status-badge-area"></div>
@@ -5930,9 +5930,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             window.scrollTo({ top: 0, behavior: 'instant' });
 
-            if (tabName === 'assets' && chart) {
+            if (tabName === 'assets') { calculate(); if (chart) {
                 setTimeout(() => { chart.resize(); }, 50);
-            }
+            } }
         };
 
         function showTutorialStep(stepIndex) {
@@ -7916,7 +7916,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=92')
+                navigator.serviceWorker.register('./sw.js?v=93')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
