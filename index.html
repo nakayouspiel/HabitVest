@@ -101,15 +101,16 @@
         }
 
         /* 文字サイズクラス */
-        body.sz-small { --fs-base: 14px; }
-        body.sz-medium { --fs-base: 17px; }
-        body.sz-large { --fs-base: 20px; }
+        body.sz-small { --fs-base: 17px; }
+        body.sz-medium { --fs-base: 20px; }
+        body.sz-large { --fs-base: 23px; }
 
-        :root:has(body.sz-small) { --fs-base: 14px; }
-        :root:has(body.sz-medium) { --fs-base: 17px; }
-        :root:has(body.sz-large) { --fs-base: 20px; }
+        :root:has(body.sz-small) { --fs-base: 17px; }
+        :root:has(body.sz-medium) { --fs-base: 20px; }
+        :root:has(body.sz-large) { --fs-base: 23px; }
 
         /* 文字サイズ中・大の時のチェックインボタンレスポンシブ配置 */
+        body.sz-small .checkin-container,
         body.sz-medium .checkin-container,
         body.sz-large .checkin-container {
             display: flex;
@@ -1814,12 +1815,15 @@
                         <span class="label">お酒</span>
                         <span class="price-badge" id="checkin-badge-beer">250円</span>
                     </button>
-                    <button class="checkin-btn daily" id="checkin-btn-invest" data-habit="invest" style="grid-column: span 2; display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 12px 10px;">
+                    <button class="checkin-btn daily" id="checkin-btn-invest" data-habit="invest" style="grid-column: span 2; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 14px 10px;">
                         <div class="status-badge-area"></div>
                         <!-- 3層構造: メインラベル、目標・日次目安[薄字]、当月累計投資実績[ネオンカラー強調] -->
-                        <span class="label" style="font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 4px;">💰 未来へ投資</span>
-                        <span class="price-badge" id="checkin-badge-invest" style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.85; border: none; background: transparent; padding: 0; display: block;">目標: 30,000円 / 目安: 1,000円</span>
-                        <span id="invest-monthly-cumulative" style="font-size: 0.82rem; font-weight: 800; color: var(--neon-secondary); text-shadow: 0 0 8px rgba(219, 39, 119, 0.4); display: flex; align-items: center; gap: 2px;">💎 プレミアム当月累計: 0円</span>
+                        <span class="label" style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 4px;">未来への投資</span>
+                        <div style="font-size: 0.75rem; display: flex; gap: 10px; align-items: center; color: var(--text-muted); font-weight: 600;">
+                            <span id="checkin-badge-invest">目標: 30,000円</span>
+                            <span style="opacity: 0.5;">|</span>
+                            <span id="invest-monthly-cumulative" style="color: var(--neon-secondary);">実績: 0円</span>
+                        </div>
                     </button>
                 </div>
                 <div style="margin-top: 12px; font-size: 0.68rem; color: var(--text-sub); line-height: 1.5; text-align: left; display: flex; align-items: flex-start; gap: 4px; border-top: 1px dashed var(--border-glass); padding-top: 10px;">
@@ -6463,7 +6467,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             document.getElementById('checkin-badge-beer').innerText = `${beerCost}円`;
 
             const investCost = floorTo100Jpy(Math.round(habitPrices.investMonthlyTarget / 30));
-            document.getElementById('checkin-badge-invest').innerText = `目標: ${(parseInt(habitPrices.investMonthlyTarget)).toLocaleString()}円 / 目安: ${investCost.toLocaleString()}円`;
+            document.getElementById('checkin-badge-invest').innerText = `目標: ${(parseInt(habitPrices.investMonthlyTarget)).toLocaleString()}円`;
         }
 
         // 今日の日付文字列 ('YYYY/M/D')
@@ -7513,7 +7517,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             });
             const cumulativeEl = document.getElementById('invest-monthly-cumulative');
             if (cumulativeEl) {
-                cumulativeEl.innerText = `💎 プレミアム当月累計: ${monthlyInvestSum.toLocaleString()}円`;
+                cumulativeEl.innerText = `実績: ${monthlyInvestSum.toLocaleString()}円`;
             }
 
             // ライフのゴールカード（id="rm-goal-card"）の出力の動的生成
@@ -7906,7 +7910,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=89')
+                navigator.serviceWorker.register('./sw.js?v=90')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         

@@ -1,0 +1,5 @@
+# Guidelines for AI coding agents in this repository
+
+- **Deploy/Push Requirement**: Every time you make changes to the files and commit them, you MUST run `git push origin main` to push the changes to GitHub.
+- **Task Completion Definition**: A task is ONLY considered completed when the code is pushed to GitHub and live on GitHub Pages. Never report "completed" before pushing.
+- **User-centricity**: Never ask the user multiple choice questions in English. Always use Japanese and explain your actions clearly before running commands.
