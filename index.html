@@ -21,6 +21,7 @@
            🎨 HabitVest - デザインシステム
            ========================================================================== */
         :root {
+            --fs-base: 14px;
             /* ☀️ ライトモード (デフォルト) */
             --bg-base: #f1f5f9;
             --bg-gradient: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
@@ -80,11 +81,16 @@
         }
 
 
+        html {
+            font-size: var(--fs-base);
+        }
+
         body {
             background-color: var(--bg-base);
             background-image: var(--bg-gradient);
             color: var(--text-main);
             font-family: var(--font-ui);
+            font-size: var(--fs-base);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -92,6 +98,33 @@
             padding: 16px 16px 80px 16px;
             overflow-x: hidden;
             transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* 文字サイズクラス */
+        body.sz-small { --fs-base: 12px; }
+        body.sz-medium { --fs-base: 14px; }
+        body.sz-large { --fs-base: 17px; }
+
+        :root:has(body.sz-small) { --fs-base: 12px; }
+        :root:has(body.sz-medium) { --fs-base: 14px; }
+        :root:has(body.sz-large) { --fs-base: 17px; }
+
+        /* 文字サイズ大の時のチェックインボタンレスポンシブ配置 */
+        body.sz-large .checkin-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 文字サイズ選択アクティブ状態のボタンスタイル */
+        .font-size-btn.active {
+            background: rgba(14, 165, 233, 0.08) !important;
+            border-color: var(--neon-primary) !important;
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.15) !important;
+            color: var(--neon-primary) !important;
+        }
+        .theme-dark .font-size-btn.active {
+            background: rgba(0, 243, 255, 0.1) !important;
+            border-color: var(--neon-primary) !important;
         }
 
         .app-container {
@@ -1780,11 +1813,12 @@
                         <span class="label">お酒</span>
                         <span class="price-badge" id="checkin-badge-beer">250円</span>
                     </button>
-                    <button class="checkin-btn daily" id="checkin-btn-invest" data-habit="invest" style="grid-column: span 2;">
+                    <button class="checkin-btn daily" id="checkin-btn-invest" data-habit="invest" style="grid-column: span 2; display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 12px 10px;">
                         <div class="status-badge-area"></div>
-                        <span class="emoji">💰</span>
-                        <span class="label">未来へ投資</span>
-                        <span class="price-badge" id="checkin-badge-invest">5,000円</span>
+                        <!-- 3層構造: メインラベル、目標・日次目安[薄字]、当月累計投資実績[ネオンカラー強調] -->
+                        <span class="label" style="font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 4px;">💰 未来へ投資</span>
+                        <span class="price-badge" id="checkin-badge-invest" style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.85; border: none; background: transparent; padding: 0; display: block;">目標: 30,000円 / 目安: 1,000円</span>
+                        <span id="invest-monthly-cumulative" style="font-size: 0.82rem; font-weight: 800; color: var(--neon-secondary); text-shadow: 0 0 8px rgba(219, 39, 119, 0.4); display: flex; align-items: center; gap: 2px;">💎 プレミアム当月累計: 0円</span>
                     </button>
                 </div>
                 <div style="margin-top: 12px; font-size: 0.68rem; color: var(--text-sub); line-height: 1.5; text-align: left; display: flex; align-items: flex-start; gap: 4px; border-top: 1px dashed var(--border-glass); padding-top: 10px;">
@@ -1965,6 +1999,14 @@
                 </div>
             </div>
 
+            <!-- 📢 AdSense 広告プレースホルダー -->
+            <div class="glass-card" style="margin-bottom: 16px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100px; background: rgba(0, 0, 0, 0.02); border: 1px dashed var(--border-glass);">
+                <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px;">Sponsored Link</div>
+                <div style="width: 100%; height: 60px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); border-radius: 8px;">
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">広告プレースホルダー (AdSense)</span>
+                </div>
+            </div>
+
             <!-- ⏳ 時間経過で起こる未来の統計予測 (投資を継続した場合) -->
             <div class="glass-card">
                 <h2 class="card-title">⏳ このまま続けた未来のロードマップ</h2>
@@ -2046,6 +2088,16 @@
                 <button id="modal-close" class="modal-close-btn">&times;</button>
             </div>
             <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- 🔤 文字サイズ設定 -->
+                <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">🔤 文字サイズ切り替え</h4>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="auth-btn font-size-btn" data-size="small" style="flex: 1; padding: 6px;">小</button>
+                        <button type="button" class="auth-btn font-size-btn" data-size="medium" style="flex: 1; padding: 6px;">中</button>
+                        <button type="button" class="auth-btn font-size-btn" data-size="large" style="flex: 1; padding: 6px;">大</button>
+                    </div>
+                </div>
+
                 <!-- 👤 プロフィール設定 -->
                 <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
                     <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">👤 プロフィール設定</h4>
@@ -2862,6 +2914,31 @@ const settingsModal = document.getElementById('settings-modal');
 
             return rates;
         }
+
+        // 文字サイズ設定の関数定義とリスナー登録
+        function setFontSize(size, save = true) {
+            document.body.classList.remove('sz-small', 'sz-medium', 'sz-large');
+            document.body.classList.add(`sz-${size}`);
+            
+            document.querySelectorAll('.font-size-btn').forEach(btn => {
+                if (btn.getAttribute('data-size') === size) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            if (save) {
+                localStorage.setItem('habitvest_font_size', size);
+            }
+        }
+        
+        document.querySelectorAll('.font-size-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const size = e.currentTarget.getAttribute('data-size');
+                setFontSize(size);
+            });
+        });
 
         // ⚙️ 設定モーダルの開閉
         settingsToggle.addEventListener('click', () => {
@@ -6385,7 +6462,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             document.getElementById('checkin-badge-beer').innerText = `${beerCost}円`;
 
             const investCost = floorTo100Jpy(Math.round(habitPrices.investMonthlyTarget / 30));
-            document.getElementById('checkin-badge-invest').innerText = `${investCost.toLocaleString()}円`;
+            document.getElementById('checkin-badge-invest').innerText = `目標: ${(parseInt(habitPrices.investMonthlyTarget)).toLocaleString()}円 / 目安: ${investCost.toLocaleString()}円`;
         }
 
         // 今日の日付文字列 ('YYYY/M/D')
@@ -6723,6 +6800,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 activeHabits.tobacco = false;
                 activeHabits.beer = false;
             }
+
+            // Restore font size from LocalStorage
+            const savedFontSize = localStorage.getItem('habitvest_font_size') || 'medium';
+            setFontSize(savedFontSize, false);
 
             // UIへの反映
             if (profile.onboarded) {
@@ -7413,226 +7494,140 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 }
             }
             // 趣味に合わせた具体的なメッセージをゴールに表示
-            if (rmGoalDesc) {
-                let hobbyTarget = "資産形成";
-                let freedomText = "日々の選択肢を広げてくれる心強い支えとなります！";
-
-                if (totalInvestGoal >= 100000000) {
-                    freedomText = "何にも縛られない完全な自由と、経済的自立（FIRE）を実現することができます！";
-                    switch (hobby) {
-                        case 'travel': hobbyTarget = "世界一周や世界中の超豪華ホテルを巡る極上の長期旅 ✈️"; break;
-                        case 'gadget': hobbyTarget = "最高峰の機材と専用ルームを完備した究極のワーク・クリエイティブ環境 💻"; break;
-                        case 'gourmet': hobbyTarget = "世界各地のミシュラン星付きレストランや至高の名店を堪能する極上グルメ 🍣"; break;
-                        case 'invest': hobbyTarget = "莫大な資産収入（不労所得）による完全な経済的自由 📈"; break;
-                        case 'gaming': hobbyTarget = "防音室や最高スペック設備を詰め込んだ夢のプライベートゲームパラダイス 🎮"; break;
-                        case 'beauty': hobbyTarget = "一生もののプレミアムな美容・健康ケアと最高峰の自己投資 💄"; break;
-                    }
-                } else if (totalInvestGoal >= 50000000) {
-                    freedomText = "早期リタイア（セミリタイア）や働き方の自由な選択肢を広げ、生活の自由度を劇的に向上させることができます！";
-                    switch (hobby) {
-                        case 'travel': hobbyTarget = "世界各地をゆったり巡る定期的な海外旅行や優雅な長期の旅 ✈️"; break;
-                        case 'gadget': hobbyTarget = "最新・最上位スペックで統一した誰もが憧れる最高峰 of デスクセットアップ 💻"; break;
-                        case 'gourmet': hobbyTarget = "毎週の高級レストランディナーや日本中の絶品グルメ巡り 🍣"; break;
-                        case 'invest': hobbyTarget = "毎月の固定費や生活費の大半を十分にカバーできる頼もしい資産配当（不労所得） 📈"; break;
-                        case 'gaming': hobbyTarget = "ハイエンド機材と最高クラスのAV設備を備えたこだわりのゲーム専用ルーム 🎮"; break;
-                        case 'beauty': hobbyTarget = "先進的な美容施術や上質なスキンケア、心身ともに極上のセルフ投資 💄"; break;
-                    }
-                } else if (totalInvestGoal >= 10000000) {
-                    freedomText = "長期の生活防衛資金やサイドFIREの確かな土台を築き、人生の大きな安心感と選択の自由を手に入れることができます！";
-                    switch (hobby) {
-                        case 'travel': hobbyTarget = "定期的な海外リゾート旅行や国内の贅沢なスイートルームでの宿泊 ✈️"; break;
-                        case 'gadget': hobbyTarget = "作業効率と満足度を極限まで引き上げるハイスペックなデスク環境 💻"; break;
-                        case 'gourmet': hobbyTarget = "日常に彩りを添える週末の贅沢なグルメや高級レストランでの特別な食事 🍣"; break;
-                        case 'invest': hobbyTarget = "将来に向けた本格的な資産形成と、家計を支える安定した配当収入 📈"; break;
-                        case 'gaming': hobbyTarget = "最高峰のゲーミングPCや複数の高リフレッシュレートモニターを揃えたゲーム環境 🎮"; break;
-                        case 'beauty': hobbyTarget = "定期的なエステや医療美容、自分を高めるための上質な自己研鑽 💄"; break;
-                    }
-                } else if (totalInvestGoal >= 3000000) {
-                    freedomText = "数年分の生活費をカバーする確かな蓄えや積極的な投資資金となり、新しい挑戦への勇気や日々の安心感を得られます！";
-                    switch (hobby) {
-                        case 'travel': hobbyTarget = "国内のちょっとリッチな温泉旅館巡りや週末の贅沢な旅行 ✈️"; break;
-                        case 'gadget': hobbyTarget = "日々の作業を快適にするハイスペックPCや最新の人気周辺機器 💻"; break;
-                        case 'gourmet': hobbyTarget = "美味しい人気レストランや話題の名店でのちょっと特別なグルメ体験 🍣"; break;
-                        case 'invest': hobbyTarget = "さらなる資産拡大に向けた力強い投資用種銭（ポートフォリオ） 📈"; break;
-                        case 'gaming': hobbyTarget = "最新のゲームハードと快適なゲーミングチェア・大型液晶モニターの導入 🎮"; break;
-                        case 'beauty': hobbyTarget = "美しさと健康をキープする上質なスキンケアやフィットネスへの投資 💄"; break;
-                    }
-                } else {
-                    freedomText = "急な出費への備えや数ヶ月分の生活の余裕となり、日々の生活設計に精神的なゆとりをもたらしてくれます！";
-                    switch (hobby) {
-                        case 'travel': hobbyTarget = "気軽に行けてしっかりリフレッシュできる週末の楽しい小旅行 ✈️"; break;
-                        case 'gadget': hobbyTarget = "日常の作業効率を高めてくれる便利なキーボードやデザイン性の高いガジェット 💻"; break;
-                        case 'gourmet': hobbyTarget = "日頃の頑張りを労うちょっと贅沢で美味しいランチやディナー 🍣"; break;
-                        case 'invest': hobbyTarget = "資産形成の一歩を踏み出すための最初の大切な元本（タネ銭） 📈"; break;
-                        case 'gaming': hobbyTarget = "遊びたかった最新ゲームソフトや快適なコントローラー・ヘッドセットの購入 🎮"; break;
-                        case 'beauty': hobbyTarget = "日々のセルフケアをワンランク上にする美容アイテムやフィットネス体験 💄"; break;
-                    }
-                }
-
-                rmGoalDesc.innerHTML = `悪い習慣をやめ、その資金を利回り <strong>${(simulationSettings.yield).toFixed(1)}%</strong> で運用するだけで、ただ貯める ${totalSavingGoal.toLocaleString()}円 よりも <strong>${(totalInvestGoal - totalSavingGoal).toLocaleString()}円</strong> も多い、<strong>${totalInvestGoal.toLocaleString()}円</strong> の資産が手に入ります。このお金があれば、 <strong>${hobbyTarget}</strong> を実現し、${freedomText}`;
-            }
-
-            const rmGoalAdvice = document.getElementById('rm-goal-advice');
-            if (rmGoalAdvice) {
-                if (monthlySaving > 0) {
-                    const todayDate = parseDateSafely(getTodayStr()) || new Date();
-                    const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
-                    const diffTime = todayDate.getTime() - startTrackingDate.getTime();
-                    const elapsedDays = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
-
-                    const tobaccoDaily = habitPrices.tobaccoPrice * habitPrices.tobaccoCount;
-                    const beerDaily = habitPrices.beerPrice * habitPrices.beerCount;
-                    const investMonthly = habitPrices.investMonthlyTarget;
-                    const investDaily = investMonthly / 30;
-
-                    const tobaccoMonthly = tobaccoDaily * 30;
-                    const beerMonthly = beerDaily * 30;
-
-                    let idealMonthlySaving = 0;
-                    if (profile.trackTobacco) idealMonthlySaving += tobaccoMonthly;
-                    if (profile.trackBeer) idealMonthlySaving += beerMonthly;
-                    if (profile.trackInvest) idealMonthlySaving += investMonthly;
-
-                    // 理想目標累積額（これまでの理想の累積）：タバコ、ビールは100%自動で経過日数分、投資も月間目標の経過日数分を自動で
-                    let idealCumToday = 0;
-                    if (profile.trackTobacco) idealCumToday += tobaccoDaily * elapsedDays;
-                    if (profile.trackBeer) idealCumToday += beerDaily * elapsedDays;
-                    if (profile.trackInvest) idealCumToday += investDaily * elapsedDays;
-
-                    idealCumToday = floorTo100Jpy(idealCumToday);
-                    const diffToday = floorTo100Jpy(idealCumToday - totalEarned);
-
-                    // 投資達成率は実際の実績累計額と理想目標額の比率から計算 直感的で整合性がある形にする 
-                    const ratePercent = idealCumToday > 0 ? Math.min(100, Math.round((totalEarned / idealCumToday) * 1000) / 10) : 100;
-
-                    let totalInvestIdeal = 0;
-                    const P_ideal = idealCumToday; // 理想目標の現在までの累積を初期元本とする
-                    if (monthlyRate > 0) {
-                        totalInvestIdeal = P_ideal * Math.pow(1 + monthlyRate, months) + idealMonthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
-                    } else {
-                        totalInvestIdeal = P_ideal + (idealMonthlySaving * 12 * years);
-                    }
-                    totalInvestIdeal = floorTo100Jpy(totalInvestIdeal);
-                    const diffInvestGoal = floorTo100Jpy(Math.max(0, totalInvestIdeal - totalInvestGoal));
-
-                    let adviceMessage = "";
-                    if (ratePercent >= 90) {
-                        adviceMessage = `🏆 <strong>神レベルの自制心です！</strong> ほぼ完璧な投資ペースを維持できています。このまま継続すれば、理想の未来 ${totalInvestIdeal.toLocaleString()}円 はすぐそこです。自分を信じて突き進みましょう！🚀`;
-                    } else if (ratePercent >= 75) {
-                        adviceMessage = `🌟 <strong>素晴らしいペースです！</strong> あと少しチェックイン日数を増やすだけで、理想との差 ${diffInvestGoal.toLocaleString()}円 を埋めることができます。小さな積み重ねが、将来驚くほどの大きな成果に化けますよ！💪`;
-                    } else if (ratePercent >= 50) {
-                        adviceMessage = `📈 <strong>伸びしろ満点です！</strong> 現在約半分を投資できています。2日に1回の成功を、3日に2回へとほんの少しだけ引き上げることで、将来手にする自由（資産）が数百万円レベルで変わってきます。まずは次の1回を投資してみましょう！✨`;
-                    } else {
-                        adviceMessage = `🌱 <strong>一歩ずつ進めましょう！</strong> 最初は誰もがここからスタートします。焦らず、まずは週に数日の投資記録から習慣化していきましょう。少しでも投資ができた日は自分を褒め、未来の資産を育てていきましょう！❤️`;
-                    }
-
-                    let diffInvestText = "";
-                    if (diffInvestGoal > 100) {
-                        diffInvestText = `もし投資達成率を<strong style="color: ${colorTextMain};">100%（完璧）</strong>に引き上げると、${years}年後の資産はさらに <span style="color: ${colorPrimary}; font-weight:800; font-size: 0.82rem;">+${diffInvestGoal.toLocaleString()}円</span> アップし、合計 <span style="color: ${colorSecondary}; font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> に達します！💰`;
-                    } else {
-                        diffInvestText = `現在、<strong style="color: ${colorTextMain};">完璧な100%の投資ペース</strong>を維持しています！このまま継続できれば、最高の未来（資産）: <span style="color: ${colorSecondary}; font-weight:800;">${totalInvestIdeal.toLocaleString()}円</span> が確実に実現します！🎉`;
-                    }
-
-                    // 💰 金銭・投資・資産形成に特化した今日の一言アドバイス
-                    const microTips = [
-                        "今日浮かせたお金は、未来への大切な種銭です。複利の力で10倍、20倍に育てていきましょう！💰",
-                        "無駄な支出を削ることは、利回り100%の非課税投資と同じ価値があります。最高の資産形成です！📈",
-                        "塵も積もれば山となる。日々の小さなチェックインが、将来の莫大な不労所得（配当金）の土台を作ります。💎",
-                        "お金を消費に回すか、未来の自由に投資するか。今日のあなたの選択が、10年後の自由時間を買い取っています！🎟️",
-                        "支出コントロール能力は一生ものの無形資産です。市場の暴落にも負けない最強の『マネーリテラシー』が身についています。🧠🔥",
-                        "浮いたお金を利回り5%で複利運用すると、20年後には投資元本が約2.6倍に膨れ上がります。今日の節約は未来の倍増マネーです！✨",
-                        "習慣投資は『意思の力』ではなく『仕組み』です。HabitVestに記録をつけた時点で、あなたのマネーゲームは勝利確定です！🏆",
-                        "消費は一瞬の快楽ですが、投資は一生の安心と自由を生み出します。今日も自由な未来を一歩引き寄せました！🌈",
-                        "もし毎日500円投資に回せば、20年後には年利5%で約200万円の金利ボーナスが生まれます。今日の一歩が大きな利息を生みます！💰📈",
-                        "お金に働いてもらう仕組み（複利）を稼働させるには、まず種銭が必要です。今日の投資が、将来あなたのために働く忠実な兵隊になります！💂‍♂️✨"
-                    ];
-                    const tipIndex = Math.floor((ratePercent * 10) % 10);
-                    const dailyTip = microTips[tipIndex];
-                    const dailyTipBg = isDark ? colorBgBase : '#e2e8f0';
-
-                    // ONになっている習慣のリストを作成
-                    let activeHabitListHtml = `
-                        <div style="margin: 12px 0; padding: 12px; background: ${dailyTipBg}; border: 1.5px solid ${colorBorder}; border-radius: 8px;">
-                            <div style="font-weight: 700; color: ${colorTextMain}; font-size: 0.72rem; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
-                                📊 今月の取り組み状況
-                            </div>
-                            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.7rem;">
-                    `;
-
-                    let hasAnyTracked = false;
-                    if (profile.trackTobacco && counts.tobacco > 0) {
-                        hasAnyTracked = true;
-                        const tobaccoPercent = Math.round(rates.tobacco * 100);
-                        activeHabitListHtml += `
-                            <li style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="color: ${colorTextSub};">🚭 タバコ節制 (継続率)</span>
-                                <span style="font-weight: 700; color: ${tobaccoPercent >= 80 ? colorGreen : tobaccoPercent >= 50 ? colorPrimary : colorSecondary};">${tobaccoPercent}%</span>
-                            </li>
-                        `;
-                    }
-                    if (profile.trackBeer && counts.beer > 0) {
-                        hasAnyTracked = true;
-                        const beerPercent = Math.round(rates.beer * 100);
-                        activeHabitListHtml += `
-                            <li style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="color: ${colorTextSub};">🍺 お酒節制 (継続率)</span>
-                                <span style="font-weight: 700; color: ${beerPercent >= 80 ? colorGreen : beerPercent >= 50 ? colorPrimary : colorSecondary};">${beerPercent}%</span>
-                            </li>
-                        `;
-                    }
-                    if (profile.trackInvest && counts.invest > 0) {
-                        hasAnyTracked = true;
-                        const investPercent = Math.round(rates.invest * 100);
-                        activeHabitListHtml += `
-                            <li style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="color: ${colorTextSub};">💰 未来への投資 (今月目標達成率)</span>
-                                <span style="font-weight: 700; color: ${investPercent >= 100 ? colorGreen : investPercent >= 50 ? colorPrimary : colorSecondary};">${investPercent}%</span>
-                            </li>
-                        `;
-                    }
-                    
-                    let hasAnyEnabled = profile.trackTobacco || profile.trackBeer || profile.trackInvest;
-                    if (!hasAnyTracked) {
-                        if (hasAnyEnabled) {
-                            activeHabitListHtml += `
-                                <li style="color: ${colorTextSub}; font-style: italic; text-align: center;">習慣の記録がありません。記録タブから記録してください。</li>
-                            `;
-                        } else {
-                            activeHabitListHtml += `
-                                <li style="color: ${colorTextSub}; font-style: italic; text-align: center;">設定で習慣の記録をONにしてください</li>
-                            `;
+            // 当月1日〜今日までの投資実績（type === 'invest'）を合算し、投資ボタン内の当月累計数値を更新
+            const currentYearStr = new Date().getFullYear();
+            const currentMonthStr = new Date().getMonth() + 1;
+            let monthlyInvestSum = 0;
+            history.forEach(item => {
+                if (item.type === 'invest' && item.date) {
+                    const parts = item.date.split('/');
+                    if (parts.length === 3) {
+                        const itemY = parseInt(parts[0]);
+                        const itemM = parseInt(parts[1]);
+                        if (itemY === currentYearStr && itemM === currentMonthStr) {
+                            monthlyInvestSum += item.amount;
                         }
                     }
+                }
+            });
+            const cumulativeEl = document.getElementById('invest-monthly-cumulative');
+            if (cumulativeEl) {
+                cumulativeEl.innerText = `💎 プレミアム当月累計: ${monthlyInvestSum.toLocaleString()}円`;
+            }
 
-                    activeHabitListHtml += `
-                            </ul>
+            // ライフのゴールカード（id="rm-goal-card"）の出力の動的生成
+            const rmGoalCard = document.getElementById('rm-goal-card');
+            if (rmGoalCard && monthlySaving > 0) {
+                const pinnacleLifestyles = {
+                    travel: "✈️ ファーストクラスで行く極上の世界一周旅行とプライベートアイランド滞在",
+                    gadget: "🔌 超伝導冷却PCと最高峰マルチモニターを備えた、SF映画のような究極のガジェット書斎",
+                    gourmet: "🍣 ミシュラン三つ星レストランを毎週末プライベート貸切する極上美食三昧",
+                    invest: "🪙 圧倒的な資産規模による完全な経済的独立（FIRE）とファミリーオフィス運営",
+                    gaming: "🎮 防音完備の専用シアター型ゲーミングルームと最高スペックのVR/シミュレーター環境",
+                    pc_setup: "🖥️ 昇降式特注ウッドデスクに最高峰湾曲有機ELモニターと最強ワークステーションを統合した完璧なPCセットアップ",
+                    hobby_room: "🛋️ 高級インテリアと最高峰音響設備に囲まれた、自分だけの究極の隠れ家シアター",
+                    self_improvement: "📕 世界トップレベルの叡智に触れる最高級のエグゼクティブスクールと自己研鑽",
+                    beauty: "🧴 一流ドクターによる最先端エイジングケアとプライベートスパでの極上全身ケア"
+                };
+
+                const pinnacle = pinnacleLifestyles[hobby] || pinnacleLifestyles.invest;
+
+                const intellectualAdvices = [
+                    "「複利は宇宙最強の力である」とアインシュタインは言いました。元本を積立てて複利で運用し続けることこそが、最大の資産形成です。",
+                    "インフレはお金をただ貯めるだけでその実質価値を奪います。未来の資産価値を守るため、堅実な資産への投資こそが必須と言えます。",
+                    "投資とは、目の前の一瞬の消費を、将来にわたる持続的で巨大な自由と交換する極めて知的な意思決定プロセスです。",
+                    "悪い習慣への無駄な支出を削減することは、利回り100%の非課税投資に等しい効果を生み出し、家計の複利効果を高めます。",
+                    "経済的な自立は人生における絶対的な選択権を与えてくれます。日々の投資は、将来のあなた自身に無限の可能性を贈る行為です。",
+                    "短期的な相場変動に惑わされず、日々の節制と積立投資の規律を守る愚直さこそが、最終的に最も強固な富を築く王道です。"
+                ];
+
+                // Determine advice based on totalInvestGoal to keep it deterministic but rotating
+                const adviceIndex = Math.abs(totalInvestGoal) % intellectualAdvices.length;
+                const advice = intellectualAdvices[adviceIndex];
+
+                // Build the active habits continuity list
+                let continuityItems = [];
+                if (profile.trackTobacco) {
+                    const pct = Math.round((rates.tobacco || 0) * 100);
+                    continuityItems.push(`
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--border-glass);">
+                            <span style="color: var(--text-sub); display: flex; align-items: center; gap: 4px;">🚭 タバコ節制</span>
+                            <span style="font-weight: 700; color: ${pct >= 80 ? colorGreen : pct >= 50 ? colorPrimary : colorSecondary}; font-family: 'Outfit';">${pct}%</span>
                         </div>
-                    `;
+                    `);
+                }
+                if (profile.trackBeer) {
+                    const pct = Math.round((rates.beer || 0) * 100);
+                    continuityItems.push(`
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--border-glass);">
+                            <span style="color: var(--text-sub); display: flex; align-items: center; gap: 4px;">🍺 お酒節制</span>
+                            <span style="font-weight: 700; color: ${pct >= 80 ? colorGreen : pct >= 50 ? colorPrimary : colorSecondary}; font-family: 'Outfit';">${pct}%</span>
+                        </div>
+                    `);
+                }
+                if (profile.trackInvest) {
+                    const pct = Math.round((rates.invest || 0) * 100);
+                    continuityItems.push(`
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--border-glass);">
+                            <span style="color: var(--text-sub); display: flex; align-items: center; gap: 4px;">💰 未来への投資</span>
+                            <span style="font-weight: 700; color: ${pct >= 100 ? colorGreen : pct >= 50 ? colorPrimary : colorSecondary}; font-family: 'Outfit';">${pct}%</span>
+                        </div>
+                    `);
+                }
 
-                    rmGoalAdvice.innerHTML = `
-                        <div style="background: ${colorBgCard}; border: 1px dashed ${colorBorder}; border-radius: 12px; padding: 12px; margin-top: 12px; box-shadow: var(--card-shadow); transition: background-color 0.4s ease, border-color 0.4s ease;">
-                            <div style="font-weight: 700; color: ${colorSecondary}; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.78rem;">
-                                💡 ${years}年後の自分への特別アドバイス
-                            </div>
-                            <div style="line-height: 1.6; font-size: 0.7rem; color: ${colorTextSub};">
-                                <div style="margin-bottom: 12px; padding: 10px; background: ${dailyTipBg}; border-left: 3px solid ${colorGreen}; border-radius: 4px; line-height: 1.4; font-size: 0.72rem; color: ${colorTextMain};">
-                                    <div style="font-weight: 700; color: ${colorGreen}; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em;">🎯 今日の投資アドバイス</div>
-                                    ${dailyTip}
-                                </div>
-                                ${activeHabitListHtml}
-                                <strong style="color: ${colorTextMain};"> 将来の伸びしろ予測 </strong><br>
-                                ${diffInvestText}<br>
-                                <span style="color: ${colorTextSub}; display: block; margin-top: 8px; border-left: 2px solid ${colorPrimary}; padding-left: 8px; line-height: 1.5;">
-                                    ${adviceMessage}
-                                </span>
-                            </div>
+                let habitsListHtml = "";
+                if (continuityItems.length > 0) {
+                    habitsListHtml = `
+                        <div style="margin: 12px 0; padding: 10px; background: rgba(0,0,0,0.015); border: 1px solid var(--border-glass); border-radius: 10px;">
+                            <div style="font-size: 0.65rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">📊 設定中習慣の今月継続率</div>
+                            ${continuityItems.join('')}
                         </div>
                     `;
                 } else {
-                    rmGoalAdvice.innerHTML = "";
+                    habitsListHtml = `
+                        <div style="margin: 12px 0; padding: 10px; background: rgba(0,0,0,0.015); border: 1px solid var(--border-glass); border-radius: 10px; text-align: center; color: var(--text-muted); font-size: 0.68rem; font-style: italic;">
+                            設定から習慣チェックをONにしてください
+                        </div>
+                    `;
                 }
-            }
 
+                const dailyTipBg = isDark ? colorBgBase : '#e2e8f0';
+
+                rmGoalCard.innerHTML = `
+                    <div id="rm-goal-dot" style="position: absolute; left: -18px; top: 16px; width: 12px; height: 12px; border-radius: 50%; background: ${colorPrimary}; box-shadow: ${isDark ? '0 0 10px ' + colorPrimary : 'none'};"></div>
+                    
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 6px; margin-bottom: 10px;">
+                        🗽 <span style="background: linear-gradient(135deg, ${colorPrimary} 0%, ${colorSecondary} 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${years}年後 (ゴール)</span>
+                    </div>
+
+                    <div style="font-size: 0.72rem; color: var(--text-sub); line-height: 1.6;">
+                        <div style="background: rgba(0,0,0,0.01); border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>ただ貯めた場合:</span>
+                                <span style="font-weight: 700; color: var(--accent-pink);">${totalSavingGoal.toLocaleString()} 円</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 0.85rem; color: var(--text-main);">
+                                <span>積立投資 (複利あり):</span>
+                                <span style="color: ${colorPrimary}; text-shadow: ${isDark ? '0 0 8px ' + colorPrimary + '40' : 'none'};">${totalInvestGoal.toLocaleString()} 円</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 10px;">
+                            <div style="font-size: 0.65rem; font-weight: 700; color: var(--neon-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">👑 最高峰ライフスタイル</div>
+                            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main); line-height: 1.4;">
+                                ${pinnacle}
+                            </div>
+                        </div>
+
+                        ${habitsListHtml}
+
+                        <div style="margin-top: 12px; padding: 10px; background: ${dailyTipBg}; border-left: 3px solid ${colorPrimary}; border-radius: 6px; font-size: 0.7rem; color: var(--text-main); line-height: 1.45;">
+                            <div style="font-weight: 700; color: ${colorPrimary}; font-size: 0.62rem; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em;">💡 知的投資アドバイス</div>
+                            ${advice}
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         function updateMilestone(total) {
