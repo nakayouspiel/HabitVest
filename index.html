@@ -7529,6 +7529,31 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // ライフのゴールカード（id="rm-goal-card"）の出力の動的生成
             const rmGoalCard = document.getElementById('rm-goal-card');
             if (rmGoalCard && monthlySaving > 0) {
+                // Calculate missing variables in local scope
+                const tobaccoDaily = habitPrices.tobaccoPrice * habitPrices.tobaccoCount;
+                const beerDaily = habitPrices.beerPrice * habitPrices.beerCount;
+                const investDaily = habitPrices.investMonthlyTarget / 30;
+
+                const todayDate = parseDateSafely(getTodayStr()) || new Date();
+                const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
+                const diffTime = todayDate.getTime() - startTrackingDate.getTime();
+                const elapsedDays = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
+
+                let P_ideal = 0;
+                if (profile.trackTobacco) P_ideal += tobaccoDaily * elapsedDays;
+                if (profile.trackBeer) P_ideal += beerDaily * elapsedDays;
+                if (profile.trackInvest) P_ideal += investDaily * elapsedDays;
+                P_ideal = floorTo100Jpy(P_ideal);
+
+                let avgRate = 1.0;
+                let activeRates = [];
+                if (profile.trackTobacco) activeRates.push(rates.tobacco);
+                if (profile.trackBeer) activeRates.push(rates.beer);
+                if (profile.trackInvest) activeRates.push(Math.min(1.0, rates.invest));
+                if (activeRates.length > 0) {
+                    avgRate = activeRates.reduce((a, b) => a + b, 0) / activeRates.length;
+                }
+
                 // Calculate ideal or slightly harder projection
                 let idealPMT = 0;
                 if (profile.trackTobacco) idealPMT += tobaccoDaily * 30;
@@ -7970,7 +7995,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=94')
+                navigator.serviceWorker.register('./sw.js?v=95')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
