@@ -101,15 +101,16 @@
         }
 
         /* 文字サイズクラス */
-        body.sz-small { --fs-base: 12px; }
-        body.sz-medium { --fs-base: 14px; }
-        body.sz-large { --fs-base: 17px; }
+        body.sz-small { --fs-base: 14px; }
+        body.sz-medium { --fs-base: 17px; }
+        body.sz-large { --fs-base: 20px; }
 
-        :root:has(body.sz-small) { --fs-base: 12px; }
-        :root:has(body.sz-medium) { --fs-base: 14px; }
-        :root:has(body.sz-large) { --fs-base: 17px; }
+        :root:has(body.sz-small) { --fs-base: 14px; }
+        :root:has(body.sz-medium) { --fs-base: 17px; }
+        :root:has(body.sz-large) { --fs-base: 20px; }
 
-        /* 文字サイズ大の時のチェックインボタンレスポンシブ配置 */
+        /* 文字サイズ中・大の時のチェックインボタンレスポンシブ配置 */
+        body.sz-medium .checkin-container,
         body.sz-large .checkin-container {
             display: flex;
             flex-direction: column;
@@ -7905,7 +7906,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=88')
+                navigator.serviceWorker.register('./sw.js?v=89')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
