@@ -2070,18 +2070,10 @@
                         <label for="profile-name">ニックネーム</label>
                         <input type="text" id="profile-name" value="" placeholder="あなたの名前">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                         <label for="profile-hobby">あなたの趣味 夢の使い道</label>
                         <select id="profile-hobby">
-                            <option value="travel">✈️ 旅行</option>
-                            <option value="gadget">🔌 ガジェット</option>
-                            <option value="gourmet">🍣 グルメ</option>
-                            <option value="invest">🪙 投資</option>
-                            <option value="gaming">🎮 ゲーム</option>
-                            <option value="pc_setup" selected>🖥️ PC環境</option>
-                            <option value="hobby_room">🛋️ 趣味部屋</option>
-                            <option value="self_improvement">📕 自己投資</option>
-                            <option value="beauty">🧴 美容</option>
+                            <option value="invest" selected>🪙 投資</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -2298,19 +2290,10 @@
                     <label for="onboard-name">ニックネーム</label>
                     <input type="text" id="onboard-name" placeholder="ニックネームを入力">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none;">
                     <label for="onboard-hobby">あなたの趣味・夢の使い道</label>
                     <select id="onboard-hobby" required>
-                        <option value="" disabled selected>選択してください</option>
-                        <option value="travel">✈️ 旅行</option>
-                        <option value="gadget">🔌 ガジェット</option>
-                        <option value="gourmet">🍣 グルメ</option>
-                        <option value="invest">🪙 投資</option>
-                        <option value="gaming">🎮 ゲーム</option>
-                        <option value="pc_setup">🖥️ PC環境</option>
-                        <option value="hobby_room">🛋️ 趣味部屋</option>
-                        <option value="self_improvement">📕 自己投資</option>
-                        <option value="beauty">🧴 美容</option>
+                        <option value="invest" selected>🪙 投資</option>
                     </select>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -6038,7 +6021,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         };
 
         // 🔮 カレンダー日付選択未来シミュレーション表示関数 (まだ来ぬ日を試す機能)
-        function showCalendarDaySimulation(targetDateInput, dateStr) {
+                function showCalendarDaySimulation(targetDateInput, dateStr) {
             const previewArea = document.getElementById('calendar-sim-preview');
             const previewContent = document.getElementById('cal-sim-content');
             if (!previewArea || !previewContent) return;
@@ -6049,10 +6032,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const targetDate = new Date(targetDateInput.getTime());
             targetDate.setHours(0,0,0,0);
 
-            previewArea.style.display = 'block';
-
             // もし選択されたのが今日以前の場合
             if (targetDate <= today) {
+                previewArea.style.display = 'block';
                 const parts = dateStr.split('/');
                 const monthFirstStr = `${parts[0]}/${parts[1]}/1`;
 
@@ -6067,7 +6049,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 dayRecords.forEach(item => {
                     recordsList.push(`・${item.label} (+${item.amount.toLocaleString()}円)`);
                 });
-
 
                 if (recordsList.length > 0) {
                     recordText = recordsList.join('<br>');
@@ -6092,72 +6073,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         </button>
                     </div>
                 `;
-                return;
-            }
-
-            // 未来の日付の場合
-            const diffTime = targetDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            const rates = getHabitSuccessRates();
-            const startTrackingDate = parseDateSafely(profile.startDate) || today;
-            const elapsedDays = Math.max(1, Math.floor((today.getTime() - startTrackingDate.getTime()) / (1000 * 3600 * 24)) + 1);
-
-            const tobaccoDaily = habitPrices.tobaccoPrice * habitPrices.tobaccoCount;
-            const beerDaily = habitPrices.beerPrice * habitPrices.beerCount;
-            const tobaccoMonthly = tobaccoDaily * 30;
-            const beerMonthly = beerDaily * 30;
-
-            const totalInvestEarned = history
-                .filter(item => item.type === 'invest')
-                .reduce((sum, item) => sum + item.amount, 0);
-            const realMonthlyInvestAverage = habitPrices.investMonthlyTarget * Math.min(1.0, rates.invest || 0);
-
-            let monthlySaving = 0;
-            if (simulationPaceMode === 'ideal') {
-                if (profile.trackTobacco) monthlySaving += tobaccoMonthly;
-                if (profile.trackBeer) monthlySaving += beerMonthly;
-                if (profile.trackInvest) monthlySaving += habitPrices.investMonthlyTarget;
             } else {
-                if (profile.trackTobacco) monthlySaving += tobaccoMonthly * rates.tobacco;
-                if (profile.trackBeer) monthlySaving += beerMonthly * rates.beer;
-                if (profile.trackInvest) monthlySaving += realMonthlyInvestAverage;
+                // 未来の日付はプレビューを表示しない
+                previewArea.style.display = 'none';
             }
-
-            const dailySaving = monthlySaving / 30;
-            const totalSaving = dailySaving * diffDays;
-
-            // 複利の計算 (年利適用、日割り換算)
-            const annualYield = simulationSettings.yield / 100;
-            let totalInvest = 0;
-            if (annualYield > 0) {
-                const dailyRate = annualYield / 365;
-                totalInvest = dailySaving * ((Math.pow(1 + dailyRate, diffDays) - 1) / dailyRate);
-            } else {
-                totalInvest = totalSaving;
-            }
-
-            const investVal = floorTo100Jpy(totalInvest);
-            const savingValRounded = floorTo100Jpy(totalSaving);
-            const bonusVal = Math.max(0, investVal - savingValRounded);
-
-            const hobby = profile.hobby || 'invest';
-            const matchedItem = getHobbyItemForAmount(hobby, investVal);
-
-            previewContent.innerHTML = `
-                <div style="font-size: 0.85rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 6px;">📅 ${dateStr} まで投資を継続した場合  ${diffDays}日後 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                    <div>・投資日数: <strong style="color: var(--text-main);">${diffDays} 日間</strong></div>
-                    <div>・投資原資（元本）: <strong>${savingValRounded.toLocaleString()} 円</strong></div>
-                    <div style="grid-column: span 2;">・複利運用後の期待値: <strong style="color: var(--neon-secondary); font-size: 0.9rem;">${investVal.toLocaleString()} 円</strong> <span style="font-size: 0.65rem; color: var(--text-muted);">(利回り ${simulationSettings.yield}%)</span></div>
-                    ${bonusVal > 0 ? `<div style="grid-column: span 2; color: var(--neon-green); font-weight: 700;">✨ 複利ボーナス: +${bonusVal.toLocaleString()} 円</div>` : ''}
-                </div>
-                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); padding: 8px; border-radius: 8px; margin-top: 4px;">
-                    <span style="font-size: 1.1rem; margin-right: 4px;">${matchedItem.emoji}</span><strong>${matchedItem.title}</strong><br>
-                    <span style="color: var(--text-muted); font-size: 0.7rem; line-height: 1.3; display: inline-block; margin-top: 2px;">${matchedItem.desc}</span>
-                </div>
-            `;
         }
+
 
         // 🚭 設定モーダル内のスライダー連動
         function setupSettingsSliders() {
@@ -7043,15 +6964,15 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (milestoneBox) milestoneBox.style.display = 'flex';
                 if (affiliateBanner) affiliateBanner.style.display = 'flex';
                 if (accordionEl) accordionEl.style.display = 'block';
-                if (tableContainer) {
+                                if (tableContainer) {
                     let tableHtml = `
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: left; color: var(--text-main);">
                             <thead>
                                 <tr style="border-bottom: 2px solid var(--border-glass); color: var(--text-muted); font-weight: 700;">
-                                    <th style="padding: 8px 4px;">年</th>
-                                    <th style="padding: 8px 4px; text-align: right;">資産</th>
-                                    <th style="padding: 8px 4px; text-align: right;">増えた額</th>
-                                    <th style="padding: 8px 4px; text-align: right;">増えた割合</th>
+                                    <th style="padding: 8px 4px;">期間</th>
+                                    <th style="padding: 8px 4px; text-align: right;">自分で貯めた額(元本)</th>
+                                    <th style="padding: 8px 4px; text-align: right;">増えた分</th>
+                                    <th style="padding: 8px 4px; text-align: right;">将来の総資産</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -7061,14 +6982,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         const diffStr = diff > 0 ? `+${formatToYenManLocal(diff)}` : formatToYenManLocal(diff);
                         
                         const ratio = savingData[i] > 0 ? (diff / savingData[i]) * 100 : 0;
-                        const ratioStr = ratio > 0 ? `+${ratio.toFixed(1)}%` : `0%`;
+                        const ratioStr = ratio > 0 ? `+${Math.round(ratio)}%` : `0%`;
 
                         tableHtml += `
                             <tr style="border-bottom: 1px solid var(--border-glass);">
                                 <td style="padding: 8px 4px; font-weight: 600;">${labels[i]}</td>
+                                <td style="padding: 8px 4px; text-align: right; color: var(--text-main); font-weight: 600;">${formatToYenManLocal(savingData[i])}</td>
+                                <td style="padding: 8px 4px; text-align: right; color: var(--accent-pink); font-weight: 600;">${diffStr} <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal;">(${ratioStr})</span></td>
                                 <td style="padding: 8px 4px; text-align: right; color: var(--neon-secondary); font-weight: 700;">${formatToYenManLocal(investData[i])}</td>
-                                <td style="padding: 8px 4px; text-align: right; color: var(--accent-pink); font-weight: 600;">${diffStr}</td>
-                                <td style="padding: 8px 4px; text-align: right; color: var(--text-muted); font-weight: 700;">${ratioStr}</td>
                             </tr>
                         `;
                     }
@@ -7078,6 +6999,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     `;
                     tableContainer.innerHTML = tableHtml;
                 }
+
             }
 
             updateChart(labels, savingData, investData);
@@ -7531,43 +7453,35 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     return `${man.toLocaleString()} 万円`;
                 };
 
-                const ratePct = Math.round(avgRate * 100);
-                let motivationText = "";
-                if (isAlreadyIdeal) {
-                    motivationText = `現在の実行率はほぼ完璧（理想ペース）です！ここからさらに1日あたりたった100円（月3,000円）の追加投資を心がけるだけで、将来の総資産は ${formatToYenMan(totalInvestGoal)} からさらに増え、最終的に <strong style="color: ${colorPrimary}; font-size: 0.78rem;">${formatToYenMan(idealTotal)}</strong> に到達します！少額の積み増しが持つ劇的な資産運用の力を実感してください。`;
-                } else {
-                    motivationText = `現在、あなたの平均投資実績は ${ratePct}% です。もし**実行率を100%（毎日）まで高められれば**、将来の総資産は現在の予想額から大きく跳ね上がり、最大で <strong style="color: ${colorPrimary}; font-size: 0.78rem;">${formatToYenMan(idealTotal)}</strong> に達します！少しのがんばりが、将来の大きな資産差を生み出します。`;
-                }
-
-                // 心理診断
-                let psiText = "";
-                if (avgRate < 0.5) {
-                    psiText = "現在、脳は一時的なドーパミンの誘惑に流されやすい状態です。行動経済学における『現在バイアス』を克服するため、完璧を目指さず、まずは記録ボタンを押すだけの極小のハードルから始めましょう。";
-                } else if (avgRate >= 0.5 && avgRate < 0.8) {
-                    psiText = "習慣化が定着しつつありますが、脳が現状維持を望む『現状維持バイアス』と戦っているフェーズです。ここで投資の自己決定感を自覚することで、意志の力に頼らずに自動操縦モードへと移行できます。";
-                } else {
-                    psiText = "素晴らしい自己管理能力です。行動心理学的に『自己効力感』が極めて高く、自制そのものが快感となる報酬系が脳内に完成しています。この調子で継続しましょう。";
-                }
-
-                // 複利効果（資産運用効果）の臨界点
+                                const ratePct = Math.round(avgRate * 100);
+                
+                // カタカナ・和製英語・専門用語を廃止し、客観的で温かいアドバイスに一本化
+                let adviceBody = "";
                 const bonusAmount = Math.max(0, totalInvestGoal - totalSavingGoal);
-                const goldenCrossText = `シミュレーションでは、資産運用によるボーナス効果が <strong>${formatToYenMan(bonusAmount)}</strong> 発生します。特に10年〜15年を超える長期では、資産自身が稼ぎ出す増加速度が、あなたが積み立てる元本の速度を追い抜く『資産運用の臨界点』に到達し、資産形成が爆発的に加速します。`;
 
-                // インフレのサイレントロス
-                const silentLossText = "統計的には、マイルドなインフレ（年2%）が続くだけでも、10年後には現金の価値は18%目減りし、20年後には33%も喪失します。単なる『現金貯蓄』は、目に見えない資産の目減りを容認することになります。インフレに強い『実質資産』としての積立運用は、統計的にも合理的な自己防衛策です。";
+                // 重複していた現在の％数値表示は削除しました。
 
-                // 欲望の複利換算（趣味のご褒美）
-                const hobby = profile.hobby || 'invest';
-                let rewardText = "";
-                const rewardMap = {
-                    travel: "1回の旅行での一時的な満足を、将来の『無期限の自由なバカンス』へ換算しています。今浮かせたお金は、将来より贅沢で心から満たされる旅へと昇華されます。",
-                    beauty: "悪習のカットは究極のインナービューティー（抗酸化・代謝向上）をもたらします。さらに浮いたお金を投資に回すことで、資産が育つ頃には『健康と若々しさ』という最高の美容効果を同時に回収できます。",
-                    gadget: "妥協したガジェットを頻繁に買い替えるサイクルから、資産形成へと脳内をアップデート。数年後の『投資の果実』だけで最新のフラッグシップ機を誇らしく手に入れる未来への知的なゲームです。",
-                    gaming: "目先のガチャや課金というデジタルデータを、現実の資産形成というリアル世界の『ステータスビルド』へ変換。資産運用のバフが乗り続けることで、人生というゲームの攻略難易度が劇的に下がっていきます。",
-                    gourmet: "惰性のコンビニ飯や飲み会を減らすと、味覚のディティールが劇的に回復します。浮いたお金で資産を育て、本当に価値のある記念日に『最高峰の美食』を味わう、洗練されたメリハリこそが真の贅沢です。",
-                    invest: "お金は単なる数値ではなく、『嫌な仕事を断る自由』のチケットです。目先の一時的な消費を、将来の『人生の圧倒的な主導権（自由時間）』に換算するプロセスを楽しんでください。"
-                };
-                rewardText = rewardMap[hobby] || rewardMap.invest;
+                adviceBody += "【継続のためのアドバイス】\\n";
+                if (ratePct >= 95) {
+                    adviceBody += "理想的なペースで、ほぼ完璧に継続できています。ご自身を律する力が非常に高く、これまでの取り組みは素晴らしい成果を生み出しています。\\n";
+                    adviceBody += "もし生活に少しゆとりがあれば、1日あたりあと100円（月に3,000円）だけ上乗せしてみることをお勧めします。それだけで、将来の蓄えはさらに増え、" + years + "年後には " + formatToYenMan(idealTotal) + " にまで引き上げることができます。小さな積み重ねが、将来の暮らしをさらに豊かにする確かな力になります。\\n\\n";
+                } else if (ratePct >= 60) {
+                    adviceBody += "順調に習慣化が進んでいます。ご自身のペースで着実に前に進んでおり、非常に良い傾向です。完璧を目指そうとすると疲れてしまうことがありますので、まずは現在のペースを無理なく維持することを心がけましょう。\\n";
+                    adviceBody += "このまま進むだけでも、将来には大きな蓄え（約 " + formatToYenMan(totalInvestGoal) + "）となってあなたを支えてくれます。\\n\\n";
+                } else {
+                    adviceBody += "少しペースが落ちている、またはお忙しい時期かもしれません。完璧にできなくても全く問題ありません。まずは「1日1回、アプリで記録をつける」という、最も簡単な行動に戻ってみましょう。焦らずに、ご自身のやりやすい範囲で少しずつ再開していきましょう。\\n\\n";
+                }
+
+                adviceBody += "【お金の動きと将来の意義】\\n";
+                if (bonusAmount > 0) {
+                    adviceBody += "ただ手元にお金を貯めておく場合と比べて、資産運用によって約 " + formatToYenMan(bonusAmount) + " の上乗せ（増えた額）が期待できる計画です。長期間続けるほど、貯まったお金そのものが成果を生み出す良い循環が生まれ、資産の増える速度が早くなっていきます。\\n";
+                }
+                adviceBody += "現在、世の中の物価が少しずつ上がっています。ただお金を眠らせておくだけでは、お金の価値は目に見えない形で少しずつ減っていってしまいます。このように価値ある形に変えて育てていくことは、ご自身の将来を守るための賢明で確実な自己防衛策です。\\n\\n";
+
+                adviceBody += "日々の小さなお金の節約は、単なる我慢ではありません。目先のささやかな消費を、将来の「嫌なことを断る自由」や「人生の選択肢」を増やすための取り組みです。将来のご自身の自由な暮らしを楽しみに、これからもご自身のペースで一歩ずつ進んでいきましょう。";
+
+                const adviceLetterHtml = adviceBody.replace(/\\n/g, '<br>');
+
 
                 // Build the active habits continuity list
                 let continuityItems = [];
@@ -7635,27 +7549,32 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 let habitsListHtml = "";
                 if (continuityItems.length > 0) {
                     habitsListHtml = `
-                        <!-- 📋 習慣＆投資の実行レポート (通知表) -->
+                                                <!-- 📋 実行診断レポート -->
                         <div style="margin: 16px 0; padding: 14px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                            <div style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                                <span>📋 実行診断レポート (通知表)</span>
-                                <span style="font-size: 0.65rem; padding: 2px 6px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 8px;">総合実行率: ${ratePct}%</span>
+                            <div style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px;">
+                                <span>📋 実行診断レポート</span>
                             </div>
                             
                             <!-- 診断結果 (パッと見でわかるランク表示) -->
-                            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px; padding: 10px; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 10px;">
+                            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px; padding: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 12px;">
                                 <div style="width: 48px; height: 48px; border-radius: 50%; background: ${rankColor}; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.6rem; font-weight: 900; font-family: 'Outfit'; box-shadow: 0 4px 10px ${rankTextShadow}; line-height: 1;">
                                     ${rank}
                                 </div>
                                 <div style="flex: 1;">
-                                    <div style="font-weight: 800; font-size: 0.78rem; color: var(--text-main); line-height: 1.2;">
-                                        診断: ランク ${rank} <span style="font-size: 0.68rem; font-weight: 500; color: var(--text-muted);">[${rankName}]</span>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                        <span style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">
+                                            診断: ランク ${rank} <span style="font-size: 0.68rem; font-weight: 500; color: var(--text-muted);">[${rankName}]</span>
+                                        </span>
+                                        <span style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--neon-secondary);">
+                                            総合実行率: ${ratePct}%
+                                        </span>
                                     </div>
-                                    <div style="font-size: 0.65rem; color: var(--text-sub); line-height: 1.3; margin-top: 2px;">
+                                    <div style="font-size: 0.68rem; color: var(--text-sub); line-height: 1.4;">
                                         ${rankComment}
                                     </div>
                                 </div>
                             </div>
+
                             
                             <!-- 個別項目リスト -->
                             <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -7702,57 +7621,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             <span id="life-advice-chevron" style="font-size: 0.65rem; opacity: 0.7;">▼</span>
                         </button>
                         
-                        <div id="life-advice-content-box" style="display: none; margin-top: 12px; display: flex; flex-direction: column; gap: 12px; animation: fadeInAdvice 0.5s ease-out; text-align: left;">
-                            
-                            <!-- 🚀 未来へのもう一歩 -->
-                            <div style="background: rgba(${isDark ? '0, 243, 255' : '2, 132, 199'}, 0.05); border: 1px dashed rgba(${isDark ? '0, 243, 255' : '2, 132, 199'}, 0.25); border-radius: 12px; padding: 12px; line-height: 1.45;">
-                                <div style="font-weight: 700; color: ${colorPrimary}; font-size: 0.68rem; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.05em;">🚀 未来へのもう一歩</div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${motivationText}
-                                </div>
+                                                <div id="life-advice-content-box" style="display: none; margin-top: 12px; animation: fadeInAdvice 0.5s ease-out; text-align: left;">
+                            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 16px; line-height: 1.6; font-size: 0.72rem; color: var(--text-main); font-family: sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                                ${adviceLetterHtml}
                             </div>
-
-                            <!-- 🧠 行動心理診断 -->
-                            <div style="background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.15); border-radius: 12px; padding: 12px;">
-                                <div style="font-weight: 700; color: #c084fc; font-size: 0.68rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    🧠 行動心理診断
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${psiText}
-                                </div>
-                            </div>
-
-                            <!-- 📈 資産運用の臨界点 -->
-                            <div style="background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px; padding: 12px;">
-                                <div style="font-weight: 700; color: #60a5fa; font-size: 0.68rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    📈 資産運用の臨界点
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${goldenCrossText}
-                                </div>
-                            </div>
-
-                            <!-- 📉 インフレのサイレントロス -->
-                            <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 12px; padding: 12px;">
-                                <div style="font-weight: 700; color: #f87171; font-size: 0.68rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    📉 インフレのサイレントロス
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${silentLossText}
-                                </div>
-                            </div>
-
-                            <!-- 🎁 欲望の資産運用換算 -->
-                            <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px; padding: 12px;">
-                                <div style="font-weight: 700; color: #34d399; font-size: 0.68rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    🎁 欲望の資産運用換算
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${rewardText}
-                                </div>
-                            </div>
-
                         </div>
+
                         <style>
                         @keyframes fadeInAdvice {
                             from { opacity: 0; transform: translateY(8px); }
@@ -7871,7 +7745,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const bannerBadge = document.getElementById('banner-badge-text');
             const bannerLink = document.getElementById('banner-link');
 
-            const totalStr = formatCurrency(totalInvest);
+            const totalMan = Math.round(totalInvest / 10000);
+            const totalStr = `${totalMan.toLocaleString()} 万円`;
             const monthlyStr = monthlySaving.toLocaleString();
 
             if (monthlySaving <= 0) {
@@ -8071,7 +7946,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=95')
+                navigator.serviceWorker.register('./sw.js?v=114')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
