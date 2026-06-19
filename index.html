@@ -1915,6 +1915,17 @@
                     <canvas id="yieldChart"></canvas>
                 </div>
 
+                <!-- 📊 毎年の資産推移 (アコーディオン) -->
+                <div id="asset-yearly-accordion" style="margin-top: 16px; display: none; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 12px; overflow: hidden; backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);">
+                    <button type="button" id="btn-toggle-asset-table" style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: transparent; border: none; cursor: pointer; color: var(--text-main); font-size: 0.78rem; font-weight: 600; transition: background 0.25s, opacity 0.2s; outline: none;">
+                        <span style="display: flex; align-items: center; gap: 8px; letter-spacing: 0.02em;">📊 年別の資産推移</span>
+                        <span id="asset-table-chevron" style="font-size: 0.6rem; color: var(--text-muted); display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 50%; transition: transform 0.3s ease, background 0.3s;">▼</span>
+                    </button>
+                    <div id="asset-yearly-table-container" style="padding: 16px; overflow-x: auto; display: none; border-top: 1px solid var(--border-glass);">
+                        <!-- JSで動的にテーブルを挿入 -->
+                    </div>
+                </div>
+
                 <!-- 💳 アフィリエイトオファーカード (人が思わず押したくなる仕掛け) -->
                 <div class="affiliate-banner-box" id="affiliate-banner">
                     <div class="banner-badge" id="banner-badge-text">🏆 おすすめ口座開設</div>
@@ -1939,37 +1950,7 @@
              🍀 タブ3: ライフ (Life) データ 時間・健康 
              ========================================== -->
         <div id="tab-content-life" class="tab-content">
-            <!-- ⚔️ 自己投資ステータス (RPG要素) -->
-            <div class="glass-card" style="margin-bottom: 16px; cursor: pointer; position: relative; overflow: hidden;" id="life-status-card">
-                <h2 class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <span>⚔️ 自己投資ステータス</span>
-                    <span id="life-status-chevron" style="font-size: 0.7rem; color: var(--text-muted); transition: transform 0.3s; background: var(--bg-base); border: 1px solid var(--border-glass); padding: 2px 8px; border-radius: 12px; font-weight: 500;">▼ 称号一覧</span>
-                </h2>
-                <div style="display: flex; gap: 16px; align-items: center; background: var(--bg-base); border: 1px solid var(--border-glass); padding: 16px; border-radius: 20px;">
-                    <div id="life-badge-icon" style="font-size: 2.8rem; text-align: center; line-height: 1; min-width: 65px;">🔰</div>
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
-                            <span id="life-title" style="font-size: 0.72rem; font-weight: 800; color: var(--neon-secondary); letter-spacing: 0.05em;">自己投資ビギナー 🔰</span>
-                            <span id="life-level" style="font-size: 1.25rem; font-weight: 800; color: var(--neon-primary); font-family: 'Outfit';">Lv. 1</span>
-                        </div>
-                        <!-- 経験値バー -->
-                        <div style="width: 100%; height: 8px; background: var(--bg-base); border: 1px solid var(--border-glass); border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
-                            <div id="life-exp-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary)); transition: width 0.3s;"></div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
-                            <span>経験値  累計投資原資 : <span id="life-exp-val">0</span> / <span id="life-next-exp-val">1000</span>円</span>
-                            <span id="life-streak" style="color: var(--neon-secondary); font-weight: 700;">🔥 0日連続投資中</span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- 🔽 折りたたみ称号ツリーエリア -->
-                <div id="life-status-details" style="max-height: 0px; overflow: hidden; transition: max-height 0.4s ease-out; margin-top: 0px;">
-                    <div style="border-top: 1px solid var(--border-glass); padding-top: 16px; margin-top: 16px; display: flex; flex-direction: column; gap: 8px;" id="life-status-tree-container">
-                        <!-- JSで称号リストを動的生成 -->
-                    </div>
-                </div>
-            </div>
 
             <!-- 📊 累計投資の実績数値 -->
             <div class="glass-card" style="margin-bottom: 16px;">
@@ -7037,22 +7018,66 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const finalInvest = investData[investData.length - 1];
             const finalBonus = finalInvest - finalSaving;
 
-            // 資産タブへの表示反映
-            valSaving.innerText = formatCurrency(finalSaving);
-            valTotal.innerText = formatCurrency(finalInvest);
-            valBonus.innerText = formatCurrency(finalBonus);
+            // 資産タブへの表示反映 (万単位で丸めた〇〇万円形式)
+            const formatToYenManLocal = (amount) => {
+                const man = Math.round(amount / 10000);
+                return `${man.toLocaleString()} 万円`;
+            };
+            valSaving.innerText = formatToYenManLocal(finalSaving);
+            valTotal.innerText = formatToYenManLocal(finalInvest);
+            valBonus.innerText = formatToYenManLocal(finalBonus);
             valYieldInfo.innerText = `${simulationSettings.yield}%`;
 
             updateMilestone(finalInvest);
             updateLifeData(years, realMonthlySaving);
             updateAffiliateBanner(finalInvest, monthlySaving);
             
+            const tableContainer = document.getElementById('asset-yearly-table-container');
+            const accordionEl = document.getElementById('asset-yearly-accordion');
+
             if (monthlySaving <= 0) {
                 if (milestoneBox) milestoneBox.style.display = 'none';
                 if (affiliateBanner) affiliateBanner.style.display = 'none';
+                if (accordionEl) accordionEl.style.display = 'none';
             } else {
                 if (milestoneBox) milestoneBox.style.display = 'flex';
                 if (affiliateBanner) affiliateBanner.style.display = 'flex';
+                if (accordionEl) accordionEl.style.display = 'block';
+                if (tableContainer) {
+                    let tableHtml = `
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: left; color: var(--text-main);">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-glass); color: var(--text-muted); font-weight: 700;">
+                                    <th style="padding: 8px 4px;">年</th>
+                                    <th style="padding: 8px 4px; text-align: right;">資産</th>
+                                    <th style="padding: 8px 4px; text-align: right;">増えた額</th>
+                                    <th style="padding: 8px 4px; text-align: right;">増えた割合</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    for (let i = 0; i < labels.length; i++) {
+                        const diff = investData[i] - savingData[i];
+                        const diffStr = diff > 0 ? `+${formatToYenManLocal(diff)}` : formatToYenManLocal(diff);
+                        
+                        const ratio = savingData[i] > 0 ? (diff / savingData[i]) * 100 : 0;
+                        const ratioStr = ratio > 0 ? `+${ratio.toFixed(1)}%` : `0%`;
+
+                        tableHtml += `
+                            <tr style="border-bottom: 1px solid var(--border-glass);">
+                                <td style="padding: 8px 4px; font-weight: 600;">${labels[i]}</td>
+                                <td style="padding: 8px 4px; text-align: right; color: var(--neon-secondary); font-weight: 700;">${formatToYenManLocal(investData[i])}</td>
+                                <td style="padding: 8px 4px; text-align: right; color: var(--accent-pink); font-weight: 600;">${diffStr}</td>
+                                <td style="padding: 8px 4px; text-align: right; color: var(--text-muted); font-weight: 700;">${ratioStr}</td>
+                            </tr>
+                        `;
+                    }
+                    tableHtml += `
+                            </tbody>
+                        </table>
+                    `;
+                    tableContainer.innerHTML = tableHtml;
+                }
             }
 
             updateChart(labels, savingData, investData);
@@ -7404,7 +7429,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
                 if (isTobaccoActive && isBeerActive) {
                     healthDay = "【心肺＆肝臓】心拍数・血圧が正常化し、アルコール分解負担がゼロに。ダブルの体内浄化が始まり、翌朝のだるさが消え去ります！";
-                    healthWeek = "【睡眠・味覚改善】ニコチンとアルコールが完全に抜け、睡眠効率が統計的に約30%向上！味覚が鋭くなり食事の美味しさが倍増します。";
+                    healthWeek = "【睡眠・味覚改善】ニコチンとアルコールが完全に抜け、睡眠効率が統計的に30%向上！味覚が鋭くなり食事の美味しさが倍増します。";
                     healthMonth = "【代謝爆上げ・肌ツヤ】肺機能が大幅回復し、肝細胞が劇的に修復。血流がスムーズになり、肌のツヤが戻り、ぽっこりお腹もスッキリ解消！";
                     healthYear = "【生涯の健康体】心血管疾患リスクが統計的に50%以上減少、肝機能が完全に正常化。疲れを全く溜め込まない最強の体が定着します！";
                 } else if (isTobaccoActive) {
@@ -7414,12 +7439,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     healthYear = "【病気リスク半減】非喫煙者と比べて心臓病の生涯リスクが統計的に50%減少！免疫力も劇的に向上し、風邪を引きにくい強靭な体に。";
                 } else if (isBeerActive) {
                     healthDay = "【睡眠・肝臓保護】アルコールによる脱水や睡眠障害から解放され、翌朝のだるさが大幅に軽減。肝臓の代謝負担がリセットされます！";
-                    healthWeek = "【脳疲労リセット】深い睡眠（レム睡眠）の割合が約20%増加し、脳の疲労が解消。脂肪燃焼効率が上がり、体重が減少傾向に入ります！";
-                    healthMonth = "【肝機能・むくみ解消】アルコール性脂肪肝リスクが統計的に約15%減少。肌の水分量が保たれて乾燥や毛穴トラブルが劇的に改善します！";
+                    healthWeek = "【脳疲労リセット】深い睡眠（レム睡眠）の割合が20%増加し、脳の疲労が解消。脂肪燃焼効率が上がり、体重が減少傾向に入ります！";
+                    healthMonth = "【肝機能・むくみ解消】アルコール性脂肪肝リスクが統計的に15%減少。肌の水分量が保たれて乾燥や毛穴トラブルが劇的に改善します！";
                     healthYear = "【生活習慣病改善】高血圧や糖尿病リスクが劇的に低下し、コレステロール値が正常化。がん発症率も下がり免疫年齢が大きく若返ります！";
                 } else {
                     healthDay = "【脳科学】『自分の力で支出をコントロールした』という自己決定感が脳の前頭葉を刺激し、朝のモチベーションが統計的に向上します！";
-                    healthWeek = "【ストレス低下】無意識の経済的焦りが解消され、ストレスホルモン（コルチゾール）が統計的に約10%低下。自律神経が整います。";
+                    healthWeek = "【ストレス低下】無意識の経済的焦りが解消され、ストレスホルモン（コルチゾール）が統計的に10%低下。自律神経が整います。";
                     healthMonth = "【自制心の強化】脳の前頭連合野の自制心回路が物理的に強化。目先の誘惑に負けない高い集中力とブレない自信が手に入ります！";
                     healthYear = "【幸福度の向上】将来への強固な安心感が得られ、うつ傾向や将来不安が統計的に30%以上減少。日常の幸福度が最大化されます！";
                 }
@@ -7501,16 +7526,48 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     }
                 }
 
-                const intellectualAdvices = [
-                    "「複利は宇宙最強の力である」とアインシュタインは言いました。元本を積立てて複利で運用し続けることこそが、最大の資産形成です。",
-                    "インフレはお金をただ貯めるだけでその実質価値を奪います。未来の資産価値を守るため、堅実な資産への投資こそが必須と言えます。",
-                    "投資とは、目の前の一瞬の消費を、将来にわたる持続的で巨大な自由と交換する極めて知的な意思決定プロセスです。",
-                    "悪い習慣への無駄な支出を削減することは、利回り100%の非課税投資に等しい効果を生み出し、家計の複利効果を高めます。",
-                    "経済的な自立は人生における絶対的な選択権を与えてくれます。日々の投資は、将来のあなた自身に無限の可能性を贈る行為です。",
-                    "短期的な相場変動に惑わされず、日々の節制と積立投資の規律を守る愚直さこそが、最終的に最も強固な富を築く王道です。"
-                ];
-                const adviceIndex = Math.abs(totalInvestGoal) % intellectualAdvices.length;
-                const advice = intellectualAdvices[adviceIndex];
+                const formatToYenMan = (amount) => {
+                    const man = Math.round(amount / 10000);
+                    return `${man.toLocaleString()} 万円`;
+                };
+
+                const ratePct = Math.round(avgRate * 100);
+                let motivationText = "";
+                if (isAlreadyIdeal) {
+                    motivationText = `現在の実行率はほぼ完璧（理想ペース）です！ここからさらに1日あたりたった100円（月3,000円）の追加投資を心がけるだけで、将来の総資産は ${formatToYenMan(totalInvestGoal)} からさらに増え、最終的に <strong style="color: ${colorPrimary}; font-size: 0.78rem;">${formatToYenMan(idealTotal)}</strong> に到達します！少額の積み増しが持つ劇的な資産運用の力を実感してください。`;
+                } else {
+                    motivationText = `現在、あなたの平均投資実績は ${ratePct}% です。もし**実行率を100%（毎日）まで高められれば**、将来の総資産は現在の予想額から大きく跳ね上がり、最大で <strong style="color: ${colorPrimary}; font-size: 0.78rem;">${formatToYenMan(idealTotal)}</strong> に達します！少しのがんばりが、将来の大きな資産差を生み出します。`;
+                }
+
+                // 心理診断
+                let psiText = "";
+                if (avgRate < 0.5) {
+                    psiText = "現在、脳は一時的なドーパミンの誘惑に流されやすい状態です。行動経済学における『現在バイアス』を克服するため、完璧を目指さず、まずは記録ボタンを押すだけの極小のハードルから始めましょう。";
+                } else if (avgRate >= 0.5 && avgRate < 0.8) {
+                    psiText = "習慣化が定着しつつありますが、脳が現状維持を望む『現状維持バイアス』と戦っているフェーズです。ここで投資の自己決定感を自覚することで、意志の力に頼らずに自動操縦モードへと移行できます。";
+                } else {
+                    psiText = "素晴らしい自己管理能力です。行動心理学的に『自己効力感』が極めて高く、自制そのものが快感となる報酬系が脳内に完成しています。この調子で継続しましょう。";
+                }
+
+                // 複利効果（資産運用効果）の臨界点
+                const bonusAmount = Math.max(0, totalInvestGoal - totalSavingGoal);
+                const goldenCrossText = `シミュレーションでは、資産運用によるボーナス効果が <strong>${formatToYenMan(bonusAmount)}</strong> 発生します。特に10年〜15年を超える長期では、資産自身が稼ぎ出す増加速度が、あなたが積み立てる元本の速度を追い抜く『資産運用の臨界点』に到達し、資産形成が爆発的に加速します。`;
+
+                // インフレのサイレントロス
+                const silentLossText = "統計的には、マイルドなインフレ（年2%）が続くだけでも、10年後には現金の価値は18%目減りし、20年後には33%も喪失します。単なる『現金貯蓄』は、目に見えない資産の目減りを容認することになります。インフレに強い『実質資産』としての積立運用は、統計的にも合理的な自己防衛策です。";
+
+                // 欲望の複利換算（趣味のご褒美）
+                const hobby = profile.hobby || 'invest';
+                let rewardText = "";
+                const rewardMap = {
+                    travel: "1回の旅行での一時的な満足を、将来の『無期限の自由なバカンス』へ換算しています。今浮かせたお金は、将来より贅沢で心から満たされる旅へと昇華されます。",
+                    beauty: "悪習のカットは究極のインナービューティー（抗酸化・代謝向上）をもたらします。さらに浮いたお金を投資に回すことで、資産が育つ頃には『健康と若々しさ』という最高の美容効果を同時に回収できます。",
+                    gadget: "妥協したガジェットを頻繁に買い替えるサイクルから、資産形成へと脳内をアップデート。数年後の『投資の果実』だけで最新のフラッグシップ機を誇らしく手に入れる未来への知的なゲームです。",
+                    gaming: "目先のガチャや課金というデジタルデータを、現実の資産形成というリアル世界の『ステータスビルド』へ変換。資産運用のバフが乗り続けることで、人生というゲームの攻略難易度が劇的に下がっていきます。",
+                    gourmet: "惰性のコンビニ飯や飲み会を減らすと、味覚のディティールが劇的に回復します。浮いたお金で資産を育て、本当に価値のある記念日に『最高峰の美食』を味わう、洗練されたメリハリこそが真の贅沢です。",
+                    invest: "お金は単なる数値ではなく、『嫌な仕事を断る自由』のチケットです。目先の一時的な消費を、将来の『人生の圧倒的な主導権（自由時間）』に換算するプロセスを楽しんでください。"
+                };
+                rewardText = rewardMap[hobby] || rewardMap.invest;
 
                 // Build the active habits continuity list
                 let continuityItems = [];
@@ -7542,12 +7599,68 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     `);
                 }
 
+                // 実行率に応じたランク判定（S, A, B, C, D）
+                let rank = "D";
+                let rankName = "要努力";
+                let rankColor = "linear-gradient(135deg, #EF4444 0%, #F43F5E 100%)";
+                let rankTextShadow = "rgba(239, 68, 68, 0.4)";
+                let rankComment = "まずは小さな一歩、週1回のアクションから始めましょう！";
+                
+                if (ratePct >= 95) {
+                    rank = "S";
+                    rankName = "極めて優秀";
+                    rankColor = "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)";
+                    rankTextShadow = "rgba(255, 215, 0, 0.4)";
+                    rankComment = "目標達成へ向けて完璧なペースです！このまま維持しましょう。";
+                } else if (ratePct >= 80) {
+                    rank = "A";
+                    rankName = "優秀";
+                    rankColor = "linear-gradient(135deg, #00F3FF 0%, #00FF87 100%)";
+                    rankTextShadow = "rgba(0, 243, 255, 0.4)";
+                    rankComment = "非常に高いモチベーションが維持されています！素晴らしいです。";
+                } else if (ratePct >= 60) {
+                    rank = "B";
+                    rankName = "順調";
+                    rankColor = "linear-gradient(135deg, #3B82F6 0%, #00F3FF 100%)";
+                    rankTextShadow = "rgba(59, 130, 246, 0.4)";
+                    rankComment = "計画通り着実に進んでいます。この調子でコツコツ続けましょう。";
+                } else if (ratePct >= 40) {
+                    rank = "C";
+                    rankName = "要改善";
+                    rankColor = "linear-gradient(135deg, #F59E0B 0%, #10B981 100%)";
+                    rankTextShadow = "rgba(245, 158, 11, 0.4)";
+                    rankComment = "少しペースが落ちています。無理のない範囲で再開してみましょう。";
+                }
+
                 let habitsListHtml = "";
                 if (continuityItems.length > 0) {
                     habitsListHtml = `
-                        <div style="margin: 12px 0; padding: 10px; background: rgba(0,0,0,0.015); border: 1px solid var(--border-glass); border-radius: 10px;">
-                            <div style="font-size: 0.65rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">📊 設定中習慣の今月継続率</div>
-                            ${continuityItems.join('')}
+                        <!-- 📋 習慣＆投資の実行レポート (通知表) -->
+                        <div style="margin: 16px 0; padding: 14px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                            <div style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                <span>📋 実行診断レポート (通知表)</span>
+                                <span style="font-size: 0.65rem; padding: 2px 6px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 8px;">総合実行率: ${ratePct}%</span>
+                            </div>
+                            
+                            <!-- 診断結果 (パッと見でわかるランク表示) -->
+                            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px; padding: 10px; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 10px;">
+                                <div style="width: 48px; height: 48px; border-radius: 50%; background: ${rankColor}; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.6rem; font-weight: 900; font-family: 'Outfit'; box-shadow: 0 4px 10px ${rankTextShadow}; line-height: 1;">
+                                    ${rank}
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 800; font-size: 0.78rem; color: var(--text-main); line-height: 1.2;">
+                                        診断: ランク ${rank} <span style="font-size: 0.68rem; font-weight: 500; color: var(--text-muted);">[${rankName}]</span>
+                                    </div>
+                                    <div style="font-size: 0.65rem; color: var(--text-sub); line-height: 1.3; margin-top: 2px;">
+                                        ${rankComment}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 個別項目リスト -->
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                ${continuityItems.join('')}
+                            </div>
                         </div>
                     `;
                 } else {
@@ -7557,6 +7670,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         </div>
                     `;
                 }
+
+                const savingGoalMan = Math.round(totalSavingGoal / 10000);
+                const investGoalMan = Math.round(totalInvestGoal / 10000);
 
                 rmGoalCard.innerHTML = `
                     <div id="rm-goal-dot" style="position: absolute; left: -18px; top: 16px; width: 12px; height: 12px; border-radius: 50%; background: ${colorPrimary}; box-shadow: ${isDark ? '0 0 10px ' + colorPrimary : 'none'};"></div>
@@ -7568,24 +7684,114 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     <div style="font-size: 0.72rem; color: var(--text-sub); line-height: 1.6;">
                         <div style="background: rgba(0,0,0,0.01); border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; margin-bottom: 12px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <span>ただ貯めた場合:</span>
-                                <span style="font-weight: 700; color: var(--accent-pink);">${totalSavingGoal.toLocaleString()} 円</span>
+                                <span>手元に貯めた場合:</span>
+                                <span style="font-weight: 700; color: var(--accent-pink);">${savingGoalMan.toLocaleString()} 万円</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 0.85rem; color: var(--text-main);">
-                                <span>積立投資 (複利あり):</span>
-                                <span style="color: ${colorPrimary}; text-shadow: ${isDark ? '0 0 8px ' + colorPrimary + '40' : 'none'};">${totalInvestGoal.toLocaleString()} 円</span>
+                                <span>資産運用した場合:</span>
+                                <span style="color: ${colorPrimary}; text-shadow: ${isDark ? '0 0 8px ' + colorPrimary + '40' : 'none'};">${investGoalMan.toLocaleString()} 万円</span>
                             </div>
                         </div>
 
                         ${habitsListHtml}
 
-                        <!-- 💡 知的投資アドバイス -->
-                        <div style="margin-top: 12px; padding: 12px; background: rgba(0, 243, 255, 0.03); border-left: 3px solid ${colorPrimary}; border-radius: 6px; font-size: 0.72rem; color: var(--text-main); line-height: 1.5; text-align: left;">
-                            <div style="font-weight: 700; color: ${colorPrimary}; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.05em;">💡 知的投資アドバイス</div>
-                            ${advice}
+                        <!-- 💡 将来の資産形成アドバイス (アコーディオン) -->
+                        <button type="button" id="btn-reveal-life-advice" style="width: 100%; margin-top: 12px; padding: 12px; background: linear-gradient(135deg, rgba(0, 243, 255, 0.12) 0%, rgba(219, 39, 119, 0.12) 100%); border: 1px solid var(--border-glass); border-radius: 12px; cursor: pointer; color: var(--text-main); font-size: 0.72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,243,255,0.05); transition: all 0.3s; position: relative; overflow: hidden;">
+                            <span style="font-size: 1rem;">💡</span>
+                            <span>あなたへの資産形成アドバイスを読む</span>
+                            <span id="life-advice-chevron" style="font-size: 0.65rem; opacity: 0.7;">▼</span>
+                        </button>
+                        
+                        <div id="life-advice-content-box" style="display: none; margin-top: 12px; display: flex; flex-direction: column; gap: 12px; animation: fadeInAdvice 0.5s ease-out; text-align: left;">
+                            
+                            <!-- 🚀 未来へのもう一歩 -->
+                            <div style="background: rgba(${isDark ? '0, 243, 255' : '2, 132, 199'}, 0.05); border: 1px dashed rgba(${isDark ? '0, 243, 255' : '2, 132, 199'}, 0.25); border-radius: 12px; padding: 12px; line-height: 1.45;">
+                                <div style="font-weight: 700; color: ${colorPrimary}; font-size: 0.68rem; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.05em;">🚀 未来へのもう一歩</div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${motivationText}
+                                </div>
+                            </div>
+
+                            <!-- 🧠 行動心理診断 -->
+                            <div style="background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.15); border-radius: 12px; padding: 12px;">
+                                <div style="font-weight: 700; color: #c084fc; font-size: 0.68rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    🧠 行動心理診断
+                                </div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${psiText}
+                                </div>
+                            </div>
+
+                            <!-- 📈 資産運用の臨界点 -->
+                            <div style="background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px; padding: 12px;">
+                                <div style="font-weight: 700; color: #60a5fa; font-size: 0.68rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    📈 資産運用の臨界点
+                                </div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${goldenCrossText}
+                                </div>
+                            </div>
+
+                            <!-- 📉 インフレのサイレントロス -->
+                            <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 12px; padding: 12px;">
+                                <div style="font-weight: 700; color: #f87171; font-size: 0.68rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    📉 インフレのサイレントロス
+                                </div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${silentLossText}
+                                </div>
+                            </div>
+
+                            <!-- 🎁 欲望の資産運用換算 -->
+                            <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px; padding: 12px;">
+                                <div style="font-weight: 700; color: #34d399; font-size: 0.68rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    🎁 欲望の資産運用換算
+                                </div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${rewardText}
+                                </div>
+                            </div>
+
                         </div>
+                        <style>
+                        @keyframes fadeInAdvice {
+                            from { opacity: 0; transform: translateY(8px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                        </style>
                     </div>
                 `;
+
+                // ゴールカード描画の後にイベントリスナーを設定する
+                setTimeout(() => {
+                    const btnReveal = document.getElementById('btn-reveal-life-advice');
+                    const adviceBox = document.getElementById('life-advice-content-box');
+                    const adviceChevron = document.getElementById('life-advice-chevron');
+                    if (btnReveal && adviceBox) {
+                        adviceBox.style.display = 'none';
+                        
+                        btnReveal.addEventListener('click', () => {
+                            const isHidden = adviceBox.style.display === 'none';
+                            if (isHidden) {
+                                adviceBox.style.display = 'flex';
+                                if (adviceChevron) adviceChevron.innerText = '▲';
+                                btnReveal.style.background = 'linear-gradient(135deg, rgba(0, 243, 255, 0.05) 0%, rgba(219, 39, 119, 0.05) 100%)';
+                            } else {
+                                adviceBox.style.display = 'none';
+                                if (adviceChevron) adviceChevron.innerText = '▼';
+                                btnReveal.style.background = 'linear-gradient(135deg, rgba(0, 243, 255, 0.12) 0%, rgba(219, 39, 119, 0.12) 100%)';
+                            }
+                        });
+                        btnReveal.addEventListener('mouseenter', () => {
+                            btnReveal.style.transform = 'translateY(-1px)';
+                            btnReveal.style.boxShadow = '0 6px 20px rgba(0,243,255,0.12)';
+                        });
+                        btnReveal.addEventListener('mouseleave', () => {
+                            btnReveal.style.transform = 'none';
+                            btnReveal.style.boxShadow = '0 4px 15px rgba(0,243,255,0.05)';
+                        });
+                    }
+                }, 50);
             }
         }
 
@@ -7926,30 +8132,28 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
 
 
-            // 自己投資ステータスカードの開閉イベント
-            const statusCard = document.getElementById('life-status-card');
-            const statusDetails = document.getElementById('life-status-details');
-            const statusChevron = document.getElementById('life-status-chevron');
-
-            if (statusCard && statusDetails && statusChevron) {
-                // 初期状態を明示的にリセット
-                statusDetails.style.maxHeight = '0px';
-                statusCard.classList.remove('details-open');
-
-                statusCard.addEventListener('click', () => {
-                    const isOpen = statusCard.classList.contains('details-open');
-                    if (!isOpen) {
-                        statusCard.classList.add('details-open');
-                        statusDetails.style.maxHeight = statusDetails.scrollHeight + 'px';
-                        statusChevron.innerText = '▲ 称号を閉じる';
+            // 資産推移テーブルのアコーディオン開閉イベント
+            const btnToggleTable = document.getElementById('btn-toggle-asset-table');
+            const tableContainerEl = document.getElementById('asset-yearly-table-container');
+            const tableChevron = document.getElementById('asset-table-chevron');
+            if (btnToggleTable && tableContainerEl && tableChevron) {
+                btnToggleTable.addEventListener('click', () => {
+                    const isHidden = tableContainerEl.style.display === 'none' || tableContainerEl.style.display === '';
+                    if (isHidden) {
+                        tableContainerEl.style.display = 'block';
+                        tableChevron.style.transform = 'rotate(180deg)';
+                        tableChevron.style.background = 'rgba(255, 255, 255, 0.1)';
                     } else {
-                        statusCard.classList.remove('details-open');
-                        statusDetails.style.maxHeight = '0px';
-                        statusChevron.innerText = '▼ 称号一覧';
+                        tableContainerEl.style.display = 'none';
+                        tableChevron.style.transform = 'rotate(0deg)';
+                        tableChevron.style.background = 'rgba(255, 255, 255, 0.05)';
                     }
                 });
-                statusDetails.addEventListener('click', (e) => {
-                    e.stopPropagation();
+                btnToggleTable.addEventListener('mouseenter', () => {
+                    btnToggleTable.style.background = 'rgba(255, 255, 255, 0.03)';
+                });
+                btnToggleTable.addEventListener('mouseleave', () => {
+                    btnToggleTable.style.background = 'transparent';
                 });
             }
 
