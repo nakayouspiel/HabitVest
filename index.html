@@ -6966,13 +6966,13 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (accordionEl) accordionEl.style.display = 'block';
                                 if (tableContainer) {
                     let tableHtml = `
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: left; color: var(--text-main);">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.68rem; text-align: left; color: var(--text-main); table-layout: fixed;">
                             <thead>
                                 <tr style="border-bottom: 2px solid var(--border-glass); color: var(--text-muted); font-weight: 700;">
-                                    <th style="padding: 8px 4px;">期間</th>
-                                    <th style="padding: 8px 4px; text-align: right;">自分で貯めた額(元本)</th>
-                                    <th style="padding: 8px 4px; text-align: right;">増えた分</th>
-                                    <th style="padding: 8px 4px; text-align: right;">将来の総資産</th>
+                                    <th style="width: 16%; padding: 8px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">期間</th>
+                                    <th style="width: 26%; padding: 8px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">元本</th>
+                                    <th style="width: 34%; padding: 8px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">増えた分</th>
+                                    <th style="width: 24%; padding: 8px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">総資産</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -6986,10 +6986,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
                         tableHtml += `
                             <tr style="border-bottom: 1px solid var(--border-glass);">
-                                <td style="padding: 8px 4px; font-weight: 600;">${labels[i]}</td>
-                                <td style="padding: 8px 4px; text-align: right; color: var(--text-main); font-weight: 600;">${formatToYenManLocal(savingData[i])}</td>
-                                <td style="padding: 8px 4px; text-align: right; color: var(--accent-pink); font-weight: 600;">${diffStr} <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal;">(${ratioStr})</span></td>
-                                <td style="padding: 8px 4px; text-align: right; color: var(--neon-secondary); font-weight: 700;">${formatToYenManLocal(investData[i])}</td>
+                                <td style="padding: 8px 2px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${labels[i]}</td>
+                                <td style="padding: 8px 2px; text-align: right; color: var(--text-main); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManLocal(savingData[i])}</td>
+                                <td style="padding: 8px 2px; text-align: right; color: var(--accent-pink); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${diffStr} <span style="font-size: 0.62rem; color: var(--text-muted); font-weight: normal;">(${ratioStr})</span></td>
+                                <td style="padding: 8px 2px; text-align: right; color: var(--neon-secondary); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManLocal(investData[i])}</td>
                             </tr>
                         `;
                     }
@@ -7946,7 +7946,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=114')
+                navigator.serviceWorker.register('./sw.js?v=115')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
