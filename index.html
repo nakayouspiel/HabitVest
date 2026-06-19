@@ -892,7 +892,10 @@
             transform: translateX(-50%);
             width: 100%;
             max-width: 440px;
-            height: 60px;
+            min-height: 60px;
+            height: auto;
+            padding-top: 6px;
+            padding-bottom: calc(6px + env(safe-area-inset-bottom));
             background: var(--nav-bg);
             border-top: 1px solid var(--border-glass);
             display: grid;
@@ -1983,19 +1986,19 @@
                         <div id="life-stats-money" style="font-size: 1.4rem; font-weight: 800; color: var(--neon-secondary); margin-top: 4px; font-family: 'Outfit';">0 円</div>
                     </div>
                     <!-- タバコの実績 -->
-                    <div id="life-stats-tobacco-card" style="background: var(--bg-base); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
-                        <div style="font-weight: 700; font-size: 0.78rem; color: var(--neon-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">🚭 タバコ節制による投資成果</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.72rem;">
-                            <div>節制した本数: <span id="life-stats-tobacco-count" style="font-weight:700; color:var(--text-sub);">0本</span></div>
-                            <div>取り戻した寿命: <span id="life-stats-tobacco-life" style="font-weight:700; color:var(--text-sub);">0分</span></div>
+                    <div id="life-stats-tobacco-card" style="background: rgba(255, 75, 75, 0.04); border: 1px solid rgba(255, 75, 75, 0.12); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
+                        <div style="font-weight: 800; font-size: 0.76rem; color: #ff4b4b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🚭 タバコ節制の健康効果</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.7rem;">
+                            <div style="background: rgba(0, 0, 0, 0.12); padding: 8px; border-radius: 8px; border: 1px solid var(--border-glass);">節制した本数<br><span id="life-stats-tobacco-count" style="font-weight:800; color:var(--text-main); font-size: 0.85rem; display: inline-block; margin-top: 3px;">0本</span></div>
+                            <div style="background: rgba(0, 0, 0, 0.12); padding: 8px; border-radius: 8px; border: 1px solid var(--border-glass);">取り戻した寿命<br><span id="life-stats-tobacco-life" style="font-weight:800; color:var(--neon-primary); font-size: 0.85rem; display: inline-block; margin-top: 3px;">0分</span></div>
                         </div>
                     </div>
                     <!-- お酒の実績 -->
-                    <div id="life-stats-beer-card" style="background: var(--bg-base); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
-                        <div style="font-weight: 700; font-size: 0.78rem; color: var(--neon-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">🍺 お酒節制による投資成果</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.72rem;">
-                            <div>節制した杯数: <span id="life-stats-beer-count" style="font-weight:700; color:var(--text-sub);">0杯</span></div>
-                            <div>カットしたカロリー: <span id="life-stats-beer-cal" style="font-weight:700; color:var(--text-sub);">0 kcal</span></div>
+                    <div id="life-stats-beer-card" style="background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.12); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
+                        <div style="font-weight: 800; font-size: 0.76rem; color: #f59e0b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🍺 お酒節制の健康効果</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.7rem;">
+                            <div style="background: rgba(0, 0, 0, 0.12); padding: 8px; border-radius: 8px; border: 1px solid var(--border-glass);">節制した杯数<br><span id="life-stats-beer-count" style="font-weight:800; color:var(--text-main); font-size: 0.85rem; display: inline-block; margin-top: 3px;">0杯</span></div>
+                            <div style="background: rgba(0, 0, 0, 0.12); padding: 8px; border-radius: 8px; border: 1px solid var(--border-glass);">カットしたカロリー<br><span id="life-stats-beer-cal" style="font-weight:800; color:var(--neon-secondary); font-size: 0.85rem; display: inline-block; margin-top: 3px;">0 kcal</span></div>
                         </div>
                     </div>
                 </div>
@@ -7498,44 +7501,16 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     }
                 }
 
-                let motivationText = "";
-                if (isAlreadyIdeal) {
-                    motivationText = `現在の継続率はほぼ完璧（理想ペース）です！ここから**さらに1日あたりたった100円**（月3,000円）の追加投資を心がけるだけで、将来の総資産は **${totalInvestGoal.toLocaleString()}円** からさらに増え、最終的に <strong style="color: ${colorPrimary}; font-size: 0.78rem;">${idealTotal.toLocaleString()}円</strong> に到達します！少額の積み増しが持つ劇的な複利の力を実感してください。`;
-                } else {
-                    motivationText = `現在、あなたの平均投資実績は ${Math.round(avgRate * 100)}% です。もし**節制の継続率を100%（毎日）まで高められれば**、将来の総資産は現在の予想額から大きく跳ね上がり、最大で <strong style="color: ${colorPrimary}; font-size: 0.78rem;">${idealTotal.toLocaleString()}円</strong> に達します！少しのがんばりが、将来の大きな資産差を生み出します。`;
-                }
-
-                // Mentally stimulating & intellectual advice generation based on states
-                let adviceParts = [];
-                
-                // 1. Action-Psychological Advice based on success rates
-                let psiText = "";
-                if (avgRate < 0.5) {
-                    psiText = "現在、脳は一時的なドーパミンの誘惑に流されやすい状態です。行動経済学における『現在バイアス』を克服するため、完璧を目指さず、まずは記録ボタンを押するだけの極小のハードルから始めましょう。";
-                } else if (avgRate >= 0.5 && avgRate < 0.8) {
-                    psiText = "習慣化が定着しつつありますが、脳が現状維持を望む『現状維持バイアス』と戦っているフェーズです。ここで投資の自己決定感を自覚することで、意志の力に頼らずに自動操縦モードへと移行できます。";
-                } else {
-                    psiText = "素晴らしい自己管理能力です。行動心理学的に『自己効力感』が極めて高く、自制そのものが快感となる報酬系が脳内に完成しています。この調子で継続しましょう。";
-                }
-
-                // 2. Compound Interest Golden Cross Advice
-                const bonusAmount = Math.max(0, totalInvestGoal - totalSavingGoal);
-                const goldenCrossText = `シミュレーションでは、複利によるボーナス効果が <strong>${bonusAmount.toLocaleString()}円</strong> 発生します。特に10年〜15年を超える長期では、資産自身が稼ぎ出す複利の増加速度が、あなたが積み立てる元本の速度を追い抜く『複利の臨界点（ゴールデンクロス）』に到達し、資産形成が爆発的に加速します。`;
-
-                // 3. Silent Loss by Inflation Advice
-                const silentLossText = "統計的には、マイルドなインフレ（年2%）が続くだけでも、10年後には現金の価値は約18%目減りし、20年後には約33%も喪失します。単なる『現金貯蓄』は、目に見えない資産の目減りを容認することになります。インフレに強い『実質資産』としての積立運用は、統計的にも合理的な自己防衛策です。";
-
-                // 4. Hobby/Desire Compound Interest Conversion
-                let rewardText = "";
-                const rewardMap = {
-                    travel: "1回の旅行での一時的な満足を、将来の『無期限の自由なバカンス』へ複利換算しています。今浮かせたお金は、将来より贅沢で心から満たされる旅へと昇華されます。",
-                    beauty: "悪習のカットは究極 of インナービューティー（抗酸化・代謝向上）をもたらします。さらに浮いたお金を投資に回すことで、資産が育つ頃には『健康と若々しさ』という最高の美容効果を同時に回収できます。",
-                    gadget: "妥協したガジェットを頻繁に買い替えるサイクルから、複利による資産形成へと脳内をアップデート。数年後の『投資の果実』だけで最新のフラッグシップ機を誇らしく手に入れる未来への知的なゲームです。",
-                    gaming: "目先のガチャや課金というデジタルデータを、現実の資産形成というリアル世界の『ステータスビルド』へ変換。複利のバフが乗り続けることで、人生というゲームの攻略難易度が劇的に下がっていきます。",
-                    gourmet: "惰性のコンビニ飯や飲み会を減らすと、味覚のディティールが劇的に回復します。浮いたお金で資産を育て、本当に価値のある記念日に『最高峰の美食』を味わう、洗練されたメリハリこそが真の贅沢です。",
-                    invest: "お金は単なる数値ではなく、『嫌な仕事を断る自由』のチケットです。目先の一時的な消費を、将来の『人生の圧倒的な主導権（自由時間）』に複利換算するプロセスを楽しんでください。"
-                };
-                rewardText = rewardMap[hobby] || rewardMap.invest;
+                const intellectualAdvices = [
+                    "「複利は宇宙最強の力である」とアインシュタインは言いました。元本を積立てて複利で運用し続けることこそが、最大の資産形成です。",
+                    "インフレはお金をただ貯めるだけでその実質価値を奪います。未来の資産価値を守るため、堅実な資産への投資こそが必須と言えます。",
+                    "投資とは、目の前の一瞬の消費を、将来にわたる持続的で巨大な自由と交換する極めて知的な意思決定プロセスです。",
+                    "悪い習慣への無駄な支出を削減することは、利回り100%の非課税投資に等しい効果を生み出し、家計の複利効果を高めます。",
+                    "経済的な自立は人生における絶対的な選択権を与えてくれます。日々の投資は、将来のあなた自身に無限の可能性を贈る行為です。",
+                    "短期的な相場変動に惑わされず、日々の節制と積立投資の規律を守る愚直さこそが、最終的に最も強固な富を築く王道です。"
+                ];
+                const adviceIndex = Math.abs(totalInvestGoal) % intellectualAdvices.length;
+                const advice = intellectualAdvices[adviceIndex];
 
                 // Build the active habits continuity list
                 let continuityItems = [];
@@ -7602,59 +7577,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             </div>
                         </div>
 
-                        <!-- 💡 もう少しがんばったら予測 -->
-                        <div style="background: rgba(${isDark ? '0, 243, 255' : '2, 132, 199'}, 0.05); border: 1px dashed rgba(${isDark ? '0, 243, 255' : '2, 132, 199'}, 0.25); border-radius: 12px; padding: 10px; margin-top: 12px; line-height: 1.45;">
-                            <div style="font-weight: 700; color: ${colorPrimary}; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.05em;">🚀 未来へのもう一歩</div>
-                            <div style="font-size: 0.72rem; color: var(--text-main); line-height: 1.45;">
-                                ${motivationText}
-                            </div>
-                        </div>
-
                         ${habitsListHtml}
 
-                        <!-- 論理的分析アドバイス (美しいカード型UI) -->
-                        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
-                            
-                            <!-- 🧠 行動心理診断 -->
-                            <div style="background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.15); border-radius: 12px; padding: 12px; text-align: left;">
-                                <div style="font-weight: 700; color: #c084fc; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    🧠 行動心理診断
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${psiText}
-                                </div>
-                            </div>
-
-                            <!-- 📈 ゴールデンクロス（複利の臨界点） -->
-                            <div style="background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px; padding: 12px; text-align: left;">
-                                <div style="font-weight: 700; color: #60a5fa; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    📈 ゴールデンクロス（複利の臨界点）
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${goldenCrossText}
-                                </div>
-                            </div>
-
-                            <!-- 📉 インフレのサイレントロス（統計） -->
-                            <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 12px; padding: 12px; text-align: left;">
-                                <div style="font-weight: 700; color: #f87171; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    📉 インフレのサイレントロス（統計）
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${silentLossText}
-                                </div>
-                            </div>
-
-                            <!-- 🎁 欲望の複利換算（趣味のご褒美） -->
-                            <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px; padding: 12px; text-align: left;">
-                                <div style="font-weight: 700; color: #34d399; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    🎁 欲望の複利換算（趣味のご褒美）
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
-                                    ${rewardText}
-                                </div>
-                            </div>
-
+                        <!-- 💡 知的投資アドバイス -->
+                        <div style="margin-top: 12px; padding: 12px; background: rgba(0, 243, 255, 0.03); border-left: 3px solid ${colorPrimary}; border-radius: 6px; font-size: 0.72rem; color: var(--text-main); line-height: 1.5; text-align: left;">
+                            <div style="font-weight: 700; color: ${colorPrimary}; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.05em;">💡 知的投資アドバイス</div>
+                            ${advice}
                         </div>
                     </div>
                 `;
