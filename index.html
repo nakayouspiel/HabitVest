@@ -6939,10 +6939,23 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const finalInvest = investData[investData.length - 1];
             const finalBonus = finalInvest - finalSaving;
 
-            // 資産タブへの表示反映 (万単位で丸めた〇〇万円形式)
+            // 資産タブへの表示反映 (万単位で丸めた〇〇万円形式、億対応)
             const formatToYenManLocal = (amount) => {
-                const man = Math.round(amount / 10000);
-                return `${man.toLocaleString()} 万円`;
+                const isNegative = amount < 0;
+                const man = Math.round(Math.abs(amount) / 10000);
+                let str = "";
+                if (man >= 10000) {
+                    const oku = Math.floor(man / 10000);
+                    const remMan = man % 10000;
+                    if (remMan === 0) {
+                        str = `${oku} 億円`;
+                    } else {
+                        str = `${oku} 億 ${remMan} 万円`;
+                    }
+                } else {
+                    str = `${man.toLocaleString()} 万円`;
+                }
+                return isNegative ? `-${str}` : str;
             };
             valSaving.innerText = formatToYenManLocal(finalSaving);
             valTotal.innerText = formatToYenManLocal(finalInvest);
@@ -7452,8 +7465,21 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 }
 
                 const formatToYenMan = (amount) => {
-                    const man = Math.round(amount / 10000);
-                    return `${man.toLocaleString()} 万円`;
+                    const isNegative = amount < 0;
+                    const man = Math.round(Math.abs(amount) / 10000);
+                    let str = "";
+                    if (man >= 10000) {
+                        const oku = Math.floor(man / 10000);
+                        const remMan = man % 10000;
+                        if (remMan === 0) {
+                            str = `${oku} 億円`;
+                        } else {
+                            str = `${oku} 億 ${remMan} 万円`;
+                        }
+                    } else {
+                        str = `${man.toLocaleString()} 万円`;
+                    }
+                    return isNegative ? `-${str}` : str;
                 };
 
                                 const ratePct = Math.round(avgRate * 100);
@@ -7748,8 +7774,24 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const bannerBadge = document.getElementById('banner-badge-text');
             const bannerLink = document.getElementById('banner-link');
 
-            const totalMan = Math.round(totalInvest / 10000);
-            const totalStr = `${totalMan.toLocaleString()} 万円`;
+            const formatToYenManLocal = (amount) => {
+                const isNegative = amount < 0;
+                const man = Math.round(Math.abs(amount) / 10000);
+                let str = "";
+                if (man >= 10000) {
+                    const oku = Math.floor(man / 10000);
+                    const remMan = man % 10000;
+                    if (remMan === 0) {
+                        str = `${oku} 億円`;
+                    } else {
+                        str = `${oku} 億 ${remMan} 万円`;
+                    }
+                } else {
+                    str = `${man.toLocaleString()} 万円`;
+                }
+                return isNegative ? `-${str}` : str;
+            };
+            const totalStr = formatToYenManLocal(totalInvest);
             const monthlyStr = monthlySaving.toLocaleString();
 
             if (monthlySaving <= 0) {
@@ -7949,7 +7991,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=118')
+                navigator.serviceWorker.register('./sw.js?v=119')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
