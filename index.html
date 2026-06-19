@@ -6970,9 +6970,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             <thead>
                                 <tr style="color: var(--text-muted); font-weight: 700;">
                                     <th style="width: 15%; padding: 10px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">期間</th>
-                                    <th style="width: 25%; padding: 10px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">貯めた額</th>
-                                    <th style="width: 32%; padding: 10px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">増えた分</th>
                                     <th style="width: 28%; padding: 10px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">総資産</th>
+                                    <th style="width: 25%; padding: 10px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">貯めた額</th>
+                                    <th style="width: 32%; padding: 10px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">増額分</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -6987,12 +6987,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         tableHtml += `
                             <tr style="border-bottom: 1px solid var(--border-glass); vertical-align: middle;">
                                 <td style="padding: 10px 2px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${labels[i]}</td>
+                                <td style="padding: 10px 2px; text-align: right; color: var(--neon-secondary); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManLocal(investData[i])}</td>
                                 <td style="padding: 10px 2px; text-align: right; color: var(--text-main); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManLocal(savingData[i])}</td>
                                 <td style="padding: 10px 2px; text-align: right; color: var(--accent-pink); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;">
                                     ${diffStr}<br>
                                     <span style="font-size: 0.62rem; color: var(--text-muted); font-weight: normal;">(${ratioStr})</span>
                                 </td>
-                                <td style="padding: 10px 2px; text-align: right; color: var(--neon-secondary); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManLocal(investData[i])}</td>
                             </tr>
                         `;
                     }
@@ -7949,7 +7949,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=116')
+                navigator.serviceWorker.register('./sw.js?v=117')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
