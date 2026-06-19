@@ -7045,11 +7045,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             updateAffiliateBanner(finalInvest, monthlySaving);
             
             if (monthlySaving <= 0) {
-                milestoneBox.style.display = 'none';
-                affiliateBanner.style.display = 'none';
+                if (milestoneBox) milestoneBox.style.display = 'none';
+                if (affiliateBanner) affiliateBanner.style.display = 'none';
             } else {
-                milestoneBox.style.display = 'flex';
-                affiliateBanner.style.display = 'flex';
+                if (milestoneBox) milestoneBox.style.display = 'flex';
+                if (affiliateBanner) affiliateBanner.style.display = 'flex';
             }
 
             updateChart(labels, savingData, investData);
