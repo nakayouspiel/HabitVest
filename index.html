@@ -1861,7 +1861,7 @@
              ========================================== -->
         <div id="tab-content-assets" class="tab-content">
             <div class="glass-card">
-                <h2 class="card-title">🔮 資産シミュレーション</h2>
+                <h2 class="card-title" id="asset-sim-title">🔮 資産シミュレーション</h2>
                 
                 <!-- 💡 シミュレーション前提の説明文 -->
                 <div style="background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 12px; padding: 12px; font-size: 0.72rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 20px; text-align: left; display: flex; align-items: flex-start; gap: 8px;">
@@ -1880,7 +1880,7 @@
                 <div class="pace-toggle-container">
                     <div id="pace-toggle-bg" class="pace-btn-sliding-bg" style="transform: translateX(100%);"></div>
                     <button type="button" id="btn-pace-ideal" class="pace-toggle-btn">理想目標 🏆</button>
-                    <button type="button" id="btn-pace-real" class="pace-toggle-btn active">現実ペース 🏃 <span id="pace-real-badge">---%</span></button>
+                    <button type="button" id="btn-pace-real" class="pace-toggle-btn active">現実ペース 🏃</button>
                 </div>
                 <div id="pace-explanation" style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-bottom: 14px; font-weight: 500; min-height: 2.8em; line-height: 1.45; padding: 0 16px;">
                     💡 理想目標: 投資達成率を100%（毎日継続）と仮定した将来予測です
@@ -1888,15 +1888,15 @@
 
                 <div class="dashboard-grid">
                     <div class="dash-card">
-                        <div class="dash-label">浮いたお金  元本 </div>
+                        <div class="dash-label">浮いたお金</div>
                         <div class="dash-val" id="val-saving">--- 円</div>
                     </div>
                     <div class="dash-card">
-                        <div class="dash-label">想定期間利回り</div>
+                        <div class="dash-label">想定利回り</div>
                         <div class="dash-val" id="val-yield-info">--- %</div>
                     </div>
                     <div class="dash-card highlight">
-                        <div class="dash-label">複利運用後の総資産</div>
+                        <div class="dash-label">複利総資産</div>
                         <div class="dash-val" id="val-total">--- 円</div>
                     </div>
                 </div>
@@ -1910,15 +1910,6 @@
                 <!-- 折れ線グラフ -->
                 <div class="chart-container">
                     <canvas id="yieldChart"></canvas>
-                </div>
-
-                <!-- 🎁 パーソナライズ・マイルストーン -->
-                <div class="milestone-box" id="milestone-box">
-                    <div class="icon" id="milestone-emoji">💡</div>
-                    <div class="milestone-content">
-                        <h4 id="milestone-title">シミュレーション結果</h4>
-                        <p id="milestone-desc">お楽しみに！</p>
-                    </div>
                 </div>
 
                 <!-- 💳 アフィリエイトオファーカード (人が思わず押したくなる仕掛け) -->
@@ -2024,35 +2015,14 @@
                 <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4;">
                     今選択・記録されている習慣の投資ペース 月換算 <span id="life-roadmap-monthly-val" style="color:var(--neon-primary); font-weight:700;">0</span>円 をこのまま継続した場合に、あなたの身体と資産に起こる素晴らしい変化の予測です。
                 </p>
-                <div class="timeline-container" style="display: flex; flex-direction: column; gap: 20px; border-left: 2px dashed var(--border-glass); padding-left: 15px; margin-left: 10px; text-align: left;">
+                <div class="timeline-container" style="display: flex; flex-direction: column; gap: 20px; text-align: left;">
                     
-                    <!-- 1日 -->
-                    <div id="rm-day-container" style="position: relative; transition: opacity 0.3s;">
-                        <!-- JSで動的に構築 -->
-                    </div>
-
-                    <!-- 1週間 -->
-                    <div id="rm-week-container" style="position: relative; transition: opacity 0.3s;">
-                        <!-- JSで動的に構築 -->
-                    </div>
-
-                    <!-- 1ヶ月 -->
-                    <div id="rm-month-container" style="position: relative; transition: opacity 0.3s;">
-                        <!-- JSで動的に構築 -->
-                    </div>
-
-                    <!-- 1年 -->
-                    <div id="rm-year-container" style="position: relative; transition: opacity 0.3s;">
-                        <!-- JSで動的に構築 -->
-                    </div>
-
                     <!-- 設定期間のゴール -->
-                    <div id="rm-goal-card" style="position: relative; border: 1px solid var(--border-glass); background: var(--bg-card); border-radius: 12px; padding: 12px; margin-left: -5px; box-shadow: var(--card-shadow); transition: background-color 0.4s ease, border-color 0.4s ease;">
-                        <div id="rm-goal-dot" style="position: absolute; left: -18px; top: 16px; width: 12px; height: 12px; border-radius: 50%; background: var(--neon-primary);"></div>
-                        <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">🗽 <span id="rm-goal-title">20年後  ゴール </span></div>
+                    <div id="rm-goal-card" style="position: relative; border: 1px solid var(--border-glass); background: var(--bg-card); border-radius: 12px; padding: 16px; box-shadow: var(--card-shadow); transition: background-color 0.4s ease, border-color 0.4s ease;">
+                        <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">🗽 <span id="rm-goal-title">20年後 ゴール</span></div>
                         <div style="font-size: 0.72rem; color: var(--text-sub); margin-top: 6px; line-height: 1.5;">
                             ただ貯めた場合: <span id="rm-goal-saving" style="font-weight: 700; color: var(--accent-pink);">0</span>円<br>
-                            <strong>積立投資 複利あり : <span id="rm-goal-invest" style="font-weight: 800; color: var(--neon-primary); font-size: 0.85rem;">0</span>円</strong><br>
+                            <strong>積立投資（複利あり）: <span id="rm-goal-invest" style="font-weight: 800; color: var(--neon-primary); font-size: 0.85rem;">0</span>円</strong><br>
                             <span style="color: var(--text-muted); display: block; margin-top: 6px;" id="rm-goal-desc">
                                 悪い習慣をやめるだけで、これほど莫大な資産が手に入ります。浮いたお金は 自分らしい自由な暮らし を実現する最高の軍資金になり、あなたの選択肢と自由を広げてくれます 🚀
                             </span>
@@ -6157,7 +6127,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const totalInvestEarned = history
                 .filter(item => item.type === 'invest')
                 .reduce((sum, item) => sum + item.amount, 0);
-            const realMonthlyInvestAverage = (totalInvestEarned / elapsedDays) * 30;
+            const realMonthlyInvestAverage = habitPrices.investMonthlyTarget * Math.min(1.0, rates.invest || 0);
 
             let monthlySaving = 0;
             if (simulationPaceMode === 'ideal') {
@@ -6956,11 +6926,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const tobaccoMonthly = tobaccoDaily * 30;
             const beerMonthly = beerDaily * 30;
 
-            // 節約（フリー入力）については過去の全履歴の合算額から1日の平均を出し、それを月額換算する
+            // 節約（フリー入力）については、目標金額に投資の達成率を乗算して月額換算する
             const totalInvestAmount = history.filter(item => item.type === 'invest').reduce((sum, item) => sum + item.amount, 0);
-            const investMonthly = (totalInvestAmount / elapsedDays) * 30;
-
             const rates = getHabitSuccessRates();
+            const investMonthly = habitPrices.investMonthlyTarget * Math.min(1.0, rates.invest || 0);
             const hasInvestHistory = (rates.invest > 0);
 
             // スイッチ表示用の実質継続率を計算してバッジに反映
@@ -7452,57 +7421,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     healthYear = "【幸福度の向上】将来への強固な安心感が得られ、うつ傾向や将来不安が統計的に30%以上減少。日常の幸福度が最大化されます！";
                 }
 
-                // 1日後
-                const rmDayContainer = document.getElementById('rm-day-container');
-                if (rmDayContainer) {
-                    rmDayContainer.style.opacity = '1';
-                    rmDayContainer.innerHTML = `
-                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorPrimary};"></div>
-                        <div style="font-size: 0.78rem; line-height: 1.5; color: ${colorTextMain};">
-                            <strong style="color: ${colorPrimary};">📅 1日後 :</strong> 累計目標 <strong>${cumDay.toLocaleString()}円</strong> (+${dailySaving.toLocaleString()}円)
-                            <span style="display: block; font-size: 0.72rem; color: ${colorTextSub}; margin-top: 2px;">🎁 ご褒美: <strong>${itemDay.title}</strong> 相当 (${itemDay.desc} ${itemDay.emoji})</span>
-                        </div>
-                    `;
-                }
 
-                // 1週間後
-                const rmWeekContainer = document.getElementById('rm-week-container');
-                if (rmWeekContainer) {
-                    rmWeekContainer.style.opacity = '1';
-                    rmWeekContainer.innerHTML = `
-                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorSecondary};"></div>
-                        <div style="font-size: 0.78rem; line-height: 1.5; color: ${colorTextMain};">
-                            <strong style="color: ${colorSecondary};">📅 1週間後 :</strong> 累計目標 <strong>${cumWeek.toLocaleString()}円</strong> (+${(dailySaving * 7).toLocaleString()}円)
-                            <span style="display: block; font-size: 0.72rem; color: ${colorTextSub}; margin-top: 2px;">🎁 ご褒美: <strong>${itemWeek.title}</strong> 相当 (${itemWeek.desc} ${itemWeek.emoji})</span>
-                        </div>
-                    `;
-                }
-
-                // 1ヶ月後
-                const rmMonthContainer = document.getElementById('rm-month-container');
-                if (rmMonthContainer) {
-                    rmMonthContainer.style.opacity = '1';
-                    rmMonthContainer.innerHTML = `
-                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorPrimary};"></div>
-                        <div style="font-size: 0.78rem; line-height: 1.5; color: ${colorTextMain};">
-                            <strong style="color: ${colorPrimary};">📅 1ヶ月後 :</strong> 累計目標 <strong>${cumMonth.toLocaleString()}円</strong> (+${monthlySaving.toLocaleString()}円)
-                            <span style="display: block; font-size: 0.72rem; color: ${colorTextSub}; margin-top: 2px;">🎁 ご褒美: <strong>${itemMonth.title}</strong> 相当 (${itemMonth.desc} ${itemMonth.emoji})</span>
-                        </div>
-                    `;
-                }
-
-                // 1年後
-                const rmYearContainer = document.getElementById('rm-year-container');
-                if (rmYearContainer) {
-                    rmYearContainer.style.opacity = '1';
-                    rmYearContainer.innerHTML = `
-                        <div style="position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${colorSecondary};"></div>
-                        <div style="font-size: 0.78rem; line-height: 1.5; color: ${colorTextMain};">
-                            <strong style="color: ${colorSecondary};">📅 1年後 :</strong> 累計目標 <strong>${cumYear.toLocaleString()}円</strong> (+${(monthlySaving * 12).toLocaleString()}円)
-                            <span style="display: block; font-size: 0.72rem; color: ${colorTextSub}; margin-top: 2px;">🎁 ご褒美: <strong>${itemYear.title}</strong> 相当 (${itemYear.desc} ${itemYear.emoji})</span>
-                        </div>
-                    `;
-                }
             }
             // 趣味に合わせた具体的なメッセージをゴールに表示
             // 当月1日〜今日までの投資実績（type === 'invest'）を合算し、投資ボタン内の当月累計数値を更新
@@ -7589,48 +7508,34 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 // Mentally stimulating & intellectual advice generation based on states
                 let adviceParts = [];
                 
-                // 1. Core intellectual investment advice (rotating based on amount)
-                const coreAdvices = [
-                    "「複利は宇宙最強の力である」とアインシュタインは言いました。元本を積立てて複利で運用し続けることこそが、最大の資産形成です。",
-                    "インフレはお金をただ貯めるだけでその実質価値を奪います。未来の資産価値を守るため、堅実な資産への投資こそが必須と言えます。",
-                    "投資とは、目の前の一瞬の消費を、将来にわたる持続的で巨大な自由と交換する極めて知的な意思決定プロセスです。",
-                    "悪い習慣への無駄な支出を削減することは、利回り100%の非課税投資に等しい効果を生み出し、家計の複利効果を高めます。",
-                    "経済的な自立は人生における絶対的な選択権を与えてくれます。日々の投資は、将来のあなた自身に無限の可能性を贈る行為です。",
-                    "短期的な相場変動に惑わされず、日々の節制と積立投資の規律を守る愚直さこそが、最終的に最も強固な富を築く王道です。"
-                ];
-                const coreIndex = Math.abs(totalInvestGoal) % coreAdvices.length;
-                adviceParts.push(coreAdvices[coreIndex]);
-
-                // 2. Mentally stimulating advice based on continuation rate
+                // 1. Action-Psychological Advice based on success rates
+                let psiText = "";
                 if (avgRate < 0.5) {
-                    adviceParts.push("精神論で悪習を断つのは困難です。意志の力に頼るのではなく、記録ボタンを押した時の達成感を脳に報酬として学習させ、まずはスモールステップで進めましょう。");
+                    psiText = "現在、脳は一時的なドーパミンの誘惑に流されやすい状態です。行動経済学における『現在バイアス』を克服するため、完璧を目指さず、まずは記録ボタンを押するだけの極小のハードルから始めましょう。";
                 } else if (avgRate >= 0.5 && avgRate < 0.8) {
-                    adviceParts.push("習慣化の折り返し地点を通過しています！脳の神経回路（前頭連合野）が『自制』の快感を覚え始めている時期です。ここで歩みを止めず、習慣を確固たるものに育てましょう。");
+                    psiText = "習慣化が定着しつつありますが、脳が現状維持を望む『現状維持バイアス』と戦っているフェーズです。ここで投資の自己決定感を自覚することで、意志の力に頼らずに自動操縦モードへと移行できます。";
                 } else {
-                    adviceParts.push("素晴らしい自己規律です！『自分の支出を完全にコントロールできている』という圧倒的な自己決定感が、日々のストレスを大幅に下げ、前向きな生産性を生み出しています。");
+                    psiText = "素晴らしい自己管理能力です。行動心理学的に『自己効力感』が極めて高く、自制そのものが快感となる報酬系が脳内に完成しています。この調子で継続しましょう。";
                 }
 
-                // 3. Hobby-based advice targeting mindset
-                const hobbyAdvices = {
-                    travel: "旅の本当の価値は、日常のルーティンから脱出して新たな知見を得ることです。日々の我慢というデイリーミッションの先に、資産が生み出す『完全な自由なバカンス』が待っています。",
-                    beauty: "タバコやお酒の節制は、お金を増やすだけでなく体内の抗酸化作用やデトックスを劇的に高めます。投資した資金が育つ頃には、健康で若々しい最高の内面美も同時に手に入っているはずです。",
-                    gadget: "妥協したガジェットを幾つも買って飽きる消費行動を卒業しましょう。日々の浮いたお金を投資に回し、数年後に『運用の成果（果実）』だけで最上級の機材を誇らしく購入する快感を。",
-                    gaming: "日々のチェックインはゲーム of クエスト攻略と同じです。敵（衝動）を倒すたびに、あなたの現実世界のステータス（資産残高）が経験値として積み上がり、人生の難易度が下がっていきます。",
-                    gourmet: "惰性の外食やコンビニ飯をやめることで、味覚が鋭くリセットされます。節制で資産を育てつつ、特別な日に行く一流の食事をかつてないほど深く官能的に楽しむメリハリこそが本物の贅沢です。",
-                    invest: "お金そのものは紙切れやデジタル数値に過ぎませんが、それは『やりたくないことを断る自由』を買う権利書です。日々の節約は、人生の主導権を自分の手に取り戻す知的ゲームなのです。"
+                // 2. Compound Interest Golden Cross Advice
+                const bonusAmount = Math.max(0, totalInvestGoal - totalSavingGoal);
+                const goldenCrossText = `シミュレーションでは、複利によるボーナス効果が <strong>${bonusAmount.toLocaleString()}円</strong> 発生します。特に10年〜15年を超える長期では、資産自身が稼ぎ出す複利の増加速度が、あなたが積み立てる元本の速度を追い抜く『複利の臨界点（ゴールデンクロス）』に到達し、資産形成が爆発的に加速します。`;
+
+                // 3. Silent Loss by Inflation Advice
+                const silentLossText = "統計的には、マイルドなインフレ（年2%）が続くだけでも、10年後には現金の価値は約18%目減りし、20年後には約33%も喪失します。単なる『現金貯蓄』は、目に見えない資産の目減りを容認することになります。インフレに強い『実質資産』としての積立運用は、統計的にも合理的な自己防衛策です。";
+
+                // 4. Hobby/Desire Compound Interest Conversion
+                let rewardText = "";
+                const rewardMap = {
+                    travel: "1回の旅行での一時的な満足を、将来の『無期限の自由なバカンス』へ複利換算しています。今浮かせたお金は、将来より贅沢で心から満たされる旅へと昇華されます。",
+                    beauty: "悪習のカットは究極 of インナービューティー（抗酸化・代謝向上）をもたらします。さらに浮いたお金を投資に回すことで、資産が育つ頃には『健康と若々しさ』という最高の美容効果を同時に回収できます。",
+                    gadget: "妥協したガジェットを頻繁に買い替えるサイクルから、複利による資産形成へと脳内をアップデート。数年後の『投資の果実』だけで最新のフラッグシップ機を誇らしく手に入れる未来への知的なゲームです。",
+                    gaming: "目先のガチャや課金というデジタルデータを、現実の資産形成というリアル世界の『ステータスビルド』へ変換。複利のバフが乗り続けることで、人生というゲームの攻略難易度が劇的に下がっていきます。",
+                    gourmet: "惰性のコンビニ飯や飲み会を減らすと、味覚のディティールが劇的に回復します。浮いたお金で資産を育て、本当に価値のある記念日に『最高峰の美食』を味わう、洗練されたメリハリこそが真の贅沢です。",
+                    invest: "お金は単なる数値ではなく、『嫌な仕事を断る自由』のチケットです。目先の一時的な消費を、将来の『人生の圧倒的な主導権（自由時間）』に複利換算するプロセスを楽しんでください。"
                 };
-                adviceParts.push(hobbyAdvices[hobby] || hobbyAdvices.invest);
-
-                // 4. Investment period based advice
-                if (years < 10) {
-                    adviceParts.push(`期間が${years}年と短めですが、初期段階こそが複利の雪だるまの芯を作る最も重要な時期です。もし余裕があれば、設定期間を少し長くしてシミュレーションしてみることをお勧めします。`);
-                } else if (years >= 10 && years < 20) {
-                    adviceParts.push(`${years}年のスパンは投資として非常に合理的な期間です。10年を越えたあたりから複利効果の二次曲線が急上昇し始め、資産が自立して自己増殖し始める楽しさを味わえます。`);
-                } else {
-                    adviceParts.push(`${years}年という超長期設定は、時間という最大のレバレッジを完璧に味方にしています。後半には複利で増えたボーナス分が積み立てた元本を遥かに凌駕する圧倒的成長を遂げるでしょう。`);
-                }
-
-                const mentalAdvice = adviceParts.join("<br><br>");
+                rewardText = rewardMap[hobby] || rewardMap.invest;
 
                 // Build the active habits continuity list
                 let continuityItems = [];
@@ -7678,8 +7583,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     `;
                 }
 
-                const dailyTipBg = isDark ? colorBgBase : '#e2e8f0';
-
                 rmGoalCard.innerHTML = `
                     <div id="rm-goal-dot" style="position: absolute; left: -18px; top: 16px; width: 12px; height: 12px; border-radius: 50%; background: ${colorPrimary}; box-shadow: ${isDark ? '0 0 10px ' + colorPrimary : 'none'};"></div>
                     
@@ -7709,11 +7612,49 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
                         ${habitsListHtml}
 
-                        <div style="margin-top: 12px; padding: 10px; background: ${dailyTipBg}; border-left: 3px solid ${colorPrimary}; border-radius: 6px; font-size: 0.7rem; color: var(--text-main); line-height: 1.45;">
-                            <div style="font-weight: 700; color: ${colorPrimary}; font-size: 0.62rem; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.05em;">💡 メンタル強化・投資分析アドバイス</div>
-                            <div style="font-size: 0.7rem; color: var(--text-main); line-height: 1.45;">
-                                ${mentalAdvice}
+                        <!-- 論理的分析アドバイス (美しいカード型UI) -->
+                        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
+                            
+                            <!-- 🧠 行動心理診断 -->
+                            <div style="background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.15); border-radius: 12px; padding: 12px; text-align: left;">
+                                <div style="font-weight: 700; color: #c084fc; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    🧠 行動心理診断
+                                </div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${psiText}
+                                </div>
                             </div>
+
+                            <!-- 📈 ゴールデンクロス（複利の臨界点） -->
+                            <div style="background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px; padding: 12px; text-align: left;">
+                                <div style="font-weight: 700; color: #60a5fa; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    📈 ゴールデンクロス（複利の臨界点）
+                                </div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${goldenCrossText}
+                                </div>
+                            </div>
+
+                            <!-- 📉 インフレのサイレントロス（統計） -->
+                            <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 12px; padding: 12px; text-align: left;">
+                                <div style="font-weight: 700; color: #f87171; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    📉 インフレのサイレントロス（統計）
+                                </div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${silentLossText}
+                                </div>
+                            </div>
+
+                            <!-- 🎁 欲望の複利換算（趣味のご褒美） -->
+                            <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px; padding: 12px; text-align: left;">
+                                <div style="font-weight: 700; color: #34d399; font-size: 0.72rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    🎁 欲望の複利換算（趣味のご褒美）
+                                </div>
+                                <div style="font-size: 0.68rem; color: var(--text-main); line-height: 1.45;">
+                                    ${rewardText}
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 `;
@@ -7721,6 +7662,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
 
         function updateMilestone(total) {
+            if (!milestoneEmoji || !milestoneTitle || !milestoneDesc) return;
             const name = profile.name || "あなた";
             const hobby = profile.hobby;
             const ageGroup = profile.age;
