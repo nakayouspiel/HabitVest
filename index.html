@@ -7467,17 +7467,17 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 adviceBody += "【継続のためのアドバイス】\\n";
                 if (ratePct >= 95) {
                     adviceBody += "理想的なペースで、ほぼ完璧に継続できています。ご自身を律する力が非常に高く、これまでの取り組みは素晴らしい成果を生み出しています。\\n";
-                    adviceBody += "もし生活に少しゆとりがあれば、1日あたりあと100円（月に3,000円）だけ上乗せしてみることをお勧めします。それだけで、将来の蓄えはさらに増え、" + years + "年後には " + formatToYenMan(idealTotal) + " にまで引き上げることができます。小さな積み重ねが、将来の暮らしをさらに豊かにする確かな力になります。\\n\\n";
+                    adviceBody += "もし生活に少しゆとりがあれば、1日あたりあと100円だけ上乗せしてみることをお勧めします。それだけで、将来の蓄えはさらに増え、" + years + "年後には " + formatToYenMan(idealTotal) + " にまで引き上げることができます。小さな積み重ねが、将来の暮らしをさらに豊かにする確かな力になります。\\n\\n";
                 } else if (ratePct >= 60) {
                     adviceBody += "順調に習慣化が進んでいます。ご自身のペースで着実に前に進んでおり、非常に良い傾向です。完璧を目指そうとすると疲れてしまうことがありますので、まずは現在のペースを無理なく維持することを心がけましょう。\\n";
-                    adviceBody += "このまま進むだけでも、将来には大きな蓄え（約 " + formatToYenMan(totalInvestGoal) + "）となってあなたを支えてくれます。\\n\\n";
+                    adviceBody += "このまま進むだけでも、将来には " + formatToYenMan(totalInvestGoal) + " の蓄えとなってあなたを支えてくれます。\\n\\n";
                 } else {
                     adviceBody += "少しペースが落ちている、またはお忙しい時期かもしれません。完璧にできなくても全く問題ありません。まずは「1日1回、アプリで記録をつける」という、最も簡単な行動に戻ってみましょう。焦らずに、ご自身のやりやすい範囲で少しずつ再開していきましょう。\\n\\n";
                 }
 
                 adviceBody += "【お金の動きと将来の意義】\\n";
                 if (bonusAmount > 0) {
-                    adviceBody += "ただ手元にお金を貯めておく場合と比べて、資産運用によって約 " + formatToYenMan(bonusAmount) + " の上乗せ（増えた額）が期待できる計画です。長期間続けるほど、貯まったお金そのものが成果を生み出す良い循環が生まれ、資産の増える速度が早くなっていきます。\\n";
+                    adviceBody += "ただ手元にお金を貯めておく場合と比べて、資産運用によって " + formatToYenMan(bonusAmount) + " の上乗せが期待できる計画です。長期間続けるほど、貯まったお金そのものが成果を生み出す良い循環が生まれ、資産の増える速度が早くなっていきます。\\n";
                 }
                 adviceBody += "現在、世の中の物価が少しずつ上がっています。ただお金を眠らせておくだけでは、お金の価値は目に見えない形で少しずつ減っていってしまいます。このように価値ある形に変えて育てていくことは、ご自身の将来を守るための賢明で確実な自己防衛策です。\\n\\n";
 
@@ -7949,7 +7949,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=117')
+                navigator.serviceWorker.register('./sw.js?v=118')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
