@@ -5306,7 +5306,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 onboardingModal.classList.add('active');
                 // 初期化状態で開くために、フォームの内容を真っさらにする
                 obName.value = "";
-                obHobby.value = "";
+                obHobby.value = "invest";
                 obAge.value = "";
                 obGender.value = "";
                 if (obStartDate) {
@@ -6566,7 +6566,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=120')
+                navigator.serviceWorker.register('./sw.js?v=123')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
