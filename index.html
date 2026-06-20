@@ -6,6 +6,17 @@
     <title>HabitVest | 習慣投資複利シミュレータ</title>
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1468121955784200" crossorigin="anonymous"></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApp",
+      "name": "HabitVest",
+      "alternateName": "習慣投資複利シミュレータ",
+      "description": "タバコやお酒などのやめたい習慣にかかっている日々のコストを投資に回したと仮定し、その資金が複利運用によって将来どのように資産形成につながるかを視覚的にシミュレーションするツール（PWA）。",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All"
+    }
+    </script>
     <!-- Google Fonts: Outfit & Noto Sans JP -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,6 +84,18 @@
             --accent-pink: #ff007f;
             --btn-primary-bg: #00f3ff;
             --btn-primary-text: #060913;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
 
         * {
@@ -1740,6 +1763,14 @@
     </style>
 </head>
 <body>
+    <!-- 👁️ 検索エンジン・クローラー向け詳細解説（視覚的には非表示） -->
+    <div class="sr-only">
+        <h2>HabitVest（ハビット・ベスト）- 習慣投資複利シミュレータ</h2>
+        <p>このアプリケーションは、タバコや酒、ギャンブルなど、削減・節制したい日々の習慣コスト（単価）を資産運用に回したと仮定し、その原資が将来的に複利の効果によってどのように増えていくかを視覚的に予測・シミュレーションできるツール（PWA）です。</p>
+        <p>ユーザーは名前、年代、運用期間、想定年間利回り、そして節制したい習慣のチェックイン設定を行うことで、日次・月次・年次での資産推移データや複利効果のグラフを動的に生成・確認することができます。日々の無駄な支出を「未来への自己投資」へとシフトさせ、新NISAなどを活用した中長期の資産運用のモチベーションを高めることを目的としています。</p>
+        <p>また、本アプリはPWA（Progressive Web App）に対応しており、スマートフォンやPCのホーム画面に追加してスタンドアロンのネイティブアプリ感覚で利用可能です。利用規約、免責事項、プライバシーポリシー（Cookieの取り扱いおよび広告配信について）に関しても、フッターのリンクよりいつでも確認できる健全な設計となっています。</p>
+    </div>
+
     <!-- 🎬 アプリ起動スプラッシュ画面 -->
     <div id="app-splash-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #060913; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
         <div style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;">
@@ -6566,7 +6597,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=123')
+                navigator.serviceWorker.register('./sw.js?v=124')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
