@@ -5574,11 +5574,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const finalInvest = investData[investData.length - 1];
             const finalBonus = finalInvest - finalSaving;
 
-            // 資産タブへの表示反映 (万単位で丸めた〇〇万円形式)
-            const formatToYenManLocal = (amount) => {
-                const man = Math.round(amount / 10000);
-                return `${man.toLocaleString()} 万円`;
-            };
+            // 資産タブへの表示反映 (万単位で丸めた〇〇万円形式、億対応)
+            const formatToYenManLocal = formatToYenMan;
             valSaving.innerText = formatToYenManLocal(finalSaving);
             valTotal.innerText = formatToYenManLocal(finalInvest);
             valBonus.innerText = formatToYenManLocal(finalBonus);
@@ -5643,6 +5640,25 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             updateChart(labels, savingData, investData);
 
 
+        }
+
+        function formatToYenMan(amount) {
+            const isNegative = amount < 0;
+            const absAmount = Math.abs(amount);
+            const man = Math.round(absAmount / 10000);
+            let str = "";
+            if (man >= 10000) {
+                const oku = Math.floor(man / 10000);
+                const remMan = man % 10000;
+                if (remMan === 0) {
+                    str = `${oku} 億円`;
+                } else {
+                    str = `${oku} 億 ${remMan.toLocaleString()} 万円`;
+                }
+            } else {
+                str = `${man.toLocaleString()} 万円`;
+            }
+            return isNegative ? `-${str}` : str;
         }
 
         function floorTo100Jpy(num) {
@@ -6241,8 +6257,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     `;
                 }
 
-                const savingGoalMan = Math.round(totalSavingGoal / 10000);
-                const investGoalMan = Math.round(totalInvestGoal / 10000);
+                const savingGoalStr = formatToYenMan(totalSavingGoal);
+                const investGoalStr = formatToYenMan(totalInvestGoal);
 
                 rmGoalCard.innerHTML = `
                     <div id="rm-goal-dot" style="position: absolute; left: -18px; top: 16px; width: 12px; height: 12px; border-radius: 50%; background: ${colorPrimary}; box-shadow: ${isDark ? '0 0 10px ' + colorPrimary : 'none'};"></div>
@@ -6255,11 +6271,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         <div style="background: rgba(0,0,0,0.01); border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; margin-bottom: 12px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                                 <span>手元に貯めた場合:</span>
-                                <span style="font-weight: 700; color: var(--accent-pink);">${savingGoalMan.toLocaleString()} 万円</span>
+                                <span style="font-weight: 700; color: var(--accent-pink);">${savingGoalStr}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 0.85rem; color: var(--text-main);">
                                 <span>資産運用した場合:</span>
-                                <span style="color: ${colorPrimary}; text-shadow: ${isDark ? '0 0 8px ' + colorPrimary + '40' : 'none'};">${investGoalMan.toLocaleString()} 万円</span>
+                                <span style="color: ${colorPrimary}; text-shadow: ${isDark ? '0 0 8px ' + colorPrimary + '40' : 'none'};">${investGoalStr}</span>
                             </div>
                         </div>
 
@@ -6396,8 +6412,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const bannerBadge = document.getElementById('banner-badge-text');
             const bannerLink = document.getElementById('banner-link');
 
-            const totalMan = Math.round(totalInvest / 10000);
-            const totalStr = `${totalMan.toLocaleString()} 万円`;
+            const totalStr = formatToYenMan(totalInvest);
             const monthlyStr = monthlySaving.toLocaleString();
 
             if (monthlySaving <= 0) {
@@ -6597,7 +6612,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=124')
+                navigator.serviceWorker.register('./sw.js?v=125')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
