@@ -2305,10 +2305,10 @@
     <!-- 💰 投資金額選択モーダル -->
     <div id="free-saving-modal" class="onboarding-overlay" style="display: none; align-items: center; justify-content: center; z-index: 1010; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
         <div class="glass-card" style="width: 100%; max-width: 320px; text-align: center; padding: 24px; position: relative;">
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <h3 id="free-saving-modal-title" style="font-size: 1.1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 💰 いくら未来へ投資した？
             </h3>
-            <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 16px;">
+            <p id="free-saving-modal-desc" style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 16px;">
                 1,000円単位で自由に今回の投資額を入力できます。
             </p>
             <div class="input-box" style="justify-content: center; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
@@ -4643,16 +4643,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     quantity = habitPrices.beerCount;
                 
                 } else if (type === 'invest') {
-                    const inputAmount = window.prompt(`${targetDateStr} の投資金額を入力してください（円）:`, Math.round(habitPrices.investMonthlyTarget / 30).toString());
-                    if (inputAmount === null) return; // キャンセル時は追加処理を中断
-                    const parsed = parseInt(inputAmount.replace(/,/g, ''), 10);
-                    if (isNaN(parsed) || parsed <= 0) {
-                        alert("有効な正の数値を入力してください。");
-                        return;
-                    }
-                    amount = floorTo100Jpy(parsed);
-                    label = "未来へ投資 💰";
-                    quantity = 1;
+                    openFreeSavingModal(targetDateStr);
+                    return;
                 }
 
                 const item = {
@@ -5051,10 +5043,28 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         const freeSavingConfirm = document.getElementById('free-saving-confirm');
 
         let tempFreeSavingAmount = 5000; // 初期値 5,000円
+        let activeFreeSavingDate = null; // null means "today"
 
-        function openFreeSavingModal() {
+        function openFreeSavingModal(targetDateStr = null) {
+            activeFreeSavingDate = targetDateStr;
             tempFreeSavingAmount = Math.max(1000, floorTo100Jpy(Math.round(habitPrices.investMonthlyTarget / 30)));
             updateFreeSavingModalDisplay();
+
+            const modalTitle = document.getElementById('free-saving-modal-title');
+            const modalDesc = document.getElementById('free-saving-modal-desc');
+            if (modalTitle) {
+                if (targetDateStr) {
+                    const parts = targetDateStr.split('/');
+                    const dateDisplay = parts.length === 3 ? `${parts[1]}/${parts[2]}` : targetDateStr;
+                    modalTitle.innerHTML = `💰 ${dateDisplay} いくら投資した？`;
+                } else {
+                    modalTitle.innerHTML = `💰 いくら未来へ投資した？`;
+                }
+            }
+            if (modalDesc) {
+                modalDesc.innerText = targetDateStr ? `この日の投資額を入力できます。` : `1,000円単位で自由に今回の投資額を入力できます。`;
+            }
+
             if (freeSavingModal) {
                 freeSavingModal.style.display = 'flex';
                 freeSavingModal.offsetHeight; // リフローを強制してアニメーションを適用
@@ -5122,7 +5132,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 setTimeout(() => { isSavingConfirming = false; }, 500);
 
                 // 節約は今日何回でも追加できるようにする
-                addHistoryItem('invest', tempFreeSavingAmount);
+                addHistoryItem('invest', tempFreeSavingAmount, activeFreeSavingDate);
                 closeFreeSavingModal();
                 
                 // 計算と画面表示の更新
@@ -5174,8 +5184,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         });
 
         // 履歴に項目を追加
-        function addHistoryItem(type, customAmount) {
-            const dateStr = getTodayStr();
+        function addHistoryItem(type, customAmount, targetDateStr = null) {
+            const dateStr = targetDateStr || getTodayStr();
             let amount = 0;
             let label = "";
             let quantity = 1;
@@ -5738,6 +5748,36 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return isNegative ? `-${str}` : str;
         }
 
+        function formatToYenJapaneseUnits(amount) {
+            const isNegative = amount < 0;
+            const absAmount = Math.abs(amount);
+            let str = "";
+            
+            if (absAmount >= 100000000) {
+                // 1億円以上: 1万円単位で四捨五入して表示 (千単位は端折る)
+                const rounded = Math.round(absAmount / 10000) * 10000;
+                const oku = Math.floor(rounded / 100000000);
+                const man = Math.floor((rounded % 100000000) / 10000);
+                str = (man === 0) ? `${oku}億円` : `${oku}億${man}万円`;
+            } else if (absAmount >= 10000) {
+                // 1万円以上1億円未満: 1000円単位で四捨五入して表示 (万・千)
+                const rounded = Math.round(absAmount / 1000) * 1000;
+                const man = Math.floor(rounded / 10000);
+                const sen = Math.floor((rounded % 10000) / 1000);
+                str = (sen === 0) ? `${man}万円` : `${man}万${sen}千円`;
+            } else if (absAmount >= 1000) {
+                // 1000円以上1万円未満: 1000円単位で四捨五入して表示 (千)
+                const rounded = Math.round(absAmount / 1000) * 1000;
+                const sen = Math.floor(rounded / 1000);
+                str = `${sen}千円`;
+            } else {
+                // 1000円未満: 通常通り円表示
+                str = `${absAmount}円`;
+            }
+            
+            return isNegative ? `-${str}` : str;
+        }
+
         function floorTo100Jpy(num) {
             // 10円単位の設定が反映されるように 10円単位での切り捨て に修正しました
             return Math.floor(num / 10) * 10;
@@ -5844,7 +5884,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // 実績の描画
             if (lifeStatsDays) lifeStatsDays.innerText = `${totalStatsDays} 日`;
             const initialInvestment = parseInt(simulationSettings.initialInvestment || 0, 10);
-            if (lifeStatsMoney) lifeStatsMoney.innerText = `${(totalEarned + initialInvestment).toLocaleString()} 円`;
+            if (lifeStatsMoney) lifeStatsMoney.innerText = formatToYenJapaneseUnits(totalEarned + initialInvestment);
 
             // タバコ実績の表示
             if (statsTobaccoCard) {
