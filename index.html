@@ -1193,7 +1193,7 @@
             background: var(--bg-input);
             border: 2px solid var(--border-input);
             border-radius: 18px;
-            padding: 16px 12px;
+            padding: 10px 12px;
             color: var(--text-main);
             font-family: var(--font-ui);
             cursor: pointer;
@@ -1202,7 +1202,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 4px;
             box-shadow: var(--card-shadow);
             position: relative;
             overflow: hidden;
@@ -1251,7 +1251,7 @@
             border-color: rgba(255, 255, 255, 0.1);
         }
         .checkin-btn .emoji {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             transition: transform 0.2s;
         }
         .checkin-btn .label {
@@ -1832,10 +1832,10 @@
              ========================================== -->
         <div id="tab-content-habits" class="tab-content active">
             <!-- 💸 本日浮いたお金 -->
-            <div class="saving-today-card" style="display: flex; justify-content: center; align-items: center; text-align: center; padding: 16px 20px; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 20px; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+            <div class="saving-today-card" style="display: flex; justify-content: center; align-items: center; text-align: center; padding: 10px 16px; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 20px; box-shadow: var(--shadow-sm); margin-bottom: 12px;">
                 <div>
                     <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">本日の投資実績（日次）</div>
-                    <div class="saving-today-val" id="val-saving-today" style="font-size: 1.8rem; font-weight: 800; color: var(--neon-secondary); margin-top: 4px;">0 円</div>
+                    <div class="saving-today-val" id="val-saving-today" style="font-size: 1.5rem; font-weight: 800; color: var(--neon-secondary); margin-top: 2px;">0 円</div>
                 </div>
             </div>
 
@@ -1850,14 +1850,14 @@
                     </button>
                     <button class="checkin-btn daily" id="checkin-btn-beer" data-habit="beer">
                         <div class="status-badge-area"></div>
-                        <span class="emoji" style="position: relative; display: inline-flex; justify-content: center; align-items: center; width: 1.8rem; height: 1.8rem; margin: 0 auto 6px auto;">
-                            <span style="font-size: 1.8rem; line-height: 1;">🍺</span>
-                            <span style="position: absolute; font-size: 1.8rem; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; line-height: 1;">🚫</span>
+                        <span class="emoji" style="position: relative; display: inline-flex; justify-content: center; align-items: center; width: 1.4rem; height: 1.4rem; margin: 0 auto 2px auto;">
+                            <span style="font-size: 1.4rem; line-height: 1;">🍺</span>
+                            <span style="position: absolute; font-size: 1.4rem; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; line-height: 1;">🚫</span>
                         </span>
                         <span class="label">お酒</span>
                         <span class="price-badge" id="checkin-badge-beer">250円</span>
                     </button>
-                    <button class="checkin-btn daily" id="checkin-btn-invest" data-habit="invest" style="grid-column: span 2; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 14px 10px;">
+                    <button class="checkin-btn daily" id="checkin-btn-invest" data-habit="invest" style="grid-column: span 2; display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 10px 10px;">
                         <div class="status-badge-area"></div>
                         <!-- 3層構造: メインラベル、目標・日次目安[薄字]、当月累計投資実績[ネオンカラー強調] -->
                         <span class="label" style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 4px;">未来への投資</span>
@@ -1870,7 +1870,7 @@
                 </div>
                 <div style="margin-top: 12px; font-size: 0.68rem; color: var(--text-sub); line-height: 1.5; text-align: left; display: flex; align-items: flex-start; gap: 4px; border-top: 1px dashed var(--border-glass); padding-top: 10px;">
                     <span style="font-size: 0.8rem; line-height: 1;">💡</span>
-                    <span><strong>【シミュレーション計算について】</strong><br>「🎯設定中」の習慣のみ、ライフや資産将来予測の計算に自動反映されます。設定画面のチェックのON/OFFで対象を切り替えることができます。</span>
+                    <span><strong>【シミュレーション計算について】</strong><br>🎯設定中の習慣のみ、ライフや資産将来予測の計算に自動反映されます。設定画面のチェックのON/OFFで対象を切り替えることができます。</span>
                 </div>
             </div>
 
@@ -1898,16 +1898,6 @@
         <div id="tab-content-assets" class="tab-content">
             <div class="glass-card">
                 <h2 class="card-title" id="asset-sim-title">🔮 資産シミュレーション</h2>
-                
-                <!-- 💡 シミュレーション前提の説明文 -->
-                <div style="background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 12px; padding: 12px; font-size: 0.72rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 20px; text-align: left; display: flex; align-items: flex-start; gap: 8px;">
-                    <span style="font-size: 1rem;">💡</span>
-                    <div>
-                        <strong>シミュレーションの前提：</strong><br>
-                        この将来予測は、<strong>現在のチェックイン実績の習慣を今後も毎日・毎月継続し、</strong>浮いたお金を想定の利回りで投資に回し続けた場合を示しています。<br>
-                        初日の記録だけでも このまま毎日続けたら将来どうなるか の成果がひと目でわかるようになっています。
-                    </div>
-                </div>
                 
                 <!-- 🔄 ペース切り替えトグル (理想 vs 現実) -->
                 <div style="font-size: 0.68rem; font-weight: 700; color: var(--text-sub); text-align: center; margin-bottom: 6px; letter-spacing: 0.3px;">
@@ -1956,6 +1946,16 @@
                     </button>
                     <div id="asset-yearly-table-container" style="padding: 0 16px 12px 16px; overflow-x: hidden; overflow-y: auto; max-height: 280px; display: none; border-top: 1px solid var(--border-glass);">
                         <!-- JSで動的にテーブルを挿入 -->
+                    </div>
+                </div>
+
+                <!-- 💡 シミュレーション前提の説明文 -->
+                <div style="background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 12px; padding: 12px; font-size: 0.72rem; line-height: 1.5; color: var(--text-sub); margin-top: 16px; margin-bottom: 20px; text-align: left; display: flex; align-items: flex-start; gap: 8px;">
+                    <span style="font-size: 1rem;">💡</span>
+                    <div>
+                        <strong>シミュレーションの前提：</strong><br>
+                        この将来予測は、<strong>現在のチェックイン実績の習慣を今後も毎日・毎月継続し、</strong>浮いたお金を想定の利回りで投資に回し続けた場合を示しています。<br>
+                        初日の記録だけでも このまま毎日続けたら将来どうなるか の成果がひと目でわかるようになっています。
                     </div>
                 </div>
 
@@ -5843,7 +5843,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             // 実績の描画
             if (lifeStatsDays) lifeStatsDays.innerText = `${totalStatsDays} 日`;
-            if (lifeStatsMoney) lifeStatsMoney.innerText = `${totalEarned.toLocaleString()} 円`;
+            const initialInvestment = parseInt(simulationSettings.initialInvestment || 0, 10);
+            if (lifeStatsMoney) lifeStatsMoney.innerText = `${(totalEarned + initialInvestment).toLocaleString()} 円`;
 
             // タバコ実績の表示
             if (statsTobaccoCard) {
@@ -6007,8 +6008,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const monthlyRate = annualYield / 12;
             const months = years * 12;
             
-            // 現在の累計実績 (totalEarned) を初期元本として将来を複利計算
-            const P = totalEarned;
+            // 現在の累計実績 (totalEarned) と初期投資額を初期元本として将来を複利計算
+            const initialInvestment = parseInt(simulationSettings.initialInvestment || 0, 10);
+            const P = totalEarned + initialInvestment;
             const PMT = monthlySaving;
             const r = monthlyRate;
             const n = months;
