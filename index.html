@@ -1104,9 +1104,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(16, 185, 129, 0.25) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1772,15 +1772,15 @@
     </div>
 
     <!-- 🎬 アプリ起動スプラッシュ画面 -->
-    <div id="app-splash-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #060913; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
+    <div id="app-splash-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0ea5e9 0%, #10b981 50%, #f59e0b 100%); z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
         <div style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;">
-            <div style="font-size: 3.2rem; filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.45)); animation: logo-pulse 2s infinite ease-in-out;">🌱</div>
-            <h1 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #00f3ff 0%, #ff007f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; letter-spacing: 0.5px; line-height: 1.2;">HabitVest</h1>
-            <p style="font-size: 0.7rem; color: #94a3b8; margin: 0; opacity: 0.8; font-weight: 500;">習慣投資複利シミュレータ</p>
+            <div style="font-size: 3.5rem; filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15)); animation: logo-pulse 2s infinite ease-in-out;">🌱</div>
+            <h1 style="font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 900; color: #ffffff; text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); margin: 0; letter-spacing: 0.5px; line-height: 1.2;">HabitVest</h1>
+            <p style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.95); margin: 0; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); font-weight: 700;">習慣投資複利シミュレータ</p>
             
             <!-- スリークローダー -->
-            <div style="width: 110px; height: 3px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; margin-top: 10px; position: relative;">
-                <div style="position: absolute; height: 100%; width: 40%; background: linear-gradient(90deg, #00f3ff, #ff007f); border-radius: 3px; animation: loading-slide 1.4s infinite ease-in-out;"></div>
+            <div style="width: 120px; height: 4px; background: rgba(255, 255, 255, 0.25); border-radius: 4px; overflow: hidden; margin-top: 12px; position: relative; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
+                <div style="position: absolute; height: 100%; width: 40%; background: #ffffff; border-radius: 4px; animation: loading-slide 1.4s infinite ease-in-out;"></div>
             </div>
         </div>
     </div>
@@ -2676,20 +2676,6 @@ const settingsModal = document.getElementById('settings-modal');
 
         // 🆕 オンボーディング用 DOM 要素
         const onboardingModal = document.getElementById('onboarding-modal');
-        // オンボーディングUIは一問一答形式に最適化されました。
-        const obName = { value: "" };
-        const obHobby = { value: "invest" };
-        const obAge = { value: "30" };
-        const obGender = { value: "male" };
-        const obStartDate = { value: "" };
-        const obChkTobacco = { checked: false };
-        const obChkBeer = { checked: false };
-        const obChkInvest = { checked: true };
-        const onboardNext1 = { addEventListener: () => {} };
-        const onboardNext2 = { addEventListener: () => {} };
-        const onboardFinish = { addEventListener: () => {} };
-        const onboardBack2 = { addEventListener: () => {} };
-        const onboardBack3 = { addEventListener: () => {} };
 
         // --- 状態変数 ---
         let simulationPaceMode = 'real'; // 'ideal' or 'real'
@@ -4786,53 +4772,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
         setupSettingsSliders();
 
-        // 🚭 オンボーディングのスライダー連動
-        function setupOnboardSliders() {
-            obTobaccoPackPrice.addEventListener('input', () => {
-                obTobaccoPriceBadge.innerText = `${obTobaccoPackPrice.value}円`;
-            });
-            obBeerUnitPrice.addEventListener('input', () => {
-                obBeerPriceBadge.innerText = `${obBeerUnitPrice.value}円`;
-            });
-
-            obInvestMonthlyTarget.addEventListener('input', () => {
-                obInvestMonthlyTargetBadge.innerText = `${parseInt(obInvestMonthlyTarget.value).toLocaleString()}円`;
-            });
-            obSliderYield.addEventListener('input', () => {
-                obYieldBadge.innerText = `${obSliderYield.value}%`;
-                if (obYieldAdvice) obYieldAdvice.innerText = getYieldAdvice(obSliderYield.value);
-            });
-            obSliderYears.addEventListener('input', () => {
-                obYearsBadge.innerText = `${obSliderYears.value}年`;
-            });
-            obSliderInitialInvestment.addEventListener('input', () => {
-                obInitialInvestmentBadge.innerText = `${parseInt(obSliderInitialInvestment.value || 0).toLocaleString()}円`;
-            });
-
-            // 初期アドバイス設定
-            if (obYieldAdvice) obYieldAdvice.innerText = getYieldAdvice(obSliderYield.value);
-
-            // チェックボックス連動でスライダー (入力エリア・ボタン) をグレーアウト
-            const toggleRange = (chk, range) => {
-                range.disabled = !chk.checked;
-                const container = range.closest('.input-box');
-                if (container) {
-                    container.style.opacity = chk.checked ? "1" : "0.4";
-                    container.querySelectorAll('button').forEach(btn => {
-                        btn.disabled = !chk.checked;
-                        btn.style.pointerEvents = chk.checked ? "auto" : "none";
-                    });
-                } else {
-                    range.style.opacity = chk.checked ? "1" : "0.4";
-                }
-            };
-            obChkTobacco.addEventListener('change', () => toggleRange(obChkTobacco, obTobaccoPackPrice));
-            obChkBeer.addEventListener('change', () => toggleRange(obChkBeer, obBeerUnitPrice));
-
-            obChkInvest.addEventListener('change', () => toggleRange(obChkInvest, obInvestMonthlyTarget));
-        }
-        setupOnboardSliders();
-
         // 🆕 オンボーディングステップ制御
         // 🆕 オンボーディング用の一時的な状態
         let onboardState = {
@@ -5444,37 +5383,43 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             } else {
                 // 未オンボーディングなら、初期化状態でオンボーディングモーダルを表示
                 onboardingModal.classList.add('active');
-                // 初期化状態で開くために、フォームの内容を真っさらにする
-                obName.value = "";
-                obHobby.value = "invest";
-                obAge.value = "";
-                obGender.value = "";
-                if (obStartDate) {
-                    obStartDate.value = formatToInputDate(getTodayStr());
-                }
                 
-                // 利回りと期間の初期値 (8%, 20年)
-                obSliderYield.value = 8.0;
-                obYieldBadge.innerText = "8.0%";
-                if (obYieldAdvice) obYieldAdvice.innerText = getYieldAdvice(8.0);
-                obSliderYears.value = 20;
-                obYearsBadge.innerText = "20年";
-                obSliderInitialInvestment.value = 0;
-                obInitialInvestmentBadge.innerText = "0円";
+                // オンボーディング用の一時状態を初期化
+                onboardState = {
+                    currentStep: 0,
+                    trackTobacco: false,
+                    trackBeer: false,
+                    trackInvest: false,
+                    name: "ゲスト",
+                    age: "30",
+                    gender: "male",
+                    initialInvestment: 0,
+                    yield: 5.0,
+                    years: 20
+                };
 
-                obChkTobacco.checked = true;
-                obChkBeer.checked = false;
+                // すべてのパネルを隠し、ステップ0を表示する
+                document.querySelectorAll('.step-pane').forEach((pane, idx) => {
+                    if (idx === 0) {
+                        pane.style.display = 'block';
+                        pane.classList.add('active');
+                    } else {
+                        pane.style.display = 'none';
+                        pane.classList.remove('active');
+                    }
+                });
 
-                obChkInvest.checked = false;
-
-                // スライダー有効・無効スタイル初期化
-                obTobaccoPackPrice.disabled = false;
-                obTobaccoPackPrice.style.opacity = "1";
-                obBeerUnitPrice.disabled = true;
-                obBeerUnitPrice.style.opacity = "0.4";
-
-                obInvestMonthlyTarget.disabled = true;
-                obInvestMonthlyTarget.style.opacity = "0.4";
+                // インプット要素のクリア
+                const nameInput = document.getElementById('ob-profile-name');
+                if (nameInput) nameInput.value = "";
+                const initialInput = document.getElementById('ob-initial-investment-val');
+                if (initialInput) initialInput.value = "0";
+                const initialWrapper = document.getElementById('ob-initial-input-wrapper');
+                if (initialWrapper) initialWrapper.style.display = 'none';
+                const yearsInput = document.getElementById('ob-years-val');
+                if (yearsInput) yearsInput.value = "20";
+                const yearsWrapper = document.getElementById('ob-years-input-wrapper');
+                if (yearsWrapper) yearsWrapper.style.display = 'none';
             }
 
             renderHistoryList();
@@ -6850,7 +6795,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=134')
+                navigator.serviceWorker.register('./sw.js?v=135')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
