@@ -1932,7 +1932,7 @@
                         <div class="dash-val" id="val-yield-info">--- %</div>
                     </div>
                     <div class="dash-card highlight">
-                        <div class="dash-label">複利総資産</div>
+                        <div class="dash-label" id="label-total-assets">未来の資産</div>
                         <div class="dash-val" id="val-total">--- 円</div>
                     </div>
                 </div>
@@ -2246,6 +2246,20 @@
                         <div id="yield-advice" style="font-size: 0.72rem; margin-top: 6px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); line-height: 1.4; color: var(--text-muted); text-align: left; min-height: 40px;"></div>
                     </div>
 
+                    <!-- 💰 初期投資額 -->
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="slider-initial-investment">初期投資額</label>
+                            <span class="val-badge" id="initial-investment-badge">0円</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="slider-initial-investment">-</button>
+                            <input type="number" id="slider-initial-investment" min="0" max="99999999" step="100000" value="0">
+                            <button type="button" class="spin-btn inc-btn" data-target="slider-initial-investment">+</button>
+                            <span>円</span>
+                        </div>
+                    </div>
+
                     <!-- ⏳ 期間 -->
                     <div class="form-group">
                         <div class="label-wrapper">
@@ -2299,9 +2313,9 @@
             </p>
             <div class="input-box" style="justify-content: center; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
                 <button type="button" class="spin-btn" id="free-saving-dec" style="width: 44px; height: 44px; font-size: 1.4rem; border-radius: 50%;">-</button>
-                <div style="display: inline-flex; align-items: baseline; justify-content: center;">
-                    <span id="free-saving-val" style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); font-family: var(--font-ui);">5,000</span>
-                    <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-sub); margin-left: 4px;">円</span>
+                <div style="display: inline-flex; align-items: center; justify-content: center;">
+                    <input type="number" id="free-saving-val" style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); font-family: var(--font-ui); background: transparent; border: none; border-bottom: 2px solid var(--border-glass); text-align: center; width: 120px; outline: none; margin-right: 4px;" value="5000" min="0" step="1000">
+                    <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-sub);">円</span>
                 </div>
                 <button type="button" class="spin-btn" id="free-saving-inc" style="width: 44px; height: 44px; font-size: 1.4rem; border-radius: 50%;">+</button>
             </div>
@@ -2447,6 +2461,20 @@
                     投資によって浮いたお金を投資に回した場合の利回りと、何年間シミュレーションするか設定しましょう。
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
+                    <!-- 💰 初期投資額 -->
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="ob-initial-investment">初期投資額</label>
+                            <span class="val-badge" id="ob-initial-investment-badge">0円</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="ob-initial-investment">-</button>
+                            <input type="number" id="ob-initial-investment" min="0" max="99999999" step="100000" value="0">
+                            <button type="button" class="spin-btn inc-btn" data-target="ob-initial-investment">+</button>
+                            <span>円</span>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <div class="label-wrapper">
                             <label for="ob-slider-yield">期待利回り  年利 </label>
@@ -2627,6 +2655,8 @@ const settingsModal = document.getElementById('settings-modal');
         const yieldAdvice = document.getElementById('yield-advice'); // 設定モードルのアドバイス
         const sliderYears = document.getElementById('slider-years');
         const yearsBadge = document.getElementById('years-badge');
+        const sliderInitialInvestment = document.getElementById('slider-initial-investment');
+        const initialInvestmentBadge = document.getElementById('initial-investment-badge');
 
         // タブ2 資産 用表示
         const valSaving = document.getElementById('val-saving');
@@ -2681,6 +2711,8 @@ const settingsModal = document.getElementById('settings-modal');
         const obYieldAdvice = document.getElementById('ob-yield-advice'); // オンボーディングのアドバイス
         const obSliderYears = document.getElementById('ob-slider-years');
         const obYearsBadge = document.getElementById('ob-years-badge');
+        const obSliderInitialInvestment = document.getElementById('ob-initial-investment');
+        const obInitialInvestmentBadge = document.getElementById('ob-initial-investment-badge');
 
         const onboardNext1 = document.getElementById('onboard-next-1');
         const onboardNext2 = document.getElementById('onboard-next-2');
@@ -2720,7 +2752,8 @@ const settingsModal = document.getElementById('settings-modal');
 
         let simulationSettings = {
             yield: 8.0,
-            years: 20
+            years: 20,
+            initialInvestment: 0
         };
 
         let history = []; // 過去の投資履歴: [{ id, date, type, label, amount }]
@@ -2962,6 +2995,7 @@ const settingsModal = document.getElementById('settings-modal');
 
             simulationSettings.yield = validateAndParse(sliderYield, 8.0, true);
             simulationSettings.years = validateAndParse(sliderYears, 20);
+            simulationSettings.initialInvestment = validateAndParse(sliderInitialInvestment, 0);
 
             // チェックインボタンのバッジテキストを更新
             updateCheckinBadges();
@@ -4773,6 +4807,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             sliderYears.addEventListener('input', () => {
                 yearsBadge.innerText = `${sliderYears.value}年`;
             });
+            sliderInitialInvestment.addEventListener('input', () => {
+                initialInvestmentBadge.innerText = `${parseInt(sliderInitialInvestment.value || 0).toLocaleString()}円`;
+            });
 
             // 初期アドバイス設定
             if (yieldAdvice) yieldAdvice.innerText = getYieldAdvice(sliderYield.value);
@@ -4797,6 +4834,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             });
             obSliderYears.addEventListener('input', () => {
                 obYearsBadge.innerText = `${obSliderYears.value}年`;
+            });
+            obSliderInitialInvestment.addEventListener('input', () => {
+                obInitialInvestmentBadge.innerText = `${parseInt(obSliderInitialInvestment.value || 0).toLocaleString()}円`;
             });
 
             // 初期アドバイス設定
@@ -4900,7 +4940,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             simulationSettings = {
                 yield: validateAndParse(obSliderYield, 8.0, true),
-                years: validateAndParse(obSliderYears, 20)
+                years: validateAndParse(obSliderYears, 20),
+                initialInvestment: validateAndParse(obSliderInitialInvestment, 0)
             };
 
             // 習慣チェックインの初期値
@@ -4970,6 +5011,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             if (yieldAdvice) yieldAdvice.innerText = getYieldAdvice(simulationSettings.yield); // 設定モーダルの初期アドバイス
             sliderYears.value = simulationSettings.years;
             yearsBadge.innerText = `${simulationSettings.years}年`;
+            if (sliderInitialInvestment) {
+                sliderInitialInvestment.value = simulationSettings.initialInvestment || 0;
+            }
+            if (initialInvestmentBadge) {
+                initialInvestmentBadge.innerText = `${parseInt(simulationSettings.initialInvestment || 0).toLocaleString()}円`;
+            }
 
             updateCheckinBadges();
         }
@@ -5028,8 +5075,21 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         function updateFreeSavingModalDisplay() {
             if (freeSavingVal) {
-                freeSavingVal.innerText = tempFreeSavingAmount.toLocaleString();
+                freeSavingVal.value = tempFreeSavingAmount;
             }
+        }
+
+        if (freeSavingVal) {
+            freeSavingVal.addEventListener('input', () => {
+                const val = parseInt(freeSavingVal.value, 10);
+                tempFreeSavingAmount = isNaN(val) ? 0 : val;
+            });
+            freeSavingVal.addEventListener('blur', () => {
+                if (isNaN(tempFreeSavingAmount) || tempFreeSavingAmount < 0) {
+                    tempFreeSavingAmount = 0;
+                }
+                updateFreeSavingModalDisplay();
+            });
         }
 
         if (freeSavingDec) {
@@ -5299,7 +5359,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 });
             }
             if (lastSyncStr) lastSyncDate = cleanDateStr(lastSyncStr);
-            if (simStr) simulationSettings = JSON.parse(simStr);
+            if (simStr) {
+                simulationSettings = JSON.parse(simStr);
+                if (simulationSettings.initialInvestment === undefined) {
+                    simulationSettings.initialInvestment = 0;
+                }
+            }
 
             // 今日チェックインされた項目の日付またぎリセット処理
             const todayStr = getTodayStr();
@@ -5350,6 +5415,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (obYieldAdvice) obYieldAdvice.innerText = getYieldAdvice(8.0);
                 obSliderYears.value = 20;
                 obYearsBadge.innerText = "20年";
+                obSliderInitialInvestment.value = 0;
+                obInitialInvestmentBadge.innerText = "0円";
 
                 obChkTobacco.checked = true;
                 obChkBeer.checked = false;
@@ -5540,7 +5607,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             P_ideal = floorTo100Jpy(P_ideal);
 
             // シミュレーションモードに応じて初期元本を切り替える
-            const activeP = (simulationPaceMode === 'ideal') ? P_ideal : P;
+            const initialInvestment = parseInt(simulationSettings.initialInvestment || 0, 10);
+            const activeP = ((simulationPaceMode === 'ideal') ? P_ideal : P) + initialInvestment;
 
             const annualYield = simulationSettings.yield / 100;
             const years = simulationSettings.years;
@@ -5584,6 +5652,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             valTotal.innerText = formatToYenManLocal(finalInvest);
             valBonus.innerText = formatToYenManLocal(finalBonus);
             valYieldInfo.innerText = `${simulationSettings.yield}%`;
+
+            const labelTotalAssets = document.getElementById('label-total-assets');
+            if (labelTotalAssets) {
+                labelTotalAssets.innerText = `未来の資産 (${years}年後)`;
+            }
 
             updateMilestone(finalInvest);
             updateLifeData(years, realMonthlySaving);
