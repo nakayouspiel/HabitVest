@@ -6009,7 +6009,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const months = years * 12;
             
             // 現在の累計実績 (totalEarned) と初期投資額を初期元本として将来を複利計算
-            const initialInvestment = parseInt(simulationSettings.initialInvestment || 0, 10);
             const P = totalEarned + initialInvestment;
             const PMT = monthlySaving;
             const r = monthlyRate;
