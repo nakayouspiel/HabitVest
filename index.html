@@ -2328,184 +2328,170 @@
 
     <!-- 🆕 オンボーディングモーダル -->
     <div id="onboarding-modal" class="onboarding-overlay">
-        <div class="onboarding-card">
-            <!-- ステップ 1: プロフィール -->
-            <div class="step-pane active" id="onboard-step-1">
-                <div class="step-progress">
-                    <span class="step-title">Welcome to HabitVest! 🚀</span>
-                    <div class="step-dot-container">
-                        <div class="step-dot active"></div>
-                        <div class="step-dot"></div>
-                        <div class="step-dot"></div>
-                    </div>
-                </div>
-                <p class="step-desc">
-                    HabitVestは、あなたが日々の 節制による投資 を記録し、それを投資複利で運用した未来の資産を可視化するアプリです。<br>まずはあなたについて教えてください！
+        <div class="onboarding-card" style="max-width: 420px; width: 90%; padding: 24px; border-radius: 20px; text-align: center; box-shadow: var(--card-shadow); border: 1.5px solid var(--border-glass); background: var(--bg-card); position: relative;">
+            
+            <!-- ステップ 0: イントロ -->
+            <div class="step-pane active" id="onboard-step-0">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; text-align: center; font-family: 'Outfit';">Welcome to HabitVest! 🚀</h3>
+                <p style="font-size: 0.78rem; line-height: 1.6; color: var(--text-sub); margin-bottom: 24px; text-align: center;">
+                    HabitVestは、何かをやめた分を投資にまわすアプリです。<br><br>
+                    いくつかの簡単な質問に答えるだけで、あなたの未来の資産予測ロードマップがすぐに完成します！
                 </p>
-                <div class="form-group">
-                    <label for="onboard-name">ニックネーム</label>
-                    <input type="text" id="onboard-name" placeholder="ニックネームを入力">
-                </div>
-                <div class="form-group" style="display: none;">
-                    <label for="onboard-hobby">あなたの趣味・夢の使い道</label>
-                    <select id="onboard-hobby" required>
-                        <option value="invest" selected>🪙 投資</option>
-                    </select>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <label for="onboard-age">年齢</label>
-                        <select id="onboard-age" required>
-                            <option value="" disabled selected>選択してください</option>
-                            <option value="10">10代</option>
-                            <option value="20">20代</option>
-                            <option value="30">30代</option>
-                            <option value="40">40代</option>
-                            <option value="50">50代以上</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="onboard-gender">性別</label>
-                        <select id="onboard-gender" required>
-                            <option value="" disabled selected>選択してください</option>
-                            <option value="male">男性</option>
-                            <option value="female">女性</option>
-                            <option value="other">その他</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label for="onboard-start-date">開始日  節制による投資を始めた日 </label>
-                    <input type="date" id="onboard-start-date" required style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main); font-weight: 600; font-family: var(--font-ui); outline: none;">
-                </div>
-                <button type="button" class="modal-btn" id="onboard-next-1">次へ進む ➔</button>
+                <button type="button" class="modal-btn" onclick="nextOnboardStep(0)" style="margin-top: 0; width: 100%;">設定をはじめる ➔</button>
             </div>
 
-            <!-- ステップ 2: やめる習慣の設定 -->
-            <div class="step-pane" id="onboard-step-2">
-                <div class="step-progress">
-                    <span class="step-title">節制による投資を行う習慣は？ 🚭</span>
-                    <div class="step-dot-container">
-                        <div class="step-dot"></div>
-                        <div class="step-dot active"></div>
-                        <div class="step-dot"></div>
-                    </div>
-                </div>
-                <p class="step-desc">
-                    あなたが投資に回したい（節制・削減したい）習慣の単価を設定しましょう。チェックした習慣があなたのシミュレーターに組み込まれます。
+            <!-- ステップ 1: タバコ -->
+            <div class="step-pane" id="onboard-step-1" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--neon-secondary); margin-bottom: 16px; text-align: center;">🚭 質問 1 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 24px; text-align: center; line-height: 1.5;">
+                    あなたはタバコをやめて、その分を投資することを考えていますか？
                 </p>
-                <div style="max-height: 250px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 12px;">
-                    <!-- タバコ -->
-                    <div style="border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; text-align: left;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 6px; cursor: pointer;">
-                            <input type="checkbox" id="onboard-chk-tobacco" checked> 🚭 タバコ節制による投資
-                        </label>
-                        <div class="form-group" style="margin-left: 20px;">
-                            <div class="label-wrapper"><label>1箱の価格</label><span class="val-badge" id="ob-tobacco-price-badge">600円</span></div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="ob-tobacco-pack-price">-</button>
-                                <input type="number" id="ob-tobacco-pack-price" min="400" max="800" step="10" value="600">
-                                <button type="button" class="spin-btn inc-btn" data-target="ob-tobacco-pack-price">+</button>
-                                <span>円</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ビール -->
-                    <div style="border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; text-align: left;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 6px; cursor: pointer;">
-                            <input type="checkbox" id="onboard-chk-beer"> 🍺 お酒節制による投資
-                        </label>
-                        <div class="form-group" style="margin-left: 20px;">
-                            <div class="label-wrapper"><label>1本の価格</label><span class="val-badge" id="ob-beer-price-badge">250円</span></div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="ob-beer-unit-price">-</button>
-                                <input type="number" id="ob-beer-unit-price" min="100" max="800" step="10" value="250">
-                                <button type="button" class="spin-btn inc-btn" data-target="ob-beer-unit-price">+</button>
-                                <span>円</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 投資・節制 -->
-                    <div style="border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px; text-align: left;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 6px; cursor: pointer;">
-                            <input type="checkbox" id="onboard-chk-invest"> 💰 未来へ投資を記録したい
-                        </label>
-                        <div class="form-group" style="margin-left: 20px;">
-                            <div class="label-wrapper"><label>月間の目標投資額</label><span class="val-badge" id="ob-invest-monthly-target-badge">30,000円</span></div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="ob-invest-monthly-target">-</button>
-                                <input type="number" id="ob-invest-monthly-target" min="1000" max="1000000" step="1000" value="30000">
-                                <button type="button" class="spin-btn inc-btn" data-target="ob-invest-monthly-target">+</button>
-                                <span>円</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px;">
-                    <button type="button" class="modal-btn-secondary" id="onboard-back-2">戻る</button>
-                    <button type="button" class="modal-btn" id="onboard-next-2" style="margin-top:0;">次へ進む ➔</button>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button type="button" class="modal-btn" onclick="setOnboardHabit('tobacco', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(219,39,119,0.15) 0%, rgba(219,39,119,0.05) 100%); border: 1.5px solid var(--neon-secondary); width: 100%;">はい、考えている</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('tobacco', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、考えていない</button>
                 </div>
             </div>
 
-            <!-- ステップ 3: 投資設定 -->
-            <div class="step-pane" id="onboard-step-3">
-                <div class="step-progress">
-                    <span class="step-title">投資運用の設定 📈</span>
-                    <div class="step-dot-container">
-                        <div class="step-dot"></div>
-                        <div class="step-dot"></div>
-                        <div class="step-dot active"></div>
-                    </div>
-                </div>
-                <p class="step-desc">
-                    投資によって浮いたお金を投資に回した場合の利回りと、何年間シミュレーションするか設定しましょう。
+            <!-- ステップ 2: お酒 -->
+            <div class="step-pane" id="onboard-step-2" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: #f59e0b; margin-bottom: 16px; text-align: center;">🍺 質問 2 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 24px; text-align: center; line-height: 1.5;">
+                    あなたはお酒をやめて、その分を投資することを考えていますか？
                 </p>
-                <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
-                    <!-- 💰 初期投資額 -->
-                    <div class="form-group">
-                        <div class="label-wrapper">
-                            <label for="ob-initial-investment">初期投資額</label>
-                            <span class="val-badge" id="ob-initial-investment-badge">0円</span>
-                        </div>
-                        <div class="input-box">
-                            <button type="button" class="spin-btn dec-btn" data-target="ob-initial-investment">-</button>
-                            <input type="number" id="ob-initial-investment" min="0" max="99999999" step="100000" value="0">
-                            <button type="button" class="spin-btn inc-btn" data-target="ob-initial-investment">+</button>
-                            <span>円</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="label-wrapper">
-                            <label for="ob-slider-yield">期待利回り  年利 </label>
-                            <span class="val-badge" id="ob-yield-badge">8.0%</span>
-                        </div>
-                        <div class="input-box">
-                            <button type="button" class="spin-btn dec-btn" data-target="ob-slider-yield">-</button>
-                            <input type="number" id="ob-slider-yield" min="0" max="1000" step="0.5" value="8.0">
-                            <button type="button" class="spin-btn inc-btn" data-target="ob-slider-yield">+</button>
-                            <span>％</span>
-                        </div>
-                        <div id="ob-yield-advice" style="font-size: 0.72rem; margin-top: 6px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); line-height: 1.4; color: var(--text-muted); text-align: left; min-height: 40px;"></div>
-                    </div>
-                    <div class="form-group">
-                        <div class="label-wrapper">
-                            <label for="ob-slider-years">積立期間  年数 </label>
-                            <span class="val-badge" id="ob-years-badge">20年</span>
-                        </div>
-                        <div class="input-box">
-                            <button type="button" class="spin-btn dec-btn" data-target="ob-slider-years">-</button>
-                            <input type="number" id="ob-slider-years" min="1" max="50" step="1" value="20">
-                            <button type="button" class="spin-btn inc-btn" data-target="ob-slider-years">+</button>
-                            <span>年</span>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px;">
-                    <button type="button" class="modal-btn-secondary" id="onboard-back-3">戻る</button>
-                    <button type="button" class="modal-btn" id="onboard-finish" style="margin-top:0;">設定を完了して始める 🚀</button>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button type="button" class="modal-btn" onclick="setOnboardHabit('beer', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.05) 100%); border: 1.5px solid #f59e0b; width: 100%;">はい、考えている</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('beer', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、考えていない</button>
                 </div>
             </div>
+
+            <!-- ステップ 3: 投資・節制 -->
+            <div class="step-pane" id="onboard-step-3" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; text-align: center;">🪙 質問 3 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 24px; text-align: center; line-height: 1.5;">
+                    タバコやお酒のほかにも、何かを節約したお金を投資に回したり、毎月コツコツと投資を記録したいですか？
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button type="button" class="modal-btn" onclick="setOnboardHabit('invest', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(14,165,233,0.15) 0%, rgba(14,165,233,0.05) 100%); border: 1.5px solid var(--neon-primary); width: 100%;">はい、記録したい</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('invest', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、記録しない</button>
+                </div>
+            </div>
+
+            <!-- ステップ 4: ニックネーム -->
+            <div class="step-pane" id="onboard-step-4" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">👤 質問 4 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; line-height: 1.5;">
+                    あなたのニックネームを教えてください
+                </p>
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <input type="text" id="ob-profile-name" placeholder="ニックネームを入力" style="width: 100%; text-align: center; padding: 12px; border-radius: 12px; font-size: 1rem; font-weight: 600; outline: none; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main);">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
+                    <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(4)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+                    <button type="button" class="modal-btn" onclick="setOnboardName()" style="margin-top: 0; width: 100%;">次へ進む ➔</button>
+                </div>
+            </div>
+
+            <!-- ステップ 5: 年代 -->
+            <div class="step-pane" id="onboard-step-5" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🎂 質問 5 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; line-height: 1.5;">
+                    あなたの年代を教えてください
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('age', '10')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">10代</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('age', '20')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">20代</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('age', '30')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">30代</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('age', '40')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">40代</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('age', '50')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; grid-column: span 2; width: 100%;">50代以上</button>
+                </div>
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(5)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+            </div>
+
+            <!-- ステップ 6: 性別 -->
+            <div class="step-pane" id="onboard-step-6" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🚻 質問 6 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; line-height: 1.5;">
+                    あなたの性別を教えてください
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('gender', 'male')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">男性</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('gender', 'female')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">女性</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('gender', 'other')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">その他</button>
+                </div>
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(6)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+            </div>
+
+            <!-- ステップ 7: 初期投資額 -->
+            <div class="step-pane" id="onboard-step-7" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">💳 質問 7 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; text-align: center; line-height: 1.5;">
+                    今、投資に回せる最初の貯金（初期投資額）はありますか？
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardInitialInvestment(0)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">0円</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardInitialInvestment(100000)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">10万円</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardInitialInvestment(500000)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">50万円</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardInitialInvestment(1000000)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">100万円</button>
+                    <button type="button" class="modal-btn-secondary" onclick="showObInitialInput()" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; grid-column: span 2; width: 100%;">自分で入力する</button>
+                </div>
+                
+                <!-- 手入力エリア -->
+                <div id="ob-initial-input-wrapper" style="display: none; margin-bottom: 16px; animation: fadeInAdvice 0.3s ease-out;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="number" id="ob-initial-investment-val" value="0" min="0" step="50000" style="flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-weight: 600; outline: none; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main);">
+                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub);">円</span>
+                        <button type="button" class="modal-btn" onclick="setOnboardInitialInvestment(null)" style="margin-top: 0; padding: 10px 16px; width: auto;">決定</button>
+                    </div>
+                </div>
+
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(7)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+            </div>
+
+            <!-- ステップ 8: 想定年利 -->
+            <div class="step-pane" id="onboard-step-8" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">📈 質問 8 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; text-align: center; line-height: 1.5;">
+                    想定している年利（お金を働かせるご褒美の割合）は何％ですか？
+                </p>
+                <p style="font-size: 0.72rem; color: var(--text-sub); text-align: center; margin-bottom: 20px; line-height: 1.4;">
+                    一般的には、世界経済の成長に合わせて 5％ 程度がふつうと言われています。
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardYield(3)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; text-align: left; display: flex; justify-content: space-between; width: 100%;"><span>3％</span> <span style="font-weight: normal; font-size: 0.7rem; color: var(--text-muted);">手堅くコツコツ</span></button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardYield(5)" style="margin-top: 0; border: 1.5px solid var(--neon-primary); padding: 12px; text-align: left; display: flex; justify-content: space-between; background: rgba(0, 243, 255, 0.04); width: 100%;"><span>5％</span> <span style="font-weight: 700; font-size: 0.7rem; color: var(--neon-primary);">ふつう・おすすめ ⭐</span></button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardYield(7)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; text-align: left; display: flex; justify-content: space-between; width: 100%;"><span>7％</span> <span style="font-weight: normal; font-size: 0.7rem; color: var(--text-muted);">積極的・米国株など</span></button>
+                </div>
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(8)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+            </div>
+
+            <!-- ステップ 9: ゴール年数 -->
+            <div class="step-pane" id="onboard-step-9" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🎯 質問 9 / 9</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 16px; text-align: center; line-height: 1.5;">
+                    シミュレーションのゴールは何年後にしますか？
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardYears(10)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">10年後</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardYears(20)" style="margin-top: 0; border: 1.5px solid var(--neon-primary); padding: 12px; background: rgba(0, 243, 255, 0.04); width: 100%;">20年後 (おすすめ)</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardYears(30)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">30年後</button>
+                    <button type="button" class="modal-btn-secondary" onclick="showObYearsInput()" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">自分で決める</button>
+                </div>
+
+                <!-- 手入力エリア -->
+                <div id="ob-years-input-wrapper" style="display: none; margin-bottom: 16px; animation: fadeInAdvice 0.3s ease-out;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="number" id="ob-years-val" value="20" min="1" max="50" style="flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-weight: 600; outline: none; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main);">
+                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub);">年</span>
+                        <button type="button" class="modal-btn" onclick="setOnboardYears(null)" style="margin-top: 0; padding: 10px 16px; width: auto;">決定</button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
+                    <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(9)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+                    <button type="button" class="modal-btn" onclick="finishOnboarding()" style="margin-top: 0; width: 100%;">設定を完了して始める 🚀</button>
+                </div>
+            </div>
+            
         </div>
     </div>
 
@@ -2690,35 +2676,20 @@ const settingsModal = document.getElementById('settings-modal');
 
         // 🆕 オンボーディング用 DOM 要素
         const onboardingModal = document.getElementById('onboarding-modal');
-        const obName = document.getElementById('onboard-name');
-        const obHobby = document.getElementById('onboard-hobby');
-        const obAge = document.getElementById('onboard-age');
-        const obGender = document.getElementById('onboard-gender');
-        const obStartDate = document.getElementById('onboard-start-date');
-        const obChkTobacco = document.getElementById('onboard-chk-tobacco');
-        const obChkBeer = document.getElementById('onboard-chk-beer');
-
-        const obChkInvest = document.getElementById('onboard-chk-invest');
-        const obTobaccoPackPrice = document.getElementById('ob-tobacco-pack-price');
-        const obTobaccoPriceBadge = document.getElementById('ob-tobacco-price-badge');
-        const obBeerUnitPrice = document.getElementById('ob-beer-unit-price');
-        const obBeerPriceBadge = document.getElementById('ob-beer-price-badge');
-
-        const obInvestMonthlyTarget = document.getElementById('ob-invest-monthly-target');
-        const obInvestMonthlyTargetBadge = document.getElementById('ob-invest-monthly-target-badge');
-        const obSliderYield = document.getElementById('ob-slider-yield');
-        const obYieldBadge = document.getElementById('ob-yield-badge');
-        const obYieldAdvice = document.getElementById('ob-yield-advice'); // オンボーディングのアドバイス
-        const obSliderYears = document.getElementById('ob-slider-years');
-        const obYearsBadge = document.getElementById('ob-years-badge');
-        const obSliderInitialInvestment = document.getElementById('ob-initial-investment');
-        const obInitialInvestmentBadge = document.getElementById('ob-initial-investment-badge');
-
-        const onboardNext1 = document.getElementById('onboard-next-1');
-        const onboardNext2 = document.getElementById('onboard-next-2');
-        const onboardFinish = document.getElementById('onboard-finish');
-        const onboardBack2 = document.getElementById('onboard-back-2');
-        const onboardBack3 = document.getElementById('onboard-back-3');
+        // オンボーディングUIは一問一答形式に最適化されました。
+        const obName = { value: "" };
+        const obHobby = { value: "invest" };
+        const obAge = { value: "30" };
+        const obGender = { value: "male" };
+        const obStartDate = { value: "" };
+        const obChkTobacco = { checked: false };
+        const obChkBeer = { checked: false };
+        const obChkInvest = { checked: true };
+        const onboardNext1 = { addEventListener: () => {} };
+        const onboardNext2 = { addEventListener: () => {} };
+        const onboardFinish = { addEventListener: () => {} };
+        const onboardBack2 = { addEventListener: () => {} };
+        const onboardBack3 = { addEventListener: () => {} };
 
         // --- 状態変数 ---
         let simulationPaceMode = 'real'; // 'ideal' or 'real'
@@ -4462,29 +4433,36 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 tab: 'habits',
                 position: 'top',
                 arrowPos: 'center',
-                title: '① できた日はここをタップ！',
-                desc: '今日、節制による投資ができた習慣（タバコやお酒など）があれば、ボタンをタップして「記録」しましょう。投資額が即時反映されます！'
+                title: 'できた日はここをタップ！',
+                desc: '今日、節約や投資ができた習慣があれば、このボタンをタップして記録しましょう。すぐに成果へ反映されます。'
             },
             {
                 tab: 'habits',
                 position: 'bottom',
                 arrowPos: 'left',
-                title: '②  記録 タブ',
-                desc: 'このタブでは、毎日の投資記録や、過去の記録カレンダー、投資履歴の確認・消去ができます。'
+                title: '記録カレンダーと履歴',
+                desc: 'ここでは、過去の記録カレンダーを見たり、間違えた記録の消去ができます。'
             },
             {
                 tab: 'assets',
                 position: 'bottom',
                 arrowPos: 'center',
-                title: '③  資産 タブ',
-                desc: '投資したお金を将来複利運用した場合の、20年後などの未来の資産形成をシミュレーションできます！'
+                title: '資産シミュレーション',
+                desc: '浮いたお金を複利運用した場合に、将来どれくらい資産が増えるかをグラフで確認できます。'
+            },
+            {
+                tab: 'assets',
+                position: 'bottom',
+                arrowPos: 'center',
+                title: '未来への推移表',
+                desc: '資産タブを少し下にスクロールすると、ただ貯蓄した場合との驚きの差が、年ごとに表で表示されます。'
             },
             {
                 tab: 'life',
                 position: 'bottom',
                 arrowPos: 'right',
-                title: '④  ライフ タブ',
-                desc: '自己投資レベルや称号ツリー、節制による健康・時間のメリット、未来のご褒美ロードマップを確認できます！'
+                title: 'ライフとロードマップ',
+                desc: 'あなたの継続レベルや、健康面の効果、将来への具体的なロードマップやパーソナルアドバイスはここで読めます。'
             }
         ];
 
@@ -4856,112 +4834,168 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         setupOnboardSliders();
 
         // 🆕 オンボーディングステップ制御
-        onboardNext1.addEventListener('click', () => {
-            const name = obName.value.trim();
-            const hobby = obHobby.value;
-            const age = obAge.value;
-            const gender = obGender.value;
-            const startDateVal = obStartDate ? obStartDate.value : "";
+        // 🆕 オンボーディング用の一時的な状態
+        let onboardState = {
+            currentStep: 0,
+            trackTobacco: false,
+            trackBeer: false,
+            trackInvest: false,
+            name: "ゲスト",
+            age: "30",
+            gender: "male",
+            initialInvestment: 0,
+            yield: 5.0,
+            years: 20
+        };
 
-            if (!name) {
-                alert("ニックネームを入力してください。");
-                return;
+        window.nextOnboardStep = function(stepIndex) {
+            const currentPane = document.getElementById('onboard-step-' + stepIndex);
+            if (currentPane) {
+                currentPane.style.display = 'none';
+                currentPane.classList.remove('active');
             }
-            if (!hobby) {
-                alert("趣味・夢の使い道を選択してください。");
-                return;
+            onboardState.currentStep = stepIndex + 1;
+            const nextPane = document.getElementById('onboard-step-' + (stepIndex + 1));
+            if (nextPane) {
+                nextPane.style.display = 'block';
+                nextPane.classList.add('active');
             }
-            if (!age) {
-                alert("年齢を選択してください。");
-                return;
-            }
-            if (!gender) {
-                alert("性別を選択してください。");
-                return;
-            }
-            if (!startDateVal) {
-                alert("開始日を選択してください。");
-                return;
-            }
-            
-            document.getElementById('onboard-step-1').classList.remove('active');
-            document.getElementById('onboard-step-2').classList.add('active');
-        });
+        };
 
-        onboardBack2.addEventListener('click', () => {
-            document.getElementById('onboard-step-2').classList.remove('active');
-            document.getElementById('onboard-step-1').classList.add('active');
-        });
-
-        onboardNext2.addEventListener('click', () => {
-            document.getElementById('onboard-step-2').classList.remove('active');
-            document.getElementById('onboard-step-3').classList.add('active');
-        });
-
-        onboardBack3.addEventListener('click', () => {
-            document.getElementById('onboard-step-3').classList.remove('active');
-            document.getElementById('onboard-step-2').classList.add('active');
-        });
-
-        onboardFinish.addEventListener('click', () => {
-            // オンボーディング設定の保存
-            let obStartDateVal = getTodayStr();
-            if (obStartDate && obStartDate.value) {
-                obStartDateVal = formatFromInputDate(obStartDate.value);
+        window.prevOnboardStep = function(stepIndex) {
+            const currentPane = document.getElementById('onboard-step-' + stepIndex);
+            if (currentPane) {
+                currentPane.style.display = 'none';
+                currentPane.classList.remove('active');
             }
+            onboardState.currentStep = stepIndex - 1;
+            const prevPane = document.getElementById('onboard-step-' + (stepIndex - 1));
+            if (prevPane) {
+                prevPane.style.display = 'block';
+                prevPane.classList.add('active');
+            }
+        };
+
+        window.setOnboardName = function() {
+            const nameInput = document.getElementById('ob-profile-name');
+            onboardState.name = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : "ゲスト";
+            window.nextOnboardStep(4);
+        };
+
+        window.setOnboardHabit = function(habitType, value) {
+            if (habitType === 'tobacco') {
+                onboardState.trackTobacco = value;
+                window.nextOnboardStep(1);
+            }
+            if (habitType === 'beer') {
+                onboardState.trackBeer = value;
+                window.nextOnboardStep(2);
+            }
+            if (habitType === 'invest') {
+                onboardState.trackInvest = value;
+                window.nextOnboardStep(3);
+            }
+        };
+
+        window.setOnboardProfile = function(key, value) {
+            if (key === 'age') {
+                onboardState.age = value;
+                window.nextOnboardStep(5);
+            }
+            if (key === 'gender') {
+                onboardState.gender = value;
+                window.nextOnboardStep(6);
+            }
+        };
+
+        window.showObInitialInput = function() {
+            const wrapper = document.getElementById('ob-initial-input-wrapper');
+            if (wrapper) wrapper.style.display = 'block';
+        };
+
+        window.setOnboardInitialInvestment = function(val) {
+            if (val === null) {
+                const inputEl = document.getElementById('ob-initial-investment-val');
+                onboardState.initialInvestment = (inputEl && inputEl.value) ? parseInt(inputEl.value, 10) : 0;
+            } else {
+                onboardState.initialInvestment = val;
+            }
+            window.nextOnboardStep(7);
+        };
+
+        window.setOnboardYield = function(val) {
+            onboardState.yield = parseFloat(val);
+            window.nextOnboardStep(8);
+        };
+
+        window.showObYearsInput = function() {
+            const wrapper = document.getElementById('ob-years-input-wrapper');
+            if (wrapper) wrapper.style.display = 'block';
+        };
+
+        window.setOnboardYears = function(val) {
+            if (val === null) {
+                const inputEl = document.getElementById('ob-years-val');
+                onboardState.years = (inputEl && inputEl.value) ? parseInt(inputEl.value, 10) : 20;
+            } else {
+                onboardState.years = val;
+            }
+            window.finishOnboarding();
+        };
+
+        window.finishOnboarding = function() {
             profile = {
-                name: obName.value.trim(),
-                hobby: obHobby.value,
-                age: obAge.value,
-                gender: obGender.value,
-                startDate: obStartDateVal,
-                trackTobacco: obChkTobacco.checked,
-                trackBeer: obChkBeer.checked,
-                trackInvest: obChkInvest.checked,
+                name: onboardState.name,
+                hobby: "invest",
+                age: onboardState.age,
+                gender: onboardState.gender,
+                startDate: getTodayStr(),
+                trackTobacco: onboardState.trackTobacco,
+                trackBeer: onboardState.trackBeer,
+                trackInvest: onboardState.trackInvest,
                 onboarded: true
             };
 
-            habitPrices = {
-                tobaccoPrice: validateAndParse(obTobaccoPackPrice, 600),
-                tobaccoCount: 1,
-                beerPrice: validateAndParse(obBeerUnitPrice, 250),
-                beerCount: 2,
+            // 全て「いいえ」だった場合の自動フォールバック（何も動かないのを防ぐ）
+            if (!profile.trackTobacco && !profile.trackBeer && !profile.trackInvest) {
+                profile.trackInvest = true;
+            }
 
-                investMonthlyTarget: validateAndParse(obInvestMonthlyTarget, 30000)
+            habitPrices = {
+                tobaccoPrice: 600,
+                tobaccoCount: 1,
+                beerPrice: 250,
+                beerCount: 2,
+                investMonthlyTarget: 30000
             };
 
             simulationSettings = {
-                yield: validateAndParse(obSliderYield, 8.0, true),
-                years: validateAndParse(obSliderYears, 20),
-                initialInvestment: validateAndParse(obSliderInitialInvestment, 0)
+                yield: onboardState.yield,
+                years: onboardState.years,
+                initialInvestment: onboardState.initialInvestment
             };
 
-            // 習慣チェックインの初期値
             activeHabits = {
                 tobacco: false,
                 beer: false,
-
                 invest: false
             };
 
             lastSyncDate = getTodayStr();
 
-            // 設定のフォームへ値を反映
             syncModalFieldsWithState();
             updateCheckinBtnVisibility();
             updateCheckinBtnStates();
 
-            // 保存 & 計算
             saveSettings();
             calculate();
 
             onboardingModal.classList.remove('active');
 
-            // 🎓 クイックチュートリアルの開始
             setTimeout(() => {
                 startTutorial();
             }, 500);
-        });
+        };
 
         // 状態を設定モーダルフィールドに反映
         function syncModalFieldsWithState() {
@@ -6816,7 +6850,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=133')
+                navigator.serviceWorker.register('./sw.js?v=134')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
