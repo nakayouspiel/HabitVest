@@ -1928,7 +1928,7 @@
                 </div>
 
                 <div style="text-align: center; margin-bottom: 6px; font-size: 0.72rem; color: var(--text-sub);">
-                    複利効果によるボーナス： <span id="val-bonus" style="color: var(--neon-secondary); font-weight: 700;">--- 円</span>
+                    投資利益： <span id="val-bonus" style="background: linear-gradient(135deg, var(--neon-primary) 0%, var(--neon-secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; display: inline-block;">--- 円</span>
                 </div>
 
 
@@ -1954,7 +1954,7 @@
                     <span style="font-size: 1rem;">💡</span>
                     <div>
                         <strong>シミュレーションの前提：</strong><br>
-                        この将来予測は、<strong>現在のチェックイン実績の習慣を今後も毎日・毎月継続し、</strong>浮いたお金を想定の利回りで投資に回し続けた場合を示しています。<br>
+                        この将来予測は、<strong>現在の習慣を今後も毎日・毎月継続し、</strong>浮いたお金を想定の利回りで投資に回し続けた場合を示しています。<br>
                         初日の記録だけでも このまま毎日続けたら将来どうなるか の成果がひと目でわかるようになっています。
                     </div>
                 </div>
@@ -2000,19 +2000,35 @@
                         <div id="life-stats-money" style="font-size: 1.25rem; font-weight: 800; color: var(--neon-secondary); margin-top: 4px; font-family: 'Outfit'; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">0 円</div>
                     </div>
                     <!-- 🚭 タバコの実績 -->
-                    <div id="life-stats-tobacco-card" style="background: rgba(255, 75, 75, 0.04); border: 1px solid rgba(255, 75, 75, 0.12); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
-                        <div style="font-weight: 800; font-size: 0.76rem; color: #ff4b4b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🚭 タバコ節制の健康効果</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.7rem;">
-                            <div style="background: rgba(0, 0, 0, 0.12); padding: 8px; border-radius: 8px; border: 1px solid var(--border-glass);">節制した本数<br><span id="life-stats-tobacco-count" style="font-weight:800; color:var(--text-main); font-size: 0.85rem; display: inline-block; margin-top: 3px;">0本</span></div>
-                            <div style="background: rgba(0, 0, 0, 0.12); padding: 8px; border-radius: 8px; border: 1px solid var(--border-glass);">取り戻した寿命<br><span id="life-stats-tobacco-life" style="font-weight:800; color:var(--neon-primary); font-size: 0.85rem; display: inline-block; margin-top: 3px;">0分</span></div>
+                    <div id="life-stats-tobacco-card" style="background: rgba(255, 75, 75, 0.03); border: 1px solid rgba(255, 75, 75, 0.15); border-radius: 16px; padding: 14px; display: none; grid-column: span 2; text-align: left; box-shadow: 0 4px 15px rgba(255, 75, 75, 0.03);">
+                        <div style="font-weight: 800; font-size: 0.8rem; color: #ff4b4b; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 1rem;">🚭</span> タバコ節制の健康効果
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="background: rgba(255, 255, 255, 0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border-glass); text-align: center;">
+                                <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">節制した本数</div>
+                                <div id="life-stats-tobacco-count" style="font-weight: 800; color: var(--text-main); font-size: 1.05rem; font-family: 'Outfit';">0本</div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border-glass); text-align: center;">
+                                <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">取り戻した寿命</div>
+                                <div id="life-stats-tobacco-life" style="font-weight: 800; color: var(--neon-primary); font-size: 1.05rem; font-family: 'Outfit';">0分</div>
+                            </div>
                         </div>
                     </div>
                     <!-- お酒の実績 -->
-                    <div id="life-stats-beer-card" style="background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.12); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
-                        <div style="font-weight: 800; font-size: 0.76rem; color: #f59e0b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🍺 お酒節制の健康効果</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.7rem;">
-                            <div style="background: rgba(0, 0, 0, 0.12); padding: 8px; border-radius: 8px; border: 1px solid var(--border-glass);">節制した杯数<br><span id="life-stats-beer-count" style="font-weight:800; color:var(--text-main); font-size: 0.85rem; display: inline-block; margin-top: 3px;">0杯</span></div>
-                            <div style="background: rgba(0, 0, 0, 0.12); padding: 8px; border-radius: 8px; border: 1px solid var(--border-glass);">カットしたカロリー<br><span id="life-stats-beer-cal" style="font-weight:800; color:var(--neon-secondary); font-size: 0.85rem; display: inline-block; margin-top: 3px;">0 kcal</span></div>
+                    <div id="life-stats-beer-card" style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 16px; padding: 14px; display: none; grid-column: span 2; text-align: left; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.03);">
+                        <div style="font-weight: 800; font-size: 0.8rem; color: #f59e0b; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 1rem;">🍺</span> お酒節制の健康効果
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="background: rgba(255, 255, 255, 0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border-glass); text-align: center;">
+                                <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">節制した杯数</div>
+                                <div id="life-stats-beer-count" style="font-weight: 800; color: var(--text-main); font-size: 1.05rem; font-family: 'Outfit';">0杯</div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border-glass); text-align: center;">
+                                <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">カットしたカロリー</div>
+                                <div id="life-stats-beer-cal" style="font-weight: 800; color: var(--neon-secondary); font-size: 1.05rem; font-family: 'Outfit';">0 kcal</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2342,7 +2358,7 @@
 
             <!-- ステップ 1: タバコ -->
             <div class="step-pane" id="onboard-step-1" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: var(--neon-secondary); margin-bottom: 16px; text-align: center;">🚭 質問 1 / 9</h4>
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--neon-secondary); margin-bottom: 16px; text-align: center;">🚭 質問 1 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 24px; text-align: center; line-height: 1.5;">
                     あなたはタバコをやめて、その分を投資することを考えていますか？
                 </p>
@@ -2354,7 +2370,7 @@
 
             <!-- ステップ 2: お酒 -->
             <div class="step-pane" id="onboard-step-2" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: #f59e0b; margin-bottom: 16px; text-align: center;">🍺 質問 2 / 9</h4>
+                <h4 style="font-size: 1rem; font-weight: 800; color: #f59e0b; margin-bottom: 16px; text-align: center;">🍺 質問 2 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 24px; text-align: center; line-height: 1.5;">
                     あなたはお酒をやめて、その分を投資することを考えていますか？
                 </p>
@@ -2366,7 +2382,7 @@
 
             <!-- ステップ 3: 投資・節制 -->
             <div class="step-pane" id="onboard-step-3" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; text-align: center;">🪙 質問 3 / 9</h4>
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; text-align: center;">🪙 質問 3 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 24px; text-align: center; line-height: 1.5;">
                     タバコやお酒のほかにも、何かを節約したお金を投資に回したり、毎月コツコツと投資を記録したいですか？
                 </p>
@@ -2376,9 +2392,34 @@
                 </div>
             </div>
 
-            <!-- ステップ 4: ニックネーム -->
+            <!-- ステップ 4: 月間目標投資額 -->
             <div class="step-pane" id="onboard-step-4" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">👤 質問 4 / 9</h4>
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--neon-primary); margin-bottom: 16px; text-align: center;">💰 質問 4 / 10</h4>
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; text-align: center; line-height: 1.5;">
+                    毎月の目標投資額（コツコツと積み立てたい額）はいくらにしますか？
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardMonthlyTarget(10000)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">1万円</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardMonthlyTarget(30000)" style="margin-top: 0; border: 1.5px solid var(--neon-primary); padding: 12px; background: rgba(0, 243, 255, 0.04); width: 100%;">3万円 (推奨)</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardMonthlyTarget(50000)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">5万円</button>
+                    <button type="button" class="modal-btn-secondary" onclick="showObMonthlyTargetInput()" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">自分で入力</button>
+                </div>
+
+                <!-- 手入力エリア -->
+                <div id="ob-monthly-target-input-wrapper" style="display: none; margin-bottom: 16px; animation: fadeInAdvice 0.3s ease-out;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="number" id="ob-monthly-target-val" value="30000" min="0" step="5000" style="flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-weight: 600; outline: none; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main);">
+                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub);">円</span>
+                        <button type="button" class="modal-btn" onclick="setOnboardMonthlyTarget(null)" style="margin-top: 0; padding: 10px 16px; width: auto;">決定</button>
+                    </div>
+                </div>
+
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(4)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+            </div>
+
+            <!-- ステップ 5: ニックネーム -->
+            <div class="step-pane" id="onboard-step-5" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">👤 質問 5 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; line-height: 1.5;">
                     あなたのニックネームを教えてください
                 </p>
@@ -2386,14 +2427,14 @@
                     <input type="text" id="ob-profile-name" placeholder="ニックネームを入力" style="width: 100%; text-align: center; padding: 12px; border-radius: 12px; font-size: 1rem; font-weight: 600; outline: none; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main);">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
-                    <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(4)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+                    <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(5)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
                     <button type="button" class="modal-btn" onclick="setOnboardName()" style="margin-top: 0; width: 100%;">次へ進む ➔</button>
                 </div>
             </div>
 
-            <!-- ステップ 5: 年代 -->
-            <div class="step-pane" id="onboard-step-5" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🎂 質問 5 / 9</h4>
+            <!-- ステップ 6: 年代 -->
+            <div class="step-pane" id="onboard-step-6" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🎂 質問 6 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; line-height: 1.5;">
                     あなたの年代を教えてください
                 </p>
@@ -2404,12 +2445,12 @@
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('age', '40')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">40代</button>
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('age', '50')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; grid-column: span 2; width: 100%;">50代以上</button>
                 </div>
-                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(5)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(6)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
             </div>
 
-            <!-- ステップ 6: 性別 -->
-            <div class="step-pane" id="onboard-step-6" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🚻 質問 6 / 9</h4>
+            <!-- ステップ 7: 性別 -->
+            <div class="step-pane" id="onboard-step-7" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🚻 質問 7 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; line-height: 1.5;">
                     あなたの性別を教えてください
                 </p>
@@ -2418,12 +2459,12 @@
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('gender', 'female')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">女性</button>
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardProfile('gender', 'other')" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; width: 100%;">その他</button>
                 </div>
-                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(6)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(7)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
             </div>
 
-            <!-- ステップ 7: 初期投資額 -->
-            <div class="step-pane" id="onboard-step-7" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">💳 質問 7 / 9</h4>
+            <!-- ステップ 8: 初期投資額 -->
+            <div class="step-pane" id="onboard-step-8" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">💳 質問 8 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; text-align: center; line-height: 1.5;">
                     今、投資に回せる最初の貯金（初期投資額）はありますか？
                 </p>
@@ -2444,12 +2485,12 @@
                     </div>
                 </div>
 
-                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(7)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(8)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
             </div>
 
-            <!-- ステップ 8: 想定年利 -->
-            <div class="step-pane" id="onboard-step-8" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">📈 質問 8 / 9</h4>
+            <!-- ステップ 9: 想定年利 -->
+            <div class="step-pane" id="onboard-step-9" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">📈 質問 9 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; text-align: center; line-height: 1.5;">
                     想定している年利（お金を働かせるご褒美の割合）は何％ですか？
                 </p>
@@ -2461,12 +2502,12 @@
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardYield(5)" style="margin-top: 0; border: 1.5px solid var(--neon-primary); padding: 12px; text-align: left; display: flex; justify-content: space-between; background: rgba(0, 243, 255, 0.04); width: 100%;"><span>5％</span> <span style="font-weight: 700; font-size: 0.7rem; color: var(--neon-primary);">ふつう・おすすめ ⭐</span></button>
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardYield(7)" style="margin-top: 0; border: 1px solid var(--border-glass); padding: 12px; text-align: left; display: flex; justify-content: space-between; width: 100%;"><span>7％</span> <span style="font-weight: normal; font-size: 0.7rem; color: var(--text-muted);">積極的・米国株など</span></button>
                 </div>
-                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(8)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+                <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(9)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
             </div>
 
-            <!-- ステップ 9: ゴール年数 -->
-            <div class="step-pane" id="onboard-step-9" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🎯 質問 9 / 9</h4>
+            <!-- ステップ 10: ゴール年数 -->
+            <div class="step-pane" id="onboard-step-10" style="display: none;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; text-align: center;">🎯 質問 10 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 16px; text-align: center; line-height: 1.5;">
                     シミュレーションのゴールは何年後にしますか？
                 </p>
@@ -2487,7 +2528,7 @@
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
-                    <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(9)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
+                    <button type="button" class="modal-btn-secondary" onclick="prevOnboardStep(10)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">戻る</button>
                     <button type="button" class="modal-btn" onclick="finishOnboarding()" style="margin-top: 0; width: 100%;">設定を完了して始める 🚀</button>
                 </div>
             </div>
@@ -4784,7 +4825,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             gender: "male",
             initialInvestment: 0,
             yield: 5.0,
-            years: 20
+            years: 20,
+            investMonthlyTarget: 30000
         };
 
         window.nextOnboardStep = function(stepIndex) {
@@ -4807,18 +4849,28 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 currentPane.style.display = 'none';
                 currentPane.classList.remove('active');
             }
-            onboardState.currentStep = stepIndex - 1;
-            const prevPane = document.getElementById('onboard-step-' + (stepIndex - 1));
-            if (prevPane) {
-                prevPane.style.display = 'block';
-                prevPane.classList.add('active');
+            // 投資チェックがOFFの場合、ニックネーム(5)から戻るときは月間目標(4)をスキップして投資選択(3)に戻す
+            if (stepIndex === 5 && !onboardState.trackInvest) {
+                onboardState.currentStep = 3;
+                const prevPane = document.getElementById('onboard-step-3');
+                if (prevPane) {
+                    prevPane.style.display = 'block';
+                    prevPane.classList.add('active');
+                }
+            } else {
+                onboardState.currentStep = stepIndex - 1;
+                const prevPane = document.getElementById('onboard-step-' + (stepIndex - 1));
+                if (prevPane) {
+                    prevPane.style.display = 'block';
+                    prevPane.classList.add('active');
+                }
             }
         };
 
         window.setOnboardName = function() {
             const nameInput = document.getElementById('ob-profile-name');
             onboardState.name = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : "ゲスト";
-            window.nextOnboardStep(4);
+            window.nextOnboardStep(5);
         };
 
         window.setOnboardHabit = function(habitType, value) {
@@ -4832,18 +4884,49 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
             if (habitType === 'invest') {
                 onboardState.trackInvest = value;
-                window.nextOnboardStep(3);
+                if (value) {
+                    window.nextOnboardStep(3);
+                } else {
+                    onboardState.investMonthlyTarget = 0;
+                    // 投資チェックがOFFの場合、月間目標(4)をスキップしてニックネーム(5)に進む
+                    const currentPane = document.getElementById('onboard-step-3');
+                    if (currentPane) {
+                        currentPane.style.display = 'none';
+                        currentPane.classList.remove('active');
+                    }
+                    onboardState.currentStep = 5;
+                    const nextPane = document.getElementById('onboard-step-5');
+                    if (nextPane) {
+                        nextPane.style.display = 'block';
+                        nextPane.classList.add('active');
+                    }
+                }
             }
+        };
+
+        window.showObMonthlyTargetInput = function() {
+            const wrapper = document.getElementById('ob-monthly-target-input-wrapper');
+            if (wrapper) wrapper.style.display = 'block';
+        };
+
+        window.setOnboardMonthlyTarget = function(val) {
+            if (val === null) {
+                const inputEl = document.getElementById('ob-monthly-target-val');
+                onboardState.investMonthlyTarget = (inputEl && inputEl.value) ? parseInt(inputEl.value, 10) : 30000;
+            } else {
+                onboardState.investMonthlyTarget = val;
+            }
+            window.nextOnboardStep(4);
         };
 
         window.setOnboardProfile = function(key, value) {
             if (key === 'age') {
                 onboardState.age = value;
-                window.nextOnboardStep(5);
+                window.nextOnboardStep(6);
             }
             if (key === 'gender') {
                 onboardState.gender = value;
-                window.nextOnboardStep(6);
+                window.nextOnboardStep(7);
             }
         };
 
@@ -4859,12 +4942,12 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             } else {
                 onboardState.initialInvestment = val;
             }
-            window.nextOnboardStep(7);
+            window.nextOnboardStep(8);
         };
 
         window.setOnboardYield = function(val) {
             onboardState.yield = parseFloat(val);
-            window.nextOnboardStep(8);
+            window.nextOnboardStep(9);
         };
 
         window.showObYearsInput = function() {
@@ -4905,7 +4988,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 tobaccoCount: 1,
                 beerPrice: 250,
                 beerCount: 2,
-                investMonthlyTarget: 30000
+                investMonthlyTarget: onboardState.investMonthlyTarget
             };
 
             simulationSettings = {
@@ -5662,15 +5745,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (milestoneBox) milestoneBox.style.display = 'flex';
                 if (affiliateBanner) affiliateBanner.style.display = 'flex';
                 if (accordionEl) accordionEl.style.display = 'block';
-                                if (tableContainer) {
                     let tableHtml = `
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.7rem; text-align: left; color: var(--text-main); table-layout: fixed;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: left; color: var(--text-main); table-layout: fixed;">
                             <thead>
                                 <tr style="color: var(--text-muted); font-weight: 700;">
-                                    <th style="width: 15%; padding: 10px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">期間</th>
-                                    <th style="width: 28%; padding: 10px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">総資産</th>
-                                    <th style="width: 25%; padding: 10px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">貯めた額</th>
-                                    <th style="width: 32%; padding: 10px 2px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">増額分</th>
+                                    <th style="width: 16%; padding: 12px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass); text-align: left;">期間</th>
+                                    <th style="width: 28%; padding: 12px 4px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">総資産</th>
+                                    <th style="width: 28%; padding: 12px 4px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">貯めた額</th>
+                                    <th style="width: 28%; padding: 12px 4px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; background: var(--bg-base); z-index: 2; border-bottom: 2px solid var(--border-glass);">増額分</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -5684,10 +5766,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
                         tableHtml += `
                             <tr style="border-bottom: 1px solid var(--border-glass); vertical-align: middle;">
-                                <td style="padding: 10px 2px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${labels[i]}</td>
-                                <td style="padding: 10px 2px; text-align: right; color: var(--neon-secondary); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManSimple(investData[i])}</td>
-                                <td style="padding: 10px 2px; text-align: right; color: var(--text-main); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManSimple(savingData[i])}</td>
-                                <td style="padding: 10px 2px; text-align: right; color: var(--accent-pink); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;">
+                                <td style="padding: 12px 4px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left;">${labels[i]}</td>
+                                <td style="padding: 12px 4px; text-align: right; color: var(--neon-primary); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManSimple(investData[i])}</td>
+                                <td style="padding: 12px 4px; text-align: right; color: var(--text-main); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatToYenManSimple(savingData[i])}</td>
+                                <td style="padding: 12px 4px; text-align: right; color: var(--neon-secondary); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;">
                                     ${diffStr}<br>
                                     <span style="font-size: 0.62rem; color: var(--text-muted); font-weight: normal;">(${ratioStr})</span>
                                 </td>
@@ -5761,52 +5843,50 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const hasHabits = (profile.trackTobacco || profile.trackBeer);
             const isInvestOnly = (profile.trackInvest && !hasHabits);
 
-            let text = "";
-
-            text += "◆ 今のペースへのアドバイス\n";
+            let currentAdvice = "";
             if (isInvestOnly) {
                 if (ratePct >= 98) {
-                    text += "目標に向けて完璧なペースで投資を続けられています。これほど高い自己管理能力を維持できるのは本当に素晴らしいことです。将来がとても楽しみですね。\n";
+                    currentAdvice += "目標に向けて完璧なペースで投資を続けられています。これほど高い自己管理能力を維持できるのは本当に素晴らしいことです。将来がとても楽しみですね。\n";
                 } else if (ratePct >= 95) {
-                    text += "目標に向けて非常に順調なペースを維持できています。お金を働かせる習慣が、すっかり暮らしの軸として定着しています。\n";
+                    currentAdvice += "目標に向けて非常に順調なペースを維持できています。お金を働かせる習慣が、すっかり暮らしの軸として定着しています。\n";
                 } else if (ratePct >= 90) {
-                    text += "とても安定したペースで進んでいます。忙しい日々の中でも崩れることなく計画をコントロールできていて素晴らしいです。\n";
+                    currentAdvice += "とても安定したペースで進んでいます。忙しい日々の中でも崩れることなく計画をコントロールできていて素晴らしいです。\n";
                 } else if (ratePct >= 80) {
-                    text += "目標に向けて着実にお金を積み上げられています。資産を作るための強い土台が、いま順調に育っています。\n";
+                    currentAdvice += "目標に向けて着実にお金を積み上げられています。資産を作るための強い土台が、いま順調に育っています。\n";
                 } else if (ratePct >= 70) {
-                    text += "無理のない現実的なペースで進んでいます。投資は長く続けることこそが一番の強みになりますので、この調子でいきましょう。\n";
+                    currentAdvice += "無理のない現実的なペースで進んでいます。投資は長く続けることこそが一番の強みになりますので、この調子でいきましょう。\n";
                 } else if (ratePct >= 60) {
-                    text += "目標の半分以上のペースを守り、確実に前進しています。このまま進むだけでも、将来あなたを支える大きな盾になります。\n";
+                    currentAdvice += "目標の半分以上のペースを守り、確実に前進しています。このまま進むだけでも、将来あなたを支える大きな盾になります。\n";
                 } else if (ratePct >= 50) {
-                    text += "波はありますが、半分近くは目標に届いています。できなかった時を悔やむより、できた成果をしっかりと喜んでいきましょう。\n";
+                    currentAdvice += "波はありますが、半分近くは目標に届いています。できなかった時を悔やむより、できた成果をしっかりと喜んでいきましょう。\n";
                 } else if (ratePct >= 40) {
-                    text += "少しペースが落ちているようです。無理に大きな額を目指さず、まずは今月できる分だけを記録することから再スタートしてみましょう。\n";
+                    currentAdvice += "少しペースが落ちているようです。無理に大きな額を目指さず、まずは今月できる分だけを記録することから再スタートしてみましょう。\n";
                 } else if (ratePct >= 20) {
-                    text += "ご自身のやりやすい範囲で少しずつ進められています。焦る必要はありませんので、少額から少しずつ投資を意識してみましょう。\n";
+                    currentAdvice += "ご自身のやりやすい範囲で少しずつ進められています。焦る必要はありませんので、少額から少しずつ投資を意識してみましょう。\n";
                 } else {
-                    text += "今はまだ始まったばかり、または忙しい時期かもしれません。まずは月に1回、習慣を振り返りながら小さな額から記録を始めてみませんか。\n";
+                    currentAdvice += "今はまだ始まったばかり、または忙しい時期かもしれません。まずは月に1回、習慣を振り返りながら小さな額から記録を始めてみませんか。\n";
                 }
             } else {
                 if (ratePct >= 98) {
-                    text += "驚異的な意志の強さで、ほぼ毎日節制を続けられています。ご自身をコントロールする力が極めて高く、素晴らしい成果です。\n";
+                    currentAdvice += "驚異的な意志の強さで、ほぼ毎日節制を続けられています。ご自身をコントロールする力が極めて高く、素晴らしい成果です。\n";
                 } else if (ratePct >= 95) {
-                    text += "理想的なペースで、非常に高い水準で継続できています。良い習慣がすっかり暮らしに定着し、心も体もお財布も喜んでいます。\n";
+                    currentAdvice += "理想的なペースで、非常に高い水準で継続できています。良い習慣がすっかり暮らしに定着し、心も体もお財布も喜んでいます。\n";
                 } else if (ratePct >= 90) {
-                    text += "極めて順調なペースです。忙しい日々の中でも崩れることなく、ご自身の習慣をしっかりとコントロールできています。\n";
+                    currentAdvice += "極めて順調なペースです。忙しい日々の中でも崩れることなく、ご自身の習慣をしっかりとコントロールできています。\n";
                 } else if (ratePct >= 80) {
-                    text += "順調に習慣化が進んでいます。ご自身のペースで着実に前に進んでおり、非常に良い傾向です。まずは現在のペースを無理なく維持することを心がけましょう。\n";
+                    currentAdvice += "順調に習慣化が進んでいます。ご自身のペースで着実に前に進おり、非常に良い傾向です。まずは現在のペースを無理なく維持することを心がけましょう。\n";
                 } else if (ratePct >= 70) {
-                    text += "ご自身のペースを掴み、安定して継続できています。完璧を目指しすぎず、現実的な範囲でとても上手くコントロールされています。\n";
+                    currentAdvice += "ご自身のペースを掴み、安定して継続できています。完璧を目指しすぎず、現実的な範囲でとても上手くコントロールされています。\n";
                 } else if (ratePct >= 60) {
-                    text += "半分以上のペースをキープし、前進できています。このまま進むだけでも、将来には大きな蓄えとなってあなたを支えてくれます。\n";
+                    currentAdvice += "半分以上のペースをキープし、前進できています。このまま進むだけでも、将来には大きな蓄えとなってあなたを支えてくれます。\n";
                 } else if (ratePct >= 50) {
-                    text += "波はあるものの、半分近くは継続できています。できない日があっても気にせず、できた日の成果をしっかり認めてあげましょう。\n";
+                    currentAdvice += "波はあるものの、半分近くは継続できています。できない日があっても気にせず、できた日の成果をしっかり認めてあげましょう。\n";
                 } else if (ratePct >= 40) {
-                    text += "少しペースが落ちている、または忙しい時期かもしれません。まずは1日1回、アプリで記録をつけるという簡単な行動に戻りましょう。\n";
+                    currentAdvice += "少しペースが落ちている、または忙しい時期かもしれません。まずは1日1回、アプリで記録をつけるという簡単な行動に戻りましょう。\n";
                 } else if (ratePct >= 20) {
-                    text += "無理をせず、ご自身のやりやすい範囲で少しずつ進められています。まずは週に数回でも投資を意識し、気が向いた時に記録してみましょう。\n";
+                    currentAdvice += "無理をせず、ご自身のやりやすい範囲で少しずつ進められています。まずは週に数回でも投資を意識し、気が向いた時に記録してみましょう。\n";
                 } else {
-                    text += "今はまだ動き出したばかり、または忙しくて手が回らない状態かもしれません。まずは週に1回の記録から始めてみませんか。\n";
+                    currentAdvice += "今はまだ動き出したばかり、または忙しくて手が回らない状態かもしれません。まずは週に1回の記録から始めてみませんか。\n";
                 }
             }
 
@@ -5819,50 +5899,51 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 }
             }
             if (nextThreshold !== null && (nextThreshold - ratePct) <= 5) {
-                text += "あと " + (nextThreshold - ratePct) + "% の継続で、上の実行ランクに届きます。日々の少しの意識で、未来の予測はさらに上乗せされます。\n";
+                currentAdvice += "あと " + (nextThreshold - ratePct) + "% の継続で、上の実行ランクに届きます。日々の少しの意識で、未来の予測はさらに上乗せされます。\n";
             }
-            text += "\n";
 
-            text += "◆ あなたのシミュレーションの特徴\n";
+            let featuresAdvice = "";
             const annualYieldPct = annualYield * 100;
             if (annualYieldPct >= 8.0) {
-                text += "・金利、つまりお金を預けたときにもらえるご褒美の割合が年 " + annualYieldPct.toFixed(1) + "% というのは、とても力強い設定です。眠っているお金を外に連れ出して、しっかり働いてもらう計画です。貯金箱にお金を集めておくだけでは増えませんが、働かせることで、お金自身が少しずつ仲間を連れて戻ってきてくれます。\n";
+                featuresAdvice += "・金利、つまりお金を預けたときにもらえるご褒美の割合が年 " + annualYieldPct.toFixed(1) + "% というのは、とても力強い設定です。眠っているお金を外に連れ出して、しっかり働いてもらう計画です。貯金箱にお金を集めておくだけでは増えませんが、働かせることで、お金自身が少しずつ仲間を連れて戻ってきてくれます。\n";
             } else if (annualYieldPct >= 3.0) {
-                text += "・金利が年 " + annualYieldPct.toFixed(1) + "% というのは、現実的かつ堅実な設定です。世の中の成長の波に乗ることで、眠っているお金をゆっくりと起こし、安全に育てていくアプローチです。\n";
+                featuresAdvice += "・金利が年 " + annualYieldPct.toFixed(1) + "% というのは、現実的かつ堅実な設定です。世の中の成長の波に乗ることで、眠っているお金をゆっくりと起こし、安全に育てていくアプローチです。\n";
             } else if (annualYieldPct > 0) {
-                text += "・金利が年 " + annualYieldPct.toFixed(1) + "% という超堅実な設定は、お金を減らさないことを最優先にしたアプローチです。手元に確実に現金を残す安心感を得ながら、一歩ずつ進めることができます。\n";
+                featuresAdvice += "・金利が年 " + annualYieldPct.toFixed(1) + "% という超堅実な設定は、お金を減らさないことを最優先にしたアプローチです。手元に確実に現金を残す安心感を得ながら、一歩ずつ進めることができます。\n";
             } else {
-                text += "・金利なしの設定ですが、それでも地道な節約は大きな元手となります。もし将来、少しでも金利のある形で運用に回せるようになれば、ご褒美がさらにご褒美を生み出す魔法の力で、将来の予測はさらに大きく膨らみます。\n";
+                featuresAdvice += "・金利なしの設定ですが、それでも地道な節約は大きな元手となります。もし将来、少しでも金利のある形で運用に回せるようになれば、ご褒美がさらにご褒美を生み出す魔法の力で、将来の予測はさらに大きく膨らみます。\n";
             }
 
             if (years >= 25) {
-                text += "・" + years + "年という長い期間は、お金が仲間を増やすためのたっぷりとした時間になります。最初は小さく増えるだけですが、時間が経つほどに、ご褒美がさらに次のご褒美を生む雪だるま効果が急加速し、ただ貯める場合と比べて、運用した場合の差が圧倒的になります。\n";
+                featuresAdvice += "・" + years + "年という長い期間は、お金が仲間を増やすためのたっぷりとした時間になります。最初は小さく増えるだけですが、時間が経つほどに、ご褒美がさらに次のご褒美を生む雪だるま効果が急加速し、ただ貯める場合と比べて、運用した場合の差が圧倒的になります。\n";
             } else if (years >= 15) {
-                text += "・" + years + "年という期間は、教育やマイホーム、老後の準備など、人生の大きなイベントを支えるためのまとまった資金を作るのに適した長さです。時間を味方につけることで、無理のない確実な資産形成が望めます。\n";
+                featuresAdvice += "・" + years + "年という期間は、教育やマイホーム、老後の準備など、人生の大きなイベントを支えるためのまとまった資金を作るのに適した長さです。時間を味方につけることで、無理のない確実な資産形成が望めます。\n";
             } else {
-                text += "・" + years + "年という比較的短い期間は、近い将来の具体的な目的、たとえば車の購入や旅行、特定の勉強資金などをイメージしやすい現実的な計画です。短期的な生活防衛資金としても頼もしい盾になります。\n";
+                featuresAdvice += "・" + years + "年という比較的短い期間は、近い将来の具体的な目的、たとえば車の購入や旅行、特定の勉強資金などをイメージしやすい現実的な計画です。短期的な生活防衛資金としても頼もしい盾になります。\n";
             }
 
             if (monthlySaving >= 50000) {
-                text += "・月々の積立額が " + formatToYenMan(monthlySaving) + " というのは、とても心強い規模です。毎月コツコツと未来の自分のために頼もしい仕送りをして、自分らしい自由な暮らしの実現に向けて着実に進んでいます。\n";
+                featuresAdvice += "・月々の積立額が " + formatToYenMan(monthlySaving) + " というのは、とても心強い規模です。毎月コツコツと未来の自分のために頼もしい仕送りをして、自分らしい自由な暮らしの実現に向けて着実に進んでいます。\n";
             } else if (monthlySaving >= 15000) {
-                text += "・月々 " + formatToYenMan(monthlySaving) + " 程度の積立は、多くの人にとって無理がなく効果を最も実感しやすい金額帯です。日々のちょっとした贅沢を我慢して浮いたお金が、将来の大きな暮らしのゆとりになって返ってきます。\n";
+                featuresAdvice += "・月々 " + formatToYenMan(monthlySaving) + " 程度の積立は、多くの人にとって無理がなく効果を最も実感しやすい金額帯です。日々のちょっとした贅沢を我慢して浮いたお金が、将来の大きな暮らしのゆとりになって返ってきます。\n";
             } else {
-                text += "・月々 " + monthlySaving.toLocaleString() + "円と、少額から無理なく始められています。投資において最も重要なのは金額の大きさではなく、今すぐ始めることと、長く続けることです。この習慣こそが何よりの財産です。\n";
+                featuresAdvice += "・月々 " + monthlySaving.toLocaleString() + "円と、少額から無理なく始められています。投資において最も重要なのは金額の大きさではなく、今すぐ始めることと、長く続けることです。この習慣こそが何よりの財産です。\n";
             }
-            text += "\n";
 
-            text += "◆ 貯金と投資、何が違うの？\n";
-            text += "貯金は、お金を金庫に眠らせておくことです。減らない安心感はありますが、増えることもありません。\n";
-            text += "投資は、価値を生む場所に預けて、一緒に育ててもらうことです。お金を働かせることで、時間が経つほどにお金そのものが新しい価値を生み出し、雪だるま式に増えていきます。\n";
+            let investmentAdvice = "";
+            investmentAdvice += "貯金は、お金を金庫に眠らせておくことです。減らない安心感はありますが、増えることもありません。\n";
+            investmentAdvice += "投資は、価値を生む場所に預けて、一緒に育ててもらうことです。お金を働かせることで、時間が経つほどにお金そのものが新しい価値を生み出し、雪だるま式に増えていきます。\n";
             if (bonusAmount > 0) {
-                text += "ただ手元にお金を貯めておく場合と比べて、お金を働かせることによって " + formatToYenMan(bonusAmount) + " もの上乗せが期待できる計画です。\n";
+                investmentAdvice += "ただ手元にお金を貯めておく場合と比べて、お金を働かせることによって " + formatToYenMan(bonusAmount) + " もの上乗せが期待できる計画です。\n";
             }
-            text += "現在、世の中のモノの値段が少しずつ上がっています。ただお金を眠らせておくだけでは、お金の数字は減らなくても、買えるモノが少なくなるため、実質的にお金の価値が小さくなってしまいます。お金を価値ある形に変えて育てていくことは、自分を守るための賢い自己防衛策です。\n\n";
+            investmentAdvice += "現在、世の中のモノの値段が少しずつ上がっています。ただお金を眠らせておくだけでは、お金の数字は減らなくても、買えるモノが少なくなるため、実質的にお金の価値が小さくなってしまいます。お金を価値ある形に変えて育てていくことは、自分を守るための賢い自己防衛策です。\n\n";
+            investmentAdvice += "日々の小さなお金の節約は、単なる我慢ではありません。目先のささやかな消費を減らし、将来の嫌なことを断る自由や、人生の選択肢を増やすための取り組みです。将来のあなたが自由で豊かに暮らす日を楽しみに、これからもご自身のペースで一歩ずつ進んでいきましょう。";
 
-            text += "日々の小さなお金の節約は、単なる我慢ではありません。目先のささやかな消費を減らし、将来の嫌なことを断る自由や、人生の選択肢を増やすための取り組みです。将来のあなたが自由で豊かに暮らす日を楽しみに、これからもご自身のペースで一歩ずつ進んでいきましょう。";
-
-            return text.replace(/\n/g, '<br>');
+            return {
+                current: currentAdvice.trim().replace(/\n/g, '<br>'),
+                features: featuresAdvice.trim().replace(/\n/g, '<br>'),
+                investment: investmentAdvice.trim().replace(/\n/g, '<br>')
+            };
         }
 
         function floorTo100Jpy(num) {
@@ -6330,7 +6411,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 
                 // 動的なアドバイス生成関数を呼び出す
                 const bonusAmount = Math.max(0, totalInvestGoal - totalSavingGoal);
-                const adviceLetterHtml = generateDynamicAdvice(ratePct, years, idealTotal, totalInvestGoal, totalSavingGoal, bonusAmount, monthlySaving, annualYield);
+                const adviceData = generateDynamicAdvice(ratePct, years, idealTotal, totalInvestGoal, totalSavingGoal, bonusAmount, monthlySaving, annualYield);
 
 
                 // Build the active habits continuity list
@@ -6471,9 +6552,21 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             <span id="life-advice-chevron" style="font-size: 0.65rem; opacity: 0.7;">▼</span>
                         </button>
                         
-                                                <div id="life-advice-content-box" style="display: none; margin-top: 12px; animation: fadeInAdvice 0.5s ease-out; text-align: left;">
-                            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 16px; line-height: 1.6; font-size: 0.72rem; color: var(--text-main); font-family: sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                                ${adviceLetterHtml}
+                                                <div id="life-advice-content-box" style="display: none; margin-top: 12px; animation: fadeInAdvice 0.5s ease-out; flex-direction: column; gap: 12px; text-align: left; width: 100%;">
+                            <!-- 今のアドバイス -->
+                            <div style="background: rgba(0, 243, 255, 0.03); border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 12px; padding: 14px; line-height: 1.6; font-size: 0.72rem; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                <div style="font-weight: 800; font-size: 0.78rem; color: var(--neon-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🎯 今のアドバイス</div>
+                                <div style="color: var(--text-sub);">${adviceData.current}</div>
+                            </div>
+                            <!-- シミュレーションの特徴 -->
+                            <div style="background: rgba(219, 39, 119, 0.03); border: 1px solid rgba(219, 39, 119, 0.15); border-radius: 12px; padding: 14px; line-height: 1.6; font-size: 0.72rem; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                <div style="font-weight: 800; font-size: 0.78rem; color: var(--neon-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">📊 シミュレーションの特徴</div>
+                                <div style="color: var(--text-sub);">${adviceData.features}</div>
+                            </div>
+                            <!-- 投資アドバイス -->
+                            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 14px; line-height: 1.6; font-size: 0.72rem; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                <div style="font-weight: 800; font-size: 0.78rem; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">💡 投資アドバイス</div>
+                                <div style="color: var(--text-sub);">${adviceData.investment}</div>
                             </div>
                         </div>
 
