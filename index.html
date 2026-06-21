@@ -1992,12 +1992,12 @@
                     <!-- 累計やめた日数 -->
                     <div style="background: var(--bg-base); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; text-align: center;">
                         <div style="font-size: 0.7rem; color: var(--text-muted);">累計投資日数</div>
-                        <div id="life-stats-days" style="font-size: 1.4rem; font-weight: 800; color: var(--neon-primary); margin-top: 4px; font-family: 'Outfit';">0 日</div>
+                        <div id="life-stats-days" style="font-size: 1.25rem; font-weight: 800; color: var(--neon-primary); margin-top: 4px; font-family: 'Outfit'; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">0 日</div>
                     </div>
                     <!-- 累計浮いたお金 -->
                     <div style="background: var(--bg-base); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; text-align: center;">
-                        <div style="font-size: 0.7rem; color: var(--text-muted);">累計投資原資</div>
-                        <div id="life-stats-money" style="font-size: 1.4rem; font-weight: 800; color: var(--neon-secondary); margin-top: 4px; font-family: 'Outfit';">0 円</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">浮いた元手</div>
+                        <div id="life-stats-money" style="font-size: 1.25rem; font-weight: 800; color: var(--neon-secondary); margin-top: 4px; font-family: 'Outfit'; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">0 円</div>
                     </div>
                     <!-- 🚭 タバコの実績 -->
                     <div id="life-stats-tobacco-card" style="background: rgba(255, 75, 75, 0.04); border: 1px solid rgba(255, 75, 75, 0.12); border-radius: 12px; padding: 12px; display: none; grid-column: span 2; text-align: left;">
@@ -5778,6 +5778,91 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return isNegative ? `-${str}` : str;
         }
 
+        function generateDynamicAdvice(ratePct, years, idealTotal, totalInvestGoal, totalSavingGoal, bonusAmount, monthlySaving, annualYield) {
+            let adviceBody = "";
+
+            adviceBody += "【継続のためのアドバイス】\n";
+            if (ratePct >= 98) {
+                adviceBody += "驚異的な意志の強さで、ほぼ完璧に継続されています。ご自身を律する力が極めて高く、これまでの取り組みは非の打ち所がない素晴らしい成果を生み出しています。\n";
+                adviceBody += "もし生活に少しゆとりがあれば、1日あたりあと100円だけ上乗せしてみることをお勧めします。それだけで、将来の蓄えはさらに増え、" + years + "年後には " + formatToYenMan(idealTotal) + " にまで引き上げることができます。小さな積み重ねが、将来の暮らしをさらに豊かにする確かな力になります。\n\n";
+            } else if (ratePct >= 95) {
+                adviceBody += "理想的なペースで、非常に高い水準で継続できています。ご自身を管理する能力が非常に高く、現在の良い習慣が完全に定着しつつあります。\n";
+                adviceBody += "もし生活に少しゆとりがあれば、あとほんの少し意識を高めてみるだけで、将来の蓄えはさらに増え、" + years + "年後には " + formatToYenMan(idealTotal) + " に到達させることができます。小さな上乗せが、将来の暮らしをさらに豊かにする確かな力になります。\n\n";
+            } else if (ratePct >= 90) {
+                adviceBody += "極めて順調なペースで継続できています。多少の忙しさがあっても崩れることなく、ご自身の習慣とマネーマシンをしっかりとコントロールできている証拠です。このペースを維持していましょう。\n\n";
+            } else if (ratePct >= 80) {
+                adviceBody += "順調に習慣化が進んでいます。週の大半をしっかりと継続できており、資産形成の非常に強固な基盤が着実に作られています。自信を持ってこのまま進んでください。\n\n";
+            } else if (ratePct >= 70) {
+                adviceBody += "ご自身のペースを掴み、安定して継続できています。完璧を目指しすぎず、現実的な範囲でとても上手くコントロールされています。引き続きマイペースで進めていきましょう。\n\n";
+            } else if (ratePct >= 60) {
+                adviceBody += "概ね半分以上のペースをキープし、着実に前進できています。習慣化の土台は十分にできていますので、無理のない範囲でこの良いリズムを守っていましょう。このまま進むだけでも、将来には " + formatToYenMan(totalInvestGoal) + " の蓄えとなってあなたを支えてくれます。\n\n";
+            } else if (ratePct >= 50) {
+                adviceBody += "波はあるものの、半数近くは継続できています。できない日があっても気にせず、『できた日』の成果をしっかり褒めてあげましょう。無理せず少しずつ記録日を増やしていけるといいですね。\n\n";
+            } else if (ratePct >= 40) {
+                adviceBody += "少しペースが落ちている、またはお忙しい時期かもしれません。完璧にできなくても全く問題ありません。まずは『1日1回、アプリで記録をつける』という、最も簡単な行動に戻ってみましょう。焦らずに、ご自身のやりやすい範囲で少しずつ再開していましょう。\n\n";
+            } else if (ratePct >= 20) {
+                adviceBody += "無理をせず、ご自身のやりやすい範囲で少しずつ進められています。ここから習慣を育てるのが面白いところです。まずは週に数回でも投資を意識し、気が向いたときにアプリを開いて記録してみましょう。焦る必要はありません。\n\n";
+            } else {
+                adviceBody += "今はまだ動き出したばかり、またはお忙しくて手が回らない状態かもしれません。記録があること自体が一つの大きな一歩です。まずは週に1回、習慣を振り返りながら、小さな金額から投資を記録してみることから始めてみませんか。\n\n";
+            }
+
+            // 「がんばったら変わる」次のランクへの応援メッセージ (距離が5%以内の場合に表示)
+            const thresholds = [20, 40, 50, 60, 70, 80, 90, 95, 98];
+            let nextThreshold = null;
+            for (let t of thresholds) {
+                if (ratePct < t) {
+                    nextThreshold = t;
+                    break;
+                }
+            }
+            if (nextThreshold !== null && (nextThreshold - ratePct) <= 5) {
+                adviceBody += "【次のステージへのヒント】\n";
+                adviceBody += "現在の総合実行率は " + ratePct + "% です。あとわずか " + (nextThreshold - ratePct) + "% の記録継続で、上の実行ランク（目標達成率 " + nextThreshold + "%以上）に手が届きます！日々の小さな一歩が、確実に未来のロードマップを塗り替えています。がんばりましょう！\n\n";
+            }
+
+            // 設定値（利回り・期間・積立額）に応じた動的メッセージ
+            adviceBody += "【計画のシミュレーション分析】\n";
+            // 利回りの分析
+            const annualYieldPct = annualYield * 100;
+            if (annualYieldPct >= 8.0) {
+                adviceBody += "・想定利回り " + annualYieldPct.toFixed(1) + "% という力強い運用設定は、複利の爆発力を最大限に引き出す計画です。日々の少額の浮いた資金が、将来に想像以上の大きな力へと育っていきます。\n";
+            } else if (annualYieldPct >= 3.0) {
+                adviceBody += "・想定利回り " + annualYieldPct.toFixed(1) + "% という現実的かつ堅実な運用設定は、長期で安定した土台を築く賢明な選択です。世界経済の成長の波に乗ることで、時間をかけて安全に資産を育てられます。\n";
+            } else if (annualYieldPct > 0) {
+                adviceBody += "・想定利回り " + annualYieldPct.toFixed(1) + "% という超堅実な設定は、元本の安定性を最優先にしたアプローチです。手元に確実に現金を残す安心感を得ながら、一歩ずつ進めることができます。\n";
+            } else {
+                adviceBody += "・金利なし（貯蓄のみ）の設定ですが、それでも地道な節約は大きな元手となります。もし将来、少しでも金利のある資産運用に回せるようになれば、複利の力でさらに将来予測は上乗せされます。\n";
+            }
+
+            // 期間の分析
+            if (years >= 25) {
+                adviceBody += "・" + years + "年という超長期のロードマップは、時間があなたの最大の味方になります。中盤以降から複利の雪だるま効果が急加速し、ただ貯める場合（" + formatToYenMan(totalSavingGoal) + "）と比べて、資産運用した場合（" + formatToYenMan(totalInvestGoal) + "）の差が圧倒的になります。\n";
+            } else if (years >= 15) {
+                adviceBody += "・" + years + "年という中長期の期間は、人生の様々なイベント（教育、住宅、セカンドライフ準備など）を支えるためのまとまった資金を作るのに非常に適した長さです。適度に複利の恩恵を受けながら、確実な資産形成が望めます。\n";
+            } else {
+                adviceBody += "・" + years + "年という比較的短期のシミュレーションは、近い将来の具体的な目的（車の購入や旅行、特定の自己投資など）をイメージしやすい現実的な計画です。短期的な生活防衛資金としても頼もしい盾になります。\n";
+            }
+
+            // 積立額の分析
+            if (monthlySaving >= 50000) {
+                adviceBody += "・月々の積立額が " + formatToYenMan(monthlySaving) + " という非常に頼もしい規模です。このレベルの積立を続けることは、将来の経済的自立（FIRE）や、自分らしい自由な暮らしの実現に向けた特急券を手にしているようなものです。\n\n";
+            } else if (monthlySaving >= 15000) {
+                adviceBody += "・月々 " + formatToYenMan(monthlySaving) + " 程度の積立は、多くの人にとって理想的かつ効果を最も実感しやすい金額帯です。日々のちょっとした贅沢の引き算が、将来の大きな暮らしの余裕となって還元されます。\n\n";
+            } else {
+                adviceBody += "・月々 " + monthlySaving.toLocaleString() + "円と、少額から無理なく始められています。投資において最も重要なのは金額の多さではなく『今すぐ始めること』と『長く続けること』です。この習慣こそが何よりの財産です。\n\n";
+            }
+
+            adviceBody += "【将来の意義】\n";
+            if (bonusAmount > 0) {
+                adviceBody += "ただ手元にお金を貯めておく場合と比べて、資産運用によって " + formatToYenMan(bonusAmount) + " の上乗せが期待できる計画です。長期間続けるほど、貯まったお金そのものが成果を生み出す良い循環が生まれ、資産の増える速度が早くなっていきます。\n";
+            }
+            adviceBody += "現在、世の中の物価が少しずつ上がっています。ただお金を眠らせておくだけでは、お金の価値は目に見えない形で少しずつ減っていってしまいます。このように価値ある形に変えて育てていくことは、ご自身の将来を守るための賢明で確実な自己防衛策です。\n\n";
+
+            adviceBody += "日々の小さなお金の節約は、単なる我慢ではありません。目先のささやかな消費を減らし、将来の「嫌なことを断る自由」や「人生の選択肢」を増やすための取り組みです。将来のご自身の自由な暮らしを楽しみに、これからもご自身のペースで一歩ずつ進んでいきましょう。";
+
+            return adviceBody.replace(/\n/g, '<br>');
+        }
+
         function floorTo100Jpy(num) {
             // 10円単位の設定が反映されるように 10円単位での切り捨て に修正しました
             return Math.floor(num / 10) * 10;
@@ -5857,7 +5942,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const dailyHistory = history.filter(item => {
                 if (item.type === 'tobacco' && !profile.trackTobacco) return false;
                 if (item.type === 'beer' && !profile.trackBeer) return false;
-                return item.type === 'tobacco' || item.type === 'beer';
+                if (item.type === 'invest' && !profile.trackInvest) return false;
+                return item.type === 'tobacco' || item.type === 'beer' || item.type === 'invest';
             });
             const uniqueDates = new Set(dailyHistory.map(item => item.date));
             const totalStatsDays = uniqueDates.size;
@@ -6240,32 +6326,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
                                 const ratePct = Math.round(avgRate * 100);
                 
-                // カタカナ・和製英語・専門用語を廃止し、客観的で温かいアドバイスに一本化
-                let adviceBody = "";
+                // 動的なアドバイス生成関数を呼び出す
                 const bonusAmount = Math.max(0, totalInvestGoal - totalSavingGoal);
-
-                // 重複していた現在の％数値表示は削除しました。
-
-                adviceBody += "【継続のためのアドバイス】\\n";
-                if (ratePct >= 95) {
-                    adviceBody += "理想的なペースで、ほぼ完璧に継続できています。ご自身を律する力が非常に高く、これまでの取り組みは素晴らしい成果を生み出しています。\\n";
-                    adviceBody += "もし生活に少しゆとりがあれば、1日あたりあと100円だけ上乗せしてみることをお勧めします。それだけで、将来の蓄えはさらに増え、" + years + "年後には " + formatToYenMan(idealTotal) + " にまで引き上げることができます。小さな積み重ねが、将来の暮らしをさらに豊かにする確かな力になります。\\n\\n";
-                } else if (ratePct >= 60) {
-                    adviceBody += "順調に習慣化が進んでいます。ご自身のペースで着実に前に進んでおり、非常に良い傾向です。完璧を目指そうとすると疲れてしまうことがありますので、まずは現在のペースを無理なく維持することを心がけましょう。\\n";
-                    adviceBody += "このまま進むだけでも、将来には " + formatToYenMan(totalInvestGoal) + " の蓄えとなってあなたを支えてくれます。\\n\\n";
-                } else {
-                    adviceBody += "少しペースが落ちている、またはお忙しい時期かもしれません。完璧にできなくても全く問題ありません。まずは「1日1回、アプリで記録をつける」という、最も簡単な行動に戻ってみましょう。焦らずに、ご自身のやりやすい範囲で少しずつ再開していきましょう。\\n\\n";
-                }
-
-                adviceBody += "【お金の動きと将来の意義】\\n";
-                if (bonusAmount > 0) {
-                    adviceBody += "ただ手元にお金を貯めておく場合と比べて、資産運用によって " + formatToYenMan(bonusAmount) + " の上乗せが期待できる計画です。長期間続けるほど、貯まったお金そのものが成果を生み出す良い循環が生まれ、資産の増える速度が早くなっていきます。\\n";
-                }
-                adviceBody += "現在、世の中の物価が少しずつ上がっています。ただお金を眠らせておくだけでは、お金の価値は目に見えない形で少しずつ減っていってしまいます。このように価値ある形に変えて育てていくことは、ご自身の将来を守るための賢明で確実な自己防衛策です。\\n\\n";
-
-                adviceBody += "日々の小さなお金の節約は、単なる我慢ではありません。目先のささやかな消費を、将来の「嫌なことを断る自由」や「人生の選択肢」を増やすための取り組みです。将来のご自身の自由な暮らしを楽しみに、これからもご自身のペースで一歩ずつ進んでいきましょう。";
-
-                const adviceLetterHtml = adviceBody.replace(/\\n/g, '<br>');
+                const adviceLetterHtml = generateDynamicAdvice(ratePct, years, idealTotal, totalInvestGoal, totalSavingGoal, bonusAmount, monthlySaving, annualYield);
 
 
                 // Build the active habits continuity list
@@ -6730,7 +6793,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=126')
+                navigator.serviceWorker.register('./sw.js?v=131')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
