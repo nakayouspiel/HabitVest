@@ -2010,7 +2010,7 @@
                                 <div id="life-stats-tobacco-count" style="font-weight: 800; color: var(--text-main); font-size: 1.05rem; font-family: 'Outfit';">0本</div>
                             </div>
                             <div style="background: rgba(255, 255, 255, 0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border-glass); text-align: center;">
-                                <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">取り戻した寿命</div>
+                                <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">浮いた時間</div>
                                 <div id="life-stats-tobacco-life" style="font-weight: 800; color: var(--neon-primary); font-size: 1.05rem; font-family: 'Outfit';">0分</div>
                             </div>
                         </div>
@@ -5923,13 +5923,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 featuresAdvice += years + "年という比較的短い期間は、近い将来の具体的な目的、たとえば車の購入や旅行、特定の勉強資金などをイメージしやすい現実的な計画です。短期的な生活防衛資金としても頼もしい盾になります。\n";
             }
 
-            if (monthlySaving >= 50000) {
-                featuresAdvice += "月々の積立額が " + formatToYenMan(monthlySaving) + " というのは、とても心強い規模です。毎月コツコツと未来の自分のために頼もしい仕送りをして、自分らしい自由な暮らしの実現に向けて着実に進んでいます。\n";
-            } else if (monthlySaving >= 15000) {
-                featuresAdvice += "月々 " + formatToYenMan(monthlySaving) + " 程度の積立は、多くの人にとって無理がなく効果を最も実感しやすい金額帯です。日々のちょっとした贅沢を我慢して浮いたお金が、将来の大きな暮らしのゆとりになって返ってきます。\n";
-            } else {
-                featuresAdvice += "月々 " + monthlySaving.toLocaleString() + "円と、少額から無理なく始められています。投資において最も重要なのは金額の大きさではなく、今すぐ始めることと、長く続けることです。この習慣こそが何よりの財産です。\n";
-            }
+            const monthlySavingStr = (monthlySaving >= 10000) ? formatToYenMan(monthlySaving) : (monthlySaving.toLocaleString() + "円");
+            featuresAdvice += "月々 " + monthlySavingStr + "（日換算で約 " + Math.round(monthlySaving / 30).toLocaleString() + "円）をコツコツ積み立てるペースは、将来のあなたを支える大切な一歩です。投資において最も重要なのは、金額の大きさよりも、早く始めて長く続けることです。日々のちょっとした工夫で浮いたお金が、将来の大きな安心感や人生の選択肢の広がりになって返ってきます。\n";
 
             let investmentAdvice = "";
             investmentAdvice += "貯金は、お金を金庫に眠らせておくことです。減らない安心感はありますが、増えることもありません。\n";
@@ -6062,17 +6057,17 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     statsTobaccoCard.style.display = 'block';
                     // counts.tobacco は累計箱数。1箱＝20本で換算
                     const tobaccoCountVal = Math.round(counts.tobacco * 20);
-                    const lifeRecoveredMin = Math.round(counts.tobacco * 110); // 1箱で110分寿命回復
+                    const timeSavedMin = Math.round(tobaccoCountVal * 5); // 1本5分換算で喫煙・移動時間などを算出
                     
-                    let lifeRecoveredStr = `${lifeRecoveredMin} 分`;
-                    if (lifeRecoveredMin >= 60) {
-                        const hrs = Math.floor(lifeRecoveredMin / 60);
-                        const mins = lifeRecoveredMin % 60;
-                        lifeRecoveredStr = `${hrs}時間 ${mins}分`;
+                    let timeSavedStr = `${timeSavedMin} 分`;
+                    if (timeSavedMin >= 60) {
+                        const hrs = Math.floor(timeSavedMin / 60);
+                        const mins = timeSavedMin % 60;
+                        timeSavedStr = `${hrs}時間 ${mins}分`;
                     }
 
                     statsTobaccoCount.innerText = `${tobaccoCountVal} 本`;
-                    statsTobaccoLife.innerText = lifeRecoveredStr;
+                    statsTobaccoLife.innerText = timeSavedStr;
                 } else {
                     statsTobaccoCard.style.display = 'none';
                 }
