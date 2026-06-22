@@ -2107,13 +2107,13 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
-                <h3>⚙️ アプリ・習慣詳細設定</h3>
+                <h3>アプリ・習慣詳細設定</h3>
                 <button id="modal-close" class="modal-close-btn">&times;</button>
             </div>
             <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
                 <!-- 🔤 文字サイズ設定 -->
                 <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
-                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">🔤 文字サイズ切り替え</h4>
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">文字サイズ切り替え</h4>
                     <div style="display: flex; gap: 8px;">
                         <button type="button" class="auth-btn font-size-btn" data-size="small" style="flex: 1; padding: 6px;">小</button>
                         <button type="button" class="auth-btn font-size-btn" data-size="medium" style="flex: 1; padding: 6px;">中</button>
@@ -2121,9 +2121,9 @@
                     </div>
                 </div>
 
-                <!-- 👤 プロフィール設定 -->
+                <!-- プロフィール設定 -->
                 <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
-                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">👤 プロフィール設定</h4>
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">プロフィール設定</h4>
                     <div class="form-group">
                         <label for="profile-name">ニックネーム</label>
                         <input type="text" id="profile-name" value="" placeholder="投資家としてのニックネーム">
@@ -2131,7 +2131,7 @@
                     <div class="form-group" style="display: none;">
                         <label for="profile-hobby">あなたの趣味 夢の使い道</label>
                         <select id="profile-hobby">
-                            <option value="invest" selected>🪙 投資</option>
+                            <option value="invest" selected>投資</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -2160,17 +2160,17 @@
 
                 <!-- 🚭 習慣の単価設定 -->
                 <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
-                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-secondary); margin-bottom: 10px;">🚭 習慣ごとの単価設定</h4>
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-secondary); margin-bottom: 10px;">習慣ごとの単価設定</h4>
                     
                     <!-- 🚭 タバコ -->
                     <div class="form-group" style="margin-bottom: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                            <input type="checkbox" id="profile-track-tobacco"> 🚭 タバコ代を投資に回してアプリに表示する
+                            <input type="checkbox" id="profile-track-tobacco"> タバコ代を投資に回してアプリに表示する
                         </label>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
-                            <label for="tobacco-pack-price">🚭 タバコ 1箱の価格</label>
+                            <label for="tobacco-pack-price">タバコ 1箱の価格</label>
                             <span class="val-badge" id="tobacco-price-badge">600円</span>
                         </div>
                         <div class="input-box">
@@ -2196,12 +2196,12 @@
                     <!-- 🍺 お酒 -->
                     <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                            <input type="checkbox" id="profile-track-beer"> 🍺 お酒代を投資に回してアプリに表示する
+                            <input type="checkbox" id="profile-track-beer"> お酒代を投資に回してアプリに表示する
                         </label>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
-                            <label for="beer-unit-price">🍺 お酒 1本あるいは1杯の価格</label>
+                            <label for="beer-unit-price">お酒 1本あるいは1杯の価格</label>
                             <span class="val-badge" id="beer-price-badge">250円</span>
                         </div>
                         <div class="input-box">
@@ -2227,12 +2227,12 @@
                     <!-- 💰 未来への投資 -->
                     <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                            <input type="checkbox" id="profile-track-invest"> 💰 毎月の積立投資を記録してアプリに表示する
+                            <input type="checkbox" id="profile-track-invest"> 毎月の積立投資を記録してアプリに表示する
                         </label>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
-                            <label for="invest-monthly-target">💰 月間の目標投資額</label>
+                            <label for="invest-monthly-target">月間の目標投資額</label>
                             <span class="val-badge" id="invest-monthly-target-badge">30,000円</span>
                         </div>
                         <div class="input-box">
@@ -2246,7 +2246,7 @@
 
                 <!-- 📈 資産シミュレーションの設定 -->
                 <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
-                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 10px;">📈 シミュレーション予測設定</h4>
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 10px;">シミュレーション予測設定</h4>
                     <!-- 📈 利回り -->
                     <div class="form-group">
                         <div class="label-wrapper">
@@ -2293,18 +2293,18 @@
 
                 <!-- 🔐 アカウント同期 -->
                 <div class="auth-sync-section">
-                    <div class="auth-title" id="auth-section-title">🔒 アカウント連携</div>
+                    <div class="auth-title" id="auth-section-title">アカウント連携</div>
                     <div id="auth-status-area" style="margin-top: 8px;">
                         <!-- ログインしていない場合はボタン一覧を表示 -->
                         <div class="auth-grid" id="auth-btn-grid">
-                            <button class="auth-btn" id="btn-login-line">💬 LINE</button>
-                            <button class="auth-btn" id="btn-login-google">🌐 Google</button>
-                            <button class="auth-btn coming-soon" id="btn-login-apple">🍏 Apple</button>
+                            <button class="auth-btn" id="btn-login-line">LINE</button>
+                            <button class="auth-btn" id="btn-login-google">Google</button>
+                            <button class="auth-btn coming-soon" id="btn-login-apple">Apple</button>
                         </div>
                         <!-- ログインしている場合はステータスとログアウトボタンを表示 -->
                         <div id="auth-logged-in-area" style="display: none; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); padding: 10px 14px; border-radius: 12px;">
                             <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                                <span id="auth-user-icon">👤</span> <span id="auth-user-name">ログイン中</span>
+                                <span id="auth-user-icon"></span> <span id="auth-user-name">ログイン中</span>
                             </div>
                             <button id="btn-logout" class="modal-btn-secondary" style="margin-top: 0; padding: 6px 12px; width: auto; font-size: 0.7rem;">ログアウト</button>
                         </div>
@@ -2313,7 +2313,7 @@
             </div>
             
             <!-- 🗑️ オールリセットボタン -->
-            <button id="modal-reset" class="modal-btn-reset">🗑️ 設定とデータを完全に初期化する</button>
+            <button id="modal-reset" class="modal-btn-reset">設定とデータを完全に初期化する</button>
             <button id="modal-save" class="modal-btn">設定を保存して適用</button>
         </div>
     </div>
