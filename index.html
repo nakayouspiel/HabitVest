@@ -2330,7 +2330,7 @@
             <div class="input-box" style="justify-content: center; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
                 <button type="button" class="spin-btn" id="free-saving-dec" style="width: 44px; height: 44px; font-size: 1.4rem; border-radius: 50%;">-</button>
                 <div style="display: inline-flex; align-items: center; justify-content: center;">
-                    <input type="number" id="free-saving-val" style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); font-family: var(--font-ui); background: transparent; border: none; border-bottom: 2px solid var(--border-glass); text-align: center; width: 120px; outline: none; margin-right: 4px;" value="5000" min="0" step="1000">
+                    <input type="number" id="free-saving-val" style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); font-family: var(--font-ui); background: transparent; border: none; border-bottom: 2px solid var(--border-glass); text-align: center; width: 140px; outline: none; margin-right: 4px;" value="5000" min="0" step="1000">
                     <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-sub);">円</span>
                 </div>
                 <button type="button" class="spin-btn" id="free-saving-inc" style="width: 44px; height: 44px; font-size: 1.4rem; border-radius: 50%;">+</button>
@@ -2363,7 +2363,7 @@
                     あなたはタバコをやめて、その分を投資することを考えていますか？
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button type="button" class="modal-btn" onclick="setOnboardHabit('tobacco', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(219,39,119,0.15) 0%, rgba(219,39,119,0.05) 100%); border: 1.5px solid var(--neon-secondary); width: 100%;">はい、考えている</button>
+                    <button type="button" class="modal-btn" onclick="setOnboardHabit('tobacco', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(219,39,119,0.15) 0%, rgba(219,39,119,0.05) 100%); border: 1.5px solid var(--neon-secondary); color: var(--neon-secondary); width: 100%;">はい、考えている</button>
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('tobacco', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、考えていない</button>
                 </div>
             </div>
@@ -2375,7 +2375,7 @@
                     あなたはお酒をやめて、その分を投資することを考えていますか？
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button type="button" class="modal-btn" onclick="setOnboardHabit('beer', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.05) 100%); border: 1.5px solid #f59e0b; width: 100%;">はい、考えている</button>
+                    <button type="button" class="modal-btn" onclick="setOnboardHabit('beer', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.05) 100%); border: 1.5px solid #f59e0b; color: #d97706; width: 100%;">はい、考えている</button>
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('beer', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、考えていない</button>
                 </div>
             </div>
@@ -2387,7 +2387,7 @@
                     タバコやお酒のほかにも、何かを節約したお金を投資に回したり、毎月コツコツと投資を記録したいですか？
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button type="button" class="modal-btn" onclick="setOnboardHabit('invest', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(14,165,233,0.15) 0%, rgba(14,165,233,0.05) 100%); border: 1.5px solid var(--neon-primary); width: 100%;">はい、記録したい</button>
+                    <button type="button" class="modal-btn" onclick="setOnboardHabit('invest', true)" style="margin-top: 0; background: linear-gradient(135deg, rgba(14,165,233,0.15) 0%, rgba(14,165,233,0.05) 100%); border: 1.5px solid var(--neon-primary); color: var(--neon-primary); width: 100%;">はい、記録したい</button>
                     <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('invest', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、記録しない</button>
                 </div>
             </div>
@@ -4562,8 +4562,15 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             window.scrollTo({ top: 0, behavior: 'instant' });
 
             if (step.position === 'top') {
-                // 上側に配置 (チェックインボタンの下あたり)
-                tooltip.style.top = '220px';
+                // 上側に配置 (チェックインボタンの下あたり。PWAバナーの有無などでズレるのを防ぐため、要素の位置から動的に計算)
+                const checkinContainer = document.querySelector('.checkin-container');
+                let topPos = 220;
+                if (checkinContainer) {
+                    const rect = checkinContainer.getBoundingClientRect();
+                    const containerRect = document.querySelector('.app-container').getBoundingClientRect();
+                    topPos = Math.round(rect.bottom - containerRect.top + 10);
+                }
+                tooltip.style.top = topPos + 'px';
                 tooltip.style.bottom = 'auto';
                 tooltip.style.left = '50%';
                 tooltip.style.transform = 'translateX(-50%)';
@@ -5924,7 +5931,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             }
 
             const monthlySavingStr = (monthlySaving >= 10000) ? formatToYenMan(monthlySaving) : (monthlySaving.toLocaleString() + "円");
-            featuresAdvice += "月々 " + monthlySavingStr + "（日換算で約 " + Math.round(monthlySaving / 30).toLocaleString() + "円）をコツコツ積み立てるペースは、将来のあなたを支える大切な一歩です。投資において最も重要なのは、金額の大きさよりも、早く始めて長く続けることです。日々のちょっとした工夫で浮いたお金が、将来の大きな安心感や人生の選択肢の広がりになって返ってきます。\n";
+            featuresAdvice += "コツコツ積み立てるペースは、将来のあなたを支える大切な一歩です。投資において最も重要なのは、金額の大きさよりも、早く始めて長く続けることです。日々のちょっとした工夫で浮いたお金が、将来の大きな安心感や人生の選択肢の広がりになって返ってきます。\n";
 
             let investmentAdvice = "";
             investmentAdvice += "貯金は、お金を金庫に眠らせておくことです。減らない安心感はありますが、増えることもありません。\n";
