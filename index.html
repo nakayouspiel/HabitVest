@@ -1870,14 +1870,14 @@
                 </div>
                 <div style="margin-top: 12px; font-size: 0.68rem; color: var(--text-sub); line-height: 1.5; text-align: left; display: flex; align-items: flex-start; gap: 4px; border-top: 1px dashed var(--border-glass); padding-top: 10px;">
                     <span style="font-size: 0.8rem; line-height: 1;">💡</span>
-                    <span><strong>【シミュレーション計算について】</strong><br>🎯設定中の習慣のみ、ライフや資産将来予測の計算に自動反映されます。設定画面のチェックのON/OFFで対象を切り替えることができます。</span>
+                    <span><strong>【シミュレーション計算について】</strong><br>🎯設定画面でチェックを入れた習慣だけが、グラフや未来の資産計算にプラスされます。</span>
                 </div>
             </div>
 
             <!-- 📅 カレンダー表示エリア -->
             <div class="glass-card" style="padding: 14px; text-align: center;">
                 <button id="btn-open-calendar" class="modal-btn" style="margin-top: 0; padding: 12px; font-size: 0.85rem; font-weight: 700; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
-                    📅 記録カレンダーを表示する
+                    📅 過去の記録とカレンダーを見る
                 </button>
             </div>
 
@@ -1954,7 +1954,7 @@
                     <span style="font-size: 1rem;">💡</span>
                     <div>
                         <strong>シミュレーションの前提：</strong><br>
-                        この将来予測は、<strong>現在の習慣を今後も毎日・毎月継続し、</strong>浮いたお金を想定の利回りで投資に回し続けた場合を示しています。<br>
+                        ※このグラフは今の節約ペースをこのまま毎日、何年もずっと続けた場合の未来の予想図です。<br>
                         初日の記録だけでも このまま毎日続けたら将来どうなるか の成果がひと目でわかるようになっています。
                     </div>
                 </div>
@@ -2126,7 +2126,7 @@
                     <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">👤 プロフィール設定</h4>
                     <div class="form-group">
                         <label for="profile-name">ニックネーム</label>
-                        <input type="text" id="profile-name" value="" placeholder="あなたの名前">
+                        <input type="text" id="profile-name" value="" placeholder="投資家としてのニックネーム">
                     </div>
                     <div class="form-group" style="display: none;">
                         <label for="profile-hobby">あなたの趣味 夢の使い道</label>
@@ -2165,7 +2165,7 @@
                     <!-- 🚭 タバコ -->
                     <div class="form-group" style="margin-bottom: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                            <input type="checkbox" id="profile-track-tobacco"> 🚭 タバコ節制による投資 
+                            <input type="checkbox" id="profile-track-tobacco"> 🚭 タバコ代を投資に回してアプリに表示する
                         </label>
                     </div>
                     <div class="form-group">
@@ -2196,12 +2196,12 @@
                     <!-- 🍺 お酒 -->
                     <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                            <input type="checkbox" id="profile-track-beer"> 🍺 お酒節制による投資 
+                            <input type="checkbox" id="profile-track-beer"> 🍺 お酒代を投資に回してアプリに表示する
                         </label>
                     </div>
                     <div class="form-group">
                         <div class="label-wrapper">
-                            <label for="beer-unit-price">🍺 お酒 1本/1杯 of 価格</label>
+                            <label for="beer-unit-price">🍺 お酒 1本あるいは1杯の価格</label>
                             <span class="val-badge" id="beer-price-badge">250円</span>
                         </div>
                         <div class="input-box">
@@ -2227,7 +2227,7 @@
                     <!-- 💰 未来への投資 -->
                     <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                            <input type="checkbox" id="profile-track-invest"> 💰 未来へ投資を記録する
+                            <input type="checkbox" id="profile-track-invest"> 💰 毎月の積立投資を記録してアプリに表示する
                         </label>
                     </div>
                     <div class="form-group">
@@ -2250,7 +2250,7 @@
                     <!-- 📈 利回り -->
                     <div class="form-group">
                         <div class="label-wrapper">
-                            <label for="slider-yield">想定年間利回り  投資先 </label>
+                            <label for="slider-yield">想定年間利回り 年利</label>
                             <span class="val-badge" id="yield-badge">8%</span>
                         </div>
                         <div class="input-box">
@@ -5848,54 +5848,27 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
 
         function generateDynamicAdvice(ratePct, years, idealTotal, totalInvestGoal, totalSavingGoal, bonusAmount, monthlySaving, annualYield) {
-            const hasHabits = (profile.trackTobacco || profile.trackBeer);
-            const isInvestOnly = (profile.trackInvest && !hasHabits);
-
             let currentAdvice = "";
-            if (isInvestOnly) {
-                if (ratePct >= 98) {
-                    currentAdvice += "目標に向けて完璧なペースで投資を続けられています。これほど高い自己管理能力を維持できるのは本当に素晴らしいことです。将来がとても楽しみですね。\n";
-                } else if (ratePct >= 95) {
-                    currentAdvice += "目標に向けて非常に順調なペースを維持できています。お金を働かせる習慣が、すっかり暮らしの軸として定着しています。\n";
-                } else if (ratePct >= 90) {
-                    currentAdvice += "とても安定したペースで進んでいます。忙しい日々の中でも崩れることなく計画をコントロールできていて素晴らしいです。\n";
-                } else if (ratePct >= 80) {
-                    currentAdvice += "目標に向けて着実にお金を積み上げられています。資産を作るための強い土台が、いま順調に育っています。\n";
-                } else if (ratePct >= 70) {
-                    currentAdvice += "無理のない現実的なペースで進んでいます。投資は長く続けることこそが一番の強みになりますので、この調子でいきましょう。\n";
-                } else if (ratePct >= 60) {
-                    currentAdvice += "目標の半分以上のペースを守り、確実に前進しています。このまま進むだけでも、将来あなたを支える大きな盾になります。\n";
-                } else if (ratePct >= 50) {
-                    currentAdvice += "波はありますが、半分近くは目標に届いています。できなかった時を悔やむより、できた成果をしっかりと喜んでいきましょう。\n";
-                } else if (ratePct >= 40) {
-                    currentAdvice += "少しペースが落ちているようです。無理に大きな額を目指さず、まずは今月できる分だけを記録することから再スタートしてみましょう。\n";
-                } else if (ratePct >= 20) {
-                    currentAdvice += "ご自身のやりやすい範囲で少しずつ進められています。焦る必要はありませんので、少額から少しずつ投資を意識してみましょう。\n";
-                } else {
-                    currentAdvice += "今はまだ始まったばかり、または忙しい時期かもしれません。まずは月に1回、習慣を振り返りながら小さな額から記録を始めてみませんか。\n";
-                }
+            if (ratePct >= 98) {
+                currentAdvice += "文句なしの天才的なペースです。ほぼ毎日投資を続けられています。これほど自分をコントロールできる力があるなら、将来の資産形成は約束されたようなものです。このまま突っ走りましょう。\n";
+            } else if (ratePct >= 95) {
+                currentAdvice += "めちゃくちゃ順調なペースを維持できています。お金を未来に回す行動が、すっかり暮らしの当たり前として定着しています。体もお財布も大喜びの状態です。\n";
+            } else if (ratePct >= 90) {
+                currentAdvice += "素晴らしい安定感です。忙しい毎日の中でも崩れることなく、自分の意志でしっかり生活をコントロールできていて本当にエライです。\n";
+            } else if (ratePct >= 80) {
+                currentAdvice += "しっかり良い習慣が育っています。自分のペースで確実にお金を積み上げられており、理想的な状態です。まずはこのペースを無理なくキープしていきましょう。\n";
+            } else if (ratePct >= 70) {
+                currentAdvice += "無理のない現実的なペースで進んでいます。投資は細く長く続けることこそが一番の強みになります。完璧を目指さず、この調子でいきましょう。\n";
+            } else if (ratePct >= 60) {
+                currentAdvice += "目標の半分以上のペースをしっかり守って前進できています。このまま進むだけでも、将来あなたを支える大きな貯えになって返ってきます。\n";
+            } else if (ratePct >= 50) {
+                currentAdvice += "波はありますが、半分近くはしっかり継続できています。できなかった日を悔やむより、できた日の成果を全力で褒めてあげましょう。\n";
+            } else if (ratePct >= 40) {
+                currentAdvice += "少しペースが落ちているようです。まずは1日1回、このアプリを開いて記録をつけるという一番簡単な行動から再スタートしてみましょう。\n";
+            } else if (ratePct >= 20) {
+                currentAdvice += "無理をせず、自分のやりやすい範囲で少しずつ進められています。まずは週に数回だけでも思い出したときにポチッと記録してみましょう。\n";
             } else {
-                if (ratePct >= 98) {
-                    currentAdvice += "驚異的な意志の強さで、ほぼ毎日節制を続けられています。ご自身をコントロールする力が極めて高く、素晴らしい成果です。\n";
-                } else if (ratePct >= 95) {
-                    currentAdvice += "理想的なペースで、非常に高い水準で継続できています。良い習慣がすっかり暮らしに定着し、心も体もお財布も喜んでいます。\n";
-                } else if (ratePct >= 90) {
-                    currentAdvice += "極めて順調なペースです。忙しい日々の中でも崩れることなく、ご自身の習慣をしっかりとコントロールできています。\n";
-                } else if (ratePct >= 80) {
-                    currentAdvice += "順調に習慣化が進んでいます。ご自身のペースで着実に前に進おり、非常に良い傾向です。まずは現在のペースを無理なく維持することを心がけましょう。\n";
-                } else if (ratePct >= 70) {
-                    currentAdvice += "ご自身のペースを掴み、安定して継続できています。完璧を目指しすぎず、現実的な範囲でとても上手くコントロールされています。\n";
-                } else if (ratePct >= 60) {
-                    currentAdvice += "半分以上のペースをキープし、前進できています。このまま進むだけでも、将来には大きな蓄えとなってあなたを支えてくれます。\n";
-                } else if (ratePct >= 50) {
-                    currentAdvice += "波はあるものの、半分近くは継続できています。できない日があっても気にせず、できた日の成果をしっかり認めてあげましょう。\n";
-                } else if (ratePct >= 40) {
-                    currentAdvice += "少しペースが落ちている、または忙しい時期かもしれません。まずは1日1回、アプリで記録をつけるという簡単な行動に戻りましょう。\n";
-                } else if (ratePct >= 20) {
-                    currentAdvice += "無理をせず、ご自身のやりやすい範囲で少しずつ進められています。まずは週に数回でも投資を意識し、気が向いた時に記録してみましょう。\n";
-                } else {
-                    currentAdvice += "今はまだ動き出したばかり、または忙しくて手が回らない状態かもしれません。まずは週に1回の記録から始めてみませんか。\n";
-                }
+                currentAdvice += "今は始まったばかりか、忙しい時期かもしれません。焦る必要は一切ありません。まずは週に1回、小さなアクションから始めてみませんか。\n";
             }
 
             const thresholds = [20, 40, 50, 60, 70, 80, 90, 95, 98];
@@ -5907,40 +5880,38 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 }
             }
             if (nextThreshold !== null && (nextThreshold - ratePct) <= 5) {
-                currentAdvice += "あと " + (nextThreshold - ratePct) + "% の継続で、上の実行ランクに届きます。日々の少しの意識で、未来の予測はさらに上乗せされます。\n";
+                currentAdvice += "あと " + (nextThreshold - ratePct) + "% の継続で上の実行ランクに昇格します。日々のちょっとした意識で未来の数字はさらに上乗せされます。\n";
             }
 
             let featuresAdvice = "";
             const annualYieldPct = annualYield * 100;
             if (annualYieldPct >= 8.0) {
-                featuresAdvice += "金利、つまりお金を預けたときにもらえるご褒美の割合が年 " + annualYieldPct.toFixed(1) + "% というのは、とても力強い設定です。眠っているお金を外に連れ出して、しっかり働いてもらう計画です。貯金箱にお金を集めておくだけでは増えませんが、働かせることで、お金自身が少しずつ仲間を連れて戻ってきてくれます。\n";
+                featuresAdvice += "年利 " + annualYieldPct.toFixed(1) + "% というのは、お金を働かせる上で非常に強力な設定です。ただ貯金箱にお金を集めておくだけでは1円も増えませんが、投資に回すことで、お金自身が勝手に仲間を増やして戻ってくる複利の魔法が全開になります。\n";
             } else if (annualYieldPct >= 3.0) {
-                featuresAdvice += "金利が年 " + annualYieldPct.toFixed(1) + "% というのは、現実的かつ堅実な設定です。世の中の成長の波に乗ることで、眠っているお金をゆっくりと起こし、安全に育てていくアプローチです。\n";
+                featuresAdvice += "年利 " + annualYieldPct.toFixed(1) + "% というのは、現実的でとても手堅い設定です。世界経済の成長の波に乗ることで、眠っているお金をゆっくりと起こし、安全に大きく育てていく王道のルートです。\n";
             } else if (annualYieldPct > 0) {
-                featuresAdvice += "金利が年 " + annualYieldPct.toFixed(1) + "% という超堅実な設定は、お金を減らさないことを最優先にしたアプローチです。手元に確実に現金を残す安心感を得ながら、一歩ずつ進めることができます。\n";
+                featuresAdvice += "年利 " + annualYieldPct.toFixed(1) + "% という超堅実な設定は、お金を絶対に減らさない安心感を最優先したアプローチです。手元に確実な現金を残しながら、一歩ずつ進めることができます。\n";
             } else {
-                featuresAdvice += "金利なしの設定ですが、それでも地道な節約は大きな元手となります。もし将来、少しでも金利のある形で運用に回せるようになれば、ご褒美がさらにご褒美を生み出す魔法の力で、将来の予測はさらに大きく膨らみます。\n";
+                featuresAdvice += "金利なしの計算ですが、地道な節約だけでも強力な元手になります。もし将来、少しでも金利のある形でお金を働かせることができるようになれば、雪だるま式に増えるスピードはさらに何倍にも跳ね上がります。\n";
             }
 
             if (years >= 25) {
-                featuresAdvice += years + "年という長い期間は、お金が仲間を増やすためのたっぷりとした時間になります。最初は小さく増えるだけですが、時間が経つほどに、ご褒美がさらに次のご褒美を生む雪だるま効果が急加速し、ただ貯める場合と比べて、運用した場合の差が圧倒的になります。\n";
+                featuresAdvice += "さらに " + years + "年という長い期間は、お金が仲間を増やすための最高の武器になります。最初は小さく増えるだけですが、後半になるほど増え方が爆発的に加速します。\n";
             } else if (years >= 15) {
-                featuresAdvice += years + "年という期間は、教育やマイホーム、老後の準備など、人生の大きなイベントを支えるためのまとまった資金を作るのに適した長さです。時間を味方につけることで、無理のない確実な資産形成が望めます。\n";
+                featuresAdvice += " " + years + "年という期間は、人生の大きなイベントを支えるためのまとまった資金を作るのに一番適した長さです。時間を味方につけることで、確実な資産形成が狙えます。\n";
             } else {
-                featuresAdvice += years + "年という比較的短い期間は、近い将来の具体的な目的、たとえば車の購入や旅行、特定の勉強資金などをイメージしやすい現実的な計画です。短期的な生活防衛資金としても頼もしい盾になります。\n";
+                featuresAdvice += " " + years + "年という期間は、近い将来の具体的な目的をイメージしやすい現実的な計画です。短期的な生活を守る盾としても非常に頼もしい味方になります。\n";
             }
 
-            const monthlySavingStr = (monthlySaving >= 10000) ? formatToYenMan(monthlySaving) : (monthlySaving.toLocaleString() + "円");
-            featuresAdvice += "コツコツ積み立てるペースは、将来のあなたを支える大切な一歩です。投資において最も重要なのは、金額の大きさよりも、早く始めて長く続けることです。日々のちょっとした工夫で浮いたお金が、将来の大きな安心感や人生の選択肢の広がりになって返ってきます。\n";
+            featuresAdvice += "毎月の積立ペースは、将来のあなたを支える大切な一歩です。投資において最も重要なのは、金額の大きさよりも、早く始めて長く続けることです。日々のお金の使い方の工夫が、将来の大きな自由になって返ってきます。\n";
 
             let investmentAdvice = "";
-            investmentAdvice += "貯金は、お金を金庫に眠らせておくことです。減らない安心感はありますが、増えることもありません。\n";
-            investmentAdvice += "投資は、価値を生む場所に預けて、一緒に育ててもらうことです。お金を働かせることで、時間が経つほどにお金そのものが新しい価値を生み出し、雪だるま式に増えていきます。\n";
+            investmentAdvice += "貯金は、お金を金庫に眠らせておくことです。数字は減りませんが、増えることもありません。対して投資は、価値を生む場所に預けて、一緒に育ててもらうことです。お金を働かせることで、時間が経つほどにお金そのものが新しい価値を生み出し、雪だるま式に増えていきます。\n\n";
             if (bonusAmount > 0) {
-                investmentAdvice += "ただ手元にお金を貯めておく場合と比べて、お金を働かせることによって " + formatToYenMan(bonusAmount) + " もの上乗せが期待できる計画です。\n";
+                investmentAdvice += "ただ手元にお金を貯めておく場合と比べて、お金を働かせることによって、なんと " + formatToYenMan(bonusAmount) + " もの上乗せが期待できる素晴らしい計画です。\n\n";
             }
-            investmentAdvice += "現在、世の中のモノの値段が少しずつ上がっています。ただお金を眠らせておくだけでは、お金の数字は減らなくても、買えるモノが少なくなるため、実質的にお金の価値が小さくなってしまいます。お金を価値ある形に変えて育てていくことは、自分を守るための賢い自己防衛策です。\n\n";
-            investmentAdvice += "日々の小さなお金の節約は、単なる我慢ではありません。目先のささやかな消費を減らし、将来の嫌なことを断る自由や、人生の選択肢を増やすための取り組みです。将来のあなたが自由で豊かに暮らす日を楽しみに、これからもご自身のペースで一歩ずつ進んでいきましょう。";
+            investmentAdvice += "今、世の中のモノの値段は少しずつ上がっています。ただお金を眠らせておくだけでは、買えるモノが少なくなってしまうため、実質的にお金の価値が目減りしているのと同じです。お金を価値ある形に変えて育てていくことは、自分を守るための賢い自己防衛になります。\n\n";
+            investmentAdvice += "日々の小さな節約は、単なる我慢や苦行ではありません。目先のささやかな消費をカットし、将来の嫌なことを断る自由や、人生の選択肢を勝ち取るためのクリエイティブな投資行動です。将来のあなたが今よりずっと自由で豊かに暮らす日を楽しみに、これからも自分のペースで一歩ずつ進んでいきましょう。";
 
             return {
                 current: currentAdvice.trim().replace(/\n/g, '<br>'),
@@ -6998,14 +6969,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 window.addEventListener('beforeinstallprompt', (e) => {
                     e.preventDefault();
                     deferredPrompt = e;
-                    
-                    if (pwaBanner && sessionStorage.getItem('pwa_banner_dismissed') !== 'true') {
-                        pwaBanner.style.display = 'block';
-                    }
                 });
                 
-                // iOSブラウザ向けにバナーを初期表示する
-                if (isiOS && pwaBanner && sessionStorage.getItem('pwa_banner_dismissed') !== 'true') {
+                // ホーム画面未追加の場合、過去に閉じていない限り必ずバナーを表示する
+                if (pwaBanner && sessionStorage.getItem('pwa_banner_dismissed') !== 'true') {
                     pwaBanner.style.display = 'block';
                 }
                 
@@ -7028,8 +6995,8 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                                 deferredPrompt = null;
                             });
                         } else {
-                            // 何らかの理由でプロンプトが利用できない場合 PCブラウザ等 
-                            alert("ご利用のブラウザまたは設定は、直接インストールに対応していません。ブラウザメニューの アプリをインストール や ホーム画面に追加 をお試しください。");
+                            // 何らかの理由でプロンプトが利用できない場合のフォールバック
+                            alert("ブラウザのメニューボタン、たとえば右上の縦の3点リーダーなどをタップし、アプリをインストール、またはホーム画面に追加を選択してください");
                         }
                     });
                 }
@@ -7049,6 +7016,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         if (iosArrow) iosArrow.style.display = 'none';
                     });
                 }
+
                 if (iosOverlay) {
                     iosOverlay.addEventListener('click', (e) => {
                         if (e.target === iosOverlay) {
