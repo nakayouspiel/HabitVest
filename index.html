@@ -1288,8 +1288,54 @@
         }
 
         /* 個別のアクティブカラースキーム (パステル調で文字の視認性も高めた柔らかい配色) */
-        /* Individual active states replaced by unified CSS active styles */
+        #checkin-btn-tobacco.active {
+            background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%);
+            border-color: #f472b6;
+            color: #831843 !important;
+        }
+        #checkin-btn-tobacco.active .price-badge {
+            color: #831843 !important;
+            background: rgba(255, 255, 255, 0.4) !important;
+        }
+        #checkin-btn-beer.active {
+            background: linear-gradient(135deg, #bae6fd 0%, #38bdf8 100%);
+            border-color: #38bdf8;
+            color: #0369a1 !important;
+        }
+        #checkin-btn-beer.active .price-badge {
+            color: #0369a1 !important;
+            background: rgba(255, 255, 255, 0.4) !important;
+        }
+        #checkin-btn-sub.active {
+            background: linear-gradient(135deg, #a7f3d0 0%, #34d399 100%);
+            border-color: #34d399;
+            color: #065f46 !important;
+        }
+        #checkin-btn-sub.active .price-badge {
+            color: #065f46 !important;
+            background: rgba(255, 255, 255, 0.4) !important;
+        }
+        #checkin-btn-invest.active {
+            background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+            border-color: #fbbf24;
+            color: #78350f !important;
+        }
+        #checkin-btn-invest.active .price-badge {
+            color: #78350f !important;
+            background: rgba(255, 255, 255, 0.4) !important;
+        }
 
+        /* ダークモード時のアクティブカラー (暗闇に優しく浮かぶソフトネオングラデーション) */
+        .theme-dark #checkin-btn-tobacco.active {
+            background: linear-gradient(135deg, #fda4af 0%, #f43f5e 100%);
+            border-color: #fda4af;
+            color: #4c0519 !important;
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.3);
+        }
+        .theme-dark #checkin-btn-tobacco.active .price-badge {
+            color: #4c0519 !important;
+            background: rgba(255, 255, 255, 0.3) !important;
+        }
         .theme-dark #checkin-btn-beer.active {
             background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%);
             border-color: #7dd3fc;
@@ -1719,190 +1765,6 @@
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(-12px); }
         }
-    
-        /* --- 🆕 Settings Modal Tabs --- */
-        .settings-tabs-header {
-            display: flex;
-            gap: 4px;
-            border-bottom: 1px solid var(--border-glass);
-            padding-bottom: 6px;
-            margin-bottom: 10px;
-        }
-        .settings-tab-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 8px 4px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.25s ease;
-            outline: none;
-            white-space: nowrap;
-        }
-        .settings-tab-btn.active {
-            color: var(--neon-primary);
-            border-bottom-color: var(--neon-primary);
-        }
-        .settings-tab-pane {
-            display: none;
-            animation: tabFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .settings-tab-pane.active {
-            display: block;
-        }
-        @keyframes tabFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(4px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* --- 🆕 Unified Active State for Check-in Buttons --- */
-        .checkin-btn.active {
-            background: linear-gradient(135deg, #a7f3d0 0%, #059669 100%) !important;
-            border-color: #10b981 !important;
-            color: #064e3b !important;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25) !important;
-        }
-        .checkin-btn.active .emoji {
-            transform: scale(1.15) rotate(-5deg);
-        }
-        .checkin-btn.active .price-badge {
-            background: rgba(255, 255, 255, 0.4) !important;
-            color: #064e3b !important;
-        }
-        
-        .theme-dark .checkin-btn.active {
-            background: linear-gradient(135deg, #34d399 0%, #064e3b 100%) !important;
-            border-color: #34d399 !important;
-            color: #e6fffa !important;
-            box-shadow: 0 0 15px rgba(52, 211, 153, 0.35) !important;
-        }
-        .theme-dark .checkin-btn.active .price-badge {
-            background: rgba(255, 255, 255, 0.2) !important;
-            color: #e6fffa !important;
-        }
-
-        /* --- 🆕 Ripple & Bounce Animations --- */
-        .checkin-btn {
-            position: relative;
-            overflow: hidden;
-            transition: background 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.4s, color 0.4s, box-shadow 0.4s, transform 0.15s ease;
-        }
-        .checkin-btn:active {
-            transform: scale(0.97);
-        }
-        .checkin-btn .ripple-effect {
-            position: absolute;
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s cubic-bezier(0.1, 0.8, 0.3, 1);
-            background-color: rgba(255, 255, 255, 0.3);
-            pointer-events: none;
-            z-index: 1;
-        }
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-        .checkin-btn.active-click-anim {
-            animation: checkinBounce 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        @keyframes checkinBounce {
-            0% { transform: scale(1); }
-            30% { transform: scale(0.92); }
-            60% { transform: scale(1.04); }
-            100% { transform: scale(1); }
-        }
-        .checkin-btn.active .emoji {
-            animation: emojiJump 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-        }
-        @keyframes emojiJump {
-            0% { transform: translateY(0) scale(1) rotate(0deg); }
-            45% { transform: translateY(-8px) scale(1.25) rotate(-10deg); }
-            75% { transform: translateY(2px) scale(0.95) rotate(5deg); }
-            100% { transform: translateY(0) scale(1.15) rotate(-5deg); }
-        }
-
-        /* --- 🆕 Undo Deletion Toast --- */
-        .undo-toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.92);
-            border: 1px solid var(--border-glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 10px 18px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-            z-index: 10000;
-            animation: toastFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .undo-toast-text {
-            font-size: 0.78rem;
-            color: #f8fafc;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
-        .undo-toast-btn {
-            background: var(--btn-gradient);
-            border: none;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            outline: none;
-        }
-        .undo-toast-btn:active {
-            transform: scale(0.94);
-        }
-        @keyframes toastFadeIn {
-            from {
-                bottom: 70px;
-                opacity: 0;
-            }
-            to {
-                bottom: 90px;
-                opacity: 1;
-            }
-        }
-
-        /* --- 🆕 Reset Button Long Press Progress --- */
-        .modal-btn-reset {
-            position: relative;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            transition: all 0.2s ease;
-        }
-        .modal-btn-reset-progress {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 0%;
-            background: rgba(220, 38, 38, 0.18);
-            transition: width 0.1s linear;
-            pointer-events: none;
-            z-index: 1;
-        }
     </style>
 </head>
 <body>
@@ -1993,7 +1855,10 @@
                     </button>
                     <button class="checkin-btn daily" id="checkin-btn-beer" data-habit="beer">
                         <div class="status-badge-area"></div>
-                        <span class="emoji">🥂</span>
+                        <span class="emoji" style="position: relative; display: inline-flex; justify-content: center; align-items: center; width: 1.4rem; height: 1.4rem; margin: 0 auto 2px auto;">
+                            <span style="font-size: 1.4rem; line-height: 1;">🍺</span>
+                            <span style="position: absolute; font-size: 1.4rem; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; line-height: 1;">🚫</span>
+                        </span>
                         <span class="label">お酒</span>
                         <span class="price-badge" id="checkin-badge-beer">250円</span>
                     </button>
@@ -2245,239 +2110,216 @@
 
     <!-- 🚪 設定モーダルウィンドウ -->
     <div id="settings-modal" class="modal-overlay">
-        <div class="modal-card" style="max-height: 90vh; display: flex; flex-direction: column;">
+        <div class="modal-card">
             <div class="modal-header">
                 <h3>アプリ・習慣詳細設定</h3>
                 <button id="modal-close" class="modal-close-btn">&times;</button>
             </div>
-            
-            <!-- 🆕 Tab Navigation Header -->
-            <div class="settings-tabs-header">
-                <button type="button" class="settings-tab-btn active" data-settings-tab="settings-tab-profile">👤 プロフィール</button>
-                <button type="button" class="settings-tab-btn" data-settings-tab="settings-tab-habits">🚭 習慣の単価</button>
-                <button type="button" class="settings-tab-btn" data-settings-tab="settings-tab-sim">📈 シミュレーション</button>
-            </div>
-            
-            <div class="modal-body" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 14px 4px 14px 0;">
-                
-                <!-- Tab 1: Profile -->
-                <div class="settings-tab-pane active" id="settings-tab-profile">
-                    <!-- 🔤 文字サイズ設定 -->
-                    <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 14px;">
-                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">文字サイズ切り替え</h4>
-                        <div style="display: flex; gap: 8px;">
-                            <button type="button" class="auth-btn font-size-btn" data-size="small" style="flex: 1; padding: 6px;">小</button>
-                            <button type="button" class="auth-btn font-size-btn" data-size="medium" style="flex: 1; padding: 6px;">中</button>
-                            <button type="button" class="auth-btn font-size-btn" data-size="large" style="flex: 1; padding: 6px;">大</button>
-                        </div>
-                    </div>
-
-                    <!-- プロフィール設定 -->
-                    <div style="padding-bottom: 12px;">
-                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">プロフィール設定</h4>
-                        <div class="form-group">
-                            <label for="profile-name">ニックネーム</label>
-                            <input type="text" id="profile-name" value="" placeholder="投資家としてのニックネーム">
-                        </div>
-                        <div class="form-group" style="display: none;">
-                            <label for="profile-hobby">あなたの趣味 夢の使い道</label>
-                            <select id="profile-hobby">
-                                <option value="invest" selected>投資</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-age">年齢</label>
-                            <select id="profile-age">
-                                <option value="10">10代</option>
-                                <option value="20">20代</option>
-                                <option value="30" selected>30代</option>
-                                <option value="40">40代</option>
-                                <option value="50">50代以上</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-gender">性別</label>
-                            <select id="profile-gender">
-                                <option value="male" selected>男性</option>
-                                <option value="female">女性</option>
-                                <option value="other">その他</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label for="profile-start-date">開始日 シミュレーション算出の起点</label>
-                            <input type="date" id="profile-start-date" value="" style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main); font-weight: 600; font-family: var(--font-ui); outline: none;">
-                        </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- 🔤 文字サイズ設定 -->
+                <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">文字サイズ切り替え</h4>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="auth-btn font-size-btn" data-size="small" style="flex: 1; padding: 6px;">小</button>
+                        <button type="button" class="auth-btn font-size-btn" data-size="medium" style="flex: 1; padding: 6px;">中</button>
+                        <button type="button" class="auth-btn font-size-btn" data-size="large" style="flex: 1; padding: 6px;">大</button>
                     </div>
                 </div>
-                
-                <!-- Tab 2: Habit Prices -->
-                <div class="settings-tab-pane" id="settings-tab-habits" style="display: none;">
-                    <!-- 🚭 習慣の単価設定 -->
-                    <div>
-                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-secondary); margin-bottom: 10px;">習慣ごとの単価設定</h4>
-                        
-                        <!-- 🚭 タバコ -->
-                        <div class="form-group" style="margin-bottom: 8px;">
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                                <input type="checkbox" id="profile-track-tobacco"> タバコ代を投資に回してアプリに表示する
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <div class="label-wrapper">
-                                <label for="tobacco-pack-price">タバコ 1箱の価格</label>
-                                <span class="val-badge" id="tobacco-price-badge">600円</span>
-                            </div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="tobacco-pack-price">-</button>
-                                <input type="number" id="tobacco-pack-price" min="400" max="800" step="10" value="600">
-                                <button type="button" class="spin-btn inc-btn" data-target="tobacco-pack-price">+</button>
-                                <span>円</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="label-wrapper">
-                                <label for="tobacco-packs-per-day">1日あたりの消費量</label>
-                                <span class="val-badge" id="tobacco-count-badge">1.0箱</span>
-                            </div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="tobacco-packs-per-day">-</button>
-                                <input type="number" id="tobacco-packs-per-day" min="1" max="10" step="1" value="1">
-                                <button type="button" class="spin-btn inc-btn" data-target="tobacco-packs-per-day">+</button>
-                                <span>箱</span>
-                            </div>
-                        </div>
 
-                        <!-- 🍺 お酒 -->
-                        <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                                <input type="checkbox" id="profile-track-beer"> お酒代を投資に回してアプリに表示する
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <div class="label-wrapper">
-                                <label for="beer-unit-price">お酒 1本あるいは1杯の価格</label>
-                                <span class="val-badge" id="beer-price-badge">250円</span>
-                            </div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="beer-unit-price">-</button>
-                                <input type="number" id="beer-unit-price" min="100" max="800" step="10" value="250">
-                                <button type="button" class="spin-btn inc-btn" data-target="beer-unit-price">+</button>
-                                <span>円</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="label-wrapper">
-                                <label for="beer-units-per-day">1日あたりの本数/杯数</label>
-                                <span class="val-badge" id="beer-count-badge">2本</span>
-                            </div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="beer-units-per-day">-</button>
-                                <input type="number" id="beer-units-per-day" min="1" max="30" step="1" value="2">
-                                <button type="button" class="spin-btn inc-btn" data-target="beer-units-per-day">+</button>
-                                <span>本</span>
-                            </div>
-                        </div>
-
-                        <!-- 💰 未来への投資 -->
-                        <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                                <input type="checkbox" id="profile-track-invest"> 毎月の積立投資を記録してアプリに表示する
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <div class="label-wrapper">
-                                <label for="invest-monthly-target">月間の目標投資額</label>
-                                <span class="val-badge" id="invest-monthly-target-badge">30,000円</span>
-                            </div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="invest-monthly-target">-</button>
-                                <input type="number" id="invest-monthly-target" min="1000" max="1000000" step="1000" value="30000">
-                                <button type="button" class="spin-btn inc-btn" data-target="invest-monthly-target">+</button>
-                                <span>円</span>
-                            </div>
-                        </div>
+                <!-- プロフィール設定 -->
+                <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-primary); margin-bottom: 10px;">プロフィール設定</h4>
+                    <div class="form-group">
+                        <label for="profile-name">ニックネーム</label>
+                        <input type="text" id="profile-name" value="" placeholder="投資家としてのニックネーム">
+                    </div>
+                    <div class="form-group" style="display: none;">
+                        <label for="profile-hobby">あなたの趣味 夢の使い道</label>
+                        <select id="profile-hobby">
+                            <option value="invest" selected>投資</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-age">年齢</label>
+                        <select id="profile-age">
+                            <option value="10">10代</option>
+                            <option value="20">20代</option>
+                            <option value="30" selected>30代</option>
+                            <option value="40">40代</option>
+                            <option value="50">50代以上</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-gender">性別</label>
+                        <select id="profile-gender">
+                            <option value="male" selected>男性</option>
+                            <option value="female">女性</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-top: 10px;">
+                        <label for="profile-start-date">開始日 シミュレーション算出の起点</label>
+                        <input type="date" id="profile-start-date" value="" style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border-input); background: var(--bg-input); color: var(--text-main); font-weight: 600; font-family: var(--font-ui); outline: none;">
                     </div>
                 </div>
-                
-                <!-- Tab 3: Simulation -->
-                <div class="settings-tab-pane" id="settings-tab-sim" style="display: none;">
-                    <!-- 📈 資産シミュレーションの設定 -->
-                    <div style="margin-bottom: 14px;">
-                        <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 10px;">シミュレーション予測設定</h4>
-                        <!-- 📈 利回り -->
-                        <div class="form-group">
-                            <div class="label-wrapper">
-                                <label for="slider-yield">想定年間利回り 年利</label>
-                                <span class="val-badge" id="yield-badge">8%</span>
-                            </div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="slider-yield">-</button>
-                                <input type="number" id="slider-yield" min="0" max="1000" step="0.5" value="8">
-                                <button type="button" class="spin-btn inc-btn" data-target="slider-yield">+</button>
-                                <span>％</span>
-                            </div>
-                            <div id="yield-advice" style="font-size: 0.72rem; margin-top: 6px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); line-height: 1.4; color: var(--text-muted); text-align: left; min-height: 40px;"></div>
-                        </div>
 
-                        <!-- 💰 初期投資額 -->
-                        <div class="form-group">
-                            <div class="label-wrapper">
-                                <label for="slider-initial-investment">初期投資額</label>
-                                <span class="val-badge" id="initial-investment-badge">0円</span>
-                            </div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="slider-initial-investment">-</button>
-                                <input type="number" id="slider-initial-investment" min="0" max="99999999" step="100000" value="0">
-                                <button type="button" class="spin-btn inc-btn" data-target="slider-initial-investment">+</button>
-                                <span>円</span>
-                            </div>
-                        </div>
-
-                        <!-- ⏳ 期間 -->
-                        <div class="form-group">
-                            <div class="label-wrapper">
-                                <label for="slider-years">シミュレーション期間</label>
-                                <span class="val-badge" id="years-badge">20年</span>
-                            </div>
-                            <div class="input-box">
-                                <button type="button" class="spin-btn dec-btn" data-target="slider-years">-</button>
-                                <input type="number" id="slider-years" min="1" max="50" step="1" value="20">
-                                <button type="button" class="spin-btn inc-btn" data-target="slider-years">+</button>
-                                <span>年</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 🔐 アカウント同期 -->
-                    <div class="auth-sync-section" style="border-top: 1px dashed var(--border-glass); padding-top: 14px; margin-bottom: 14px;">
-                        <div class="auth-title" id="auth-section-title">アカウント連携</div>
-                        <div id="auth-status-area" style="margin-top: 8px;">
-                            <div class="auth-grid" id="auth-btn-grid">
-                                <button class="auth-btn" id="btn-login-line">LINE</button>
-                                <button class="auth-btn" id="btn-login-google">Google</button>
-                                <button class="auth-btn coming-soon" id="btn-login-apple">Apple</button>
-                            </div>
-                            <div id="auth-logged-in-area" style="display: none; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); padding: 10px 14px; border-radius: 12px;">
-                                <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                                    <span id="auth-user-icon"></span> <span id="auth-user-name">ログイン中</span>
-                                </div>
-                                <button id="btn-logout" class="modal-btn-secondary" style="margin-top: 0; padding: 6px 12px; width: auto; font-size: 0.7rem;">ログアウト</button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- 🚭 習慣の単価設定 -->
+                <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-secondary); margin-bottom: 10px;">習慣ごとの単価設定</h4>
                     
-                    <!-- ⚠️ Danger Zone -->
-                    <div style="border-top: 1px dashed var(--border-glass); padding-top: 14px; margin-top: 14px;">
-                        <h4 style="font-size: 0.75rem; font-weight: 700; color: #ef4444; margin-bottom: 6px;">⚠️ 危険な操作</h4>
-                        <p style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.35;">データを完全に削除し、初期設定からやり直します。</p>
-                        <button id="modal-reset" class="modal-btn-reset">🗑️ 3秒間長押しでデータを初期化... <div class="modal-btn-reset-progress" id="modal-reset-progress"></div></button>
+                    <!-- 🚭 タバコ -->
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
+                            <input type="checkbox" id="profile-track-tobacco"> タバコ代を投資に回してアプリに表示する
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="tobacco-pack-price">タバコ 1箱の価格</label>
+                            <span class="val-badge" id="tobacco-price-badge">600円</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="tobacco-pack-price">-</button>
+                            <input type="number" id="tobacco-pack-price" min="400" max="800" step="10" value="600">
+                            <button type="button" class="spin-btn inc-btn" data-target="tobacco-pack-price">+</button>
+                            <span>円</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="tobacco-packs-per-day">1日あたりの消費量</label>
+                            <span class="val-badge" id="tobacco-count-badge">1.0箱</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="tobacco-packs-per-day">-</button>
+                            <input type="number" id="tobacco-packs-per-day" min="1" max="10" step="1" value="1">
+                            <button type="button" class="spin-btn inc-btn" data-target="tobacco-packs-per-day">+</button>
+                            <span>箱</span>
+                        </div>
+                    </div>
+
+                    <!-- 🍺 お酒 -->
+                    <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
+                            <input type="checkbox" id="profile-track-beer"> お酒代を投資に回してアプリに表示する
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="beer-unit-price">お酒 1本あるいは1杯の価格</label>
+                            <span class="val-badge" id="beer-price-badge">250円</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="beer-unit-price">-</button>
+                            <input type="number" id="beer-unit-price" min="100" max="800" step="10" value="250">
+                            <button type="button" class="spin-btn inc-btn" data-target="beer-unit-price">+</button>
+                            <span>円</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="beer-units-per-day">1日あたりの本数/杯数</label>
+                            <span class="val-badge" id="beer-count-badge">2本</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="beer-units-per-day">-</button>
+                            <input type="number" id="beer-units-per-day" min="1" max="30" step="1" value="2">
+                            <button type="button" class="spin-btn inc-btn" data-target="beer-units-per-day">+</button>
+                            <span>本</span>
+                        </div>
+                    </div>
+
+                    <!-- 💰 未来への投資 -->
+                    <div class="form-group" style="margin-top: 14px; margin-bottom: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
+                            <input type="checkbox" id="profile-track-invest"> 毎月の積立投資を記録してアプリに表示する
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="invest-monthly-target">月間の目標投資額</label>
+                            <span class="val-badge" id="invest-monthly-target-badge">30,000円</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="invest-monthly-target">-</button>
+                            <input type="number" id="invest-monthly-target" min="1000" max="1000000" step="1000" value="30000">
+                            <button type="button" class="spin-btn inc-btn" data-target="invest-monthly-target">+</button>
+                            <span>円</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 📈 資産シミュレーションの設定 -->
+                <div style="border-bottom: 1px dashed var(--border-glass); padding-bottom: 12px; margin-bottom: 4px;">
+                    <h4 style="font-size: 0.78rem; font-weight: 700; color: var(--neon-green); margin-bottom: 10px;">シミュレーション予測設定</h4>
+                    <!-- 📈 利回り -->
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="slider-yield">想定年間利回り 年利</label>
+                            <span class="val-badge" id="yield-badge">8%</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="slider-yield">-</button>
+                            <input type="number" id="slider-yield" min="0" max="1000" step="0.5" value="8">
+                            <button type="button" class="spin-btn inc-btn" data-target="slider-yield">+</button>
+                            <span>％</span>
+                        </div>
+                        <div id="yield-advice" style="font-size: 0.72rem; margin-top: 6px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); line-height: 1.4; color: var(--text-muted); text-align: left; min-height: 40px;"></div>
+                    </div>
+
+                    <!-- 💰 初期投資額 -->
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="slider-initial-investment">初期投資額</label>
+                            <span class="val-badge" id="initial-investment-badge">0円</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="slider-initial-investment">-</button>
+                            <input type="number" id="slider-initial-investment" min="0" max="99999999" step="100000" value="0">
+                            <button type="button" class="spin-btn inc-btn" data-target="slider-initial-investment">+</button>
+                            <span>円</span>
+                        </div>
+                    </div>
+
+                    <!-- ⏳ 期間 -->
+                    <div class="form-group">
+                        <div class="label-wrapper">
+                            <label for="slider-years">シミュレーション期間</label>
+                            <span class="val-badge" id="years-badge">20年</span>
+                        </div>
+                        <div class="input-box">
+                            <button type="button" class="spin-btn dec-btn" data-target="slider-years">-</button>
+                            <input type="number" id="slider-years" min="1" max="50" step="1" value="20">
+                            <button type="button" class="spin-btn inc-btn" data-target="slider-years">+</button>
+                            <span>年</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🔐 アカウント同期 -->
+                <div class="auth-sync-section">
+                    <div class="auth-title" id="auth-section-title">アカウント連携</div>
+                    <div id="auth-status-area" style="margin-top: 8px;">
+                        <!-- ログインしていない場合はボタン一覧を表示 -->
+                        <div class="auth-grid" id="auth-btn-grid">
+                            <button class="auth-btn" id="btn-login-line">LINE</button>
+                            <button class="auth-btn" id="btn-login-google">Google</button>
+                            <button class="auth-btn coming-soon" id="btn-login-apple">Apple</button>
+                        </div>
+                        <!-- ログインしている場合はステータスとログアウトボタンを表示 -->
+                        <div id="auth-logged-in-area" style="display: none; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); padding: 10px 14px; border-radius: 12px;">
+                            <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                                <span id="auth-user-icon"></span> <span id="auth-user-name">ログイン中</span>
+                            </div>
+                            <button id="btn-logout" class="modal-btn-secondary" style="margin-top: 0; padding: 6px 12px; width: auto; font-size: 0.7rem;">ログアウト</button>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="modal-footer" style="padding: 10px 0 0 0; border-top: 1px solid var(--border-glass); display: flex; gap: 8px;">
-                <button id="modal-save" class="modal-btn" style="margin-top: 0; width: 100%;">設定を保存して適用</button>
-            </div>
+            <!-- 🗑️ オールリセットボタン -->
+            <button id="modal-reset" class="modal-btn-reset">設定とデータを完全に初期化する</button>
+            <button id="modal-save" class="modal-btn">設定を保存して適用</button>
         </div>
     </div>
 
@@ -2533,7 +2375,7 @@
 
             <!-- ステップ 2: お酒 -->
             <div class="step-pane" id="onboard-step-2" style="display: none;">
-                <h4 style="font-size: 1rem; font-weight: 800; color: #f59e0b; margin-bottom: 16px; text-align: center;">🥂 質問 2 / 10</h4>
+                <h4 style="font-size: 1rem; font-weight: 800; color: #f59e0b; margin-bottom: 16px; text-align: center;">🍺 質問 2 / 10</h4>
                 <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 24px; text-align: center; line-height: 1.5;">
                     あなたはお酒をやめて、その分を投資することを考えていますか？
                 </p>
@@ -3478,90 +3320,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         const resetCancel = document.getElementById('reset-cancel');
         const resetExecute = document.getElementById('reset-execute');
 
-        // --- 🆕 設定モーダルのタブ切り替え機能 ---
-        const settingsTabBtns = document.querySelectorAll('.settings-tab-btn');
-        const settingsTabPanes = document.querySelectorAll('.settings-tab-pane');
-
-        settingsTabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetTab = btn.dataset.settingsTab;
-                
-                settingsTabBtns.forEach(b => b.classList.remove('active'));
-                settingsTabPanes.forEach(p => p.classList.remove('active'));
-                
-                btn.classList.add('active');
-                const activePane = document.getElementById(targetTab);
-                if (activePane) {
-                    activePane.classList.add('active');
-                }
-            });
+        modalReset.addEventListener('click', () => {
+            resetConfirmModal.classList.add('active');
         });
-
-        // --- 🆕 リセットボタンの3秒間長押し制御 (摩擦の追加) ---
-        if (modalReset) {
-            let pressTimer = null;
-            let pressProgress = 0;
-            let pressInterval = null;
-            const pressDuration = 3000;
-            const pressStep = 100;
-            
-            const startPress = (e) => {
-                e.preventDefault();
-                if (pressTimer) return;
-                
-                pressProgress = 0;
-                const progEl = document.getElementById('modal-reset-progress');
-                if (progEl) {
-                    progEl.style.transition = 'width 0.1s linear';
-                    progEl.style.width = '0%';
-                }
-                
-                pressInterval = setInterval(() => {
-                    pressProgress += pressStep;
-                    const percentage = Math.min((pressProgress / pressDuration) * 100, 100);
-                    if (progEl) progEl.style.width = `${percentage}%`;
-                    
-                    if (pressProgress >= pressDuration) {
-                        endPress();
-                        if (navigator.vibrate) navigator.vibrate([40, 40]);
-                        resetConfirmModal.classList.add('active');
-                    }
-                }, pressStep);
-                
-                pressTimer = setTimeout(() => {
-                    endPress();
-                }, pressDuration + 100);
-            };
-            
-            const endPress = () => {
-                if (pressInterval) {
-                    clearInterval(pressInterval);
-                    pressInterval = null;
-                }
-                if (pressTimer) {
-                    clearTimeout(pressTimer);
-                    pressTimer = null;
-                }
-                const progEl = document.getElementById('modal-reset-progress');
-                if (progEl) {
-                    progEl.style.transition = 'width 0.3s ease';
-                    progEl.style.width = '0%';
-                }
-            };
-            
-            modalReset.addEventListener('mousedown', startPress);
-            modalReset.addEventListener('touchstart', startPress);
-            
-            modalReset.addEventListener('mouseup', endPress);
-            modalReset.addEventListener('mouseleave', endPress);
-            modalReset.addEventListener('touchend', endPress);
-            modalReset.addEventListener('touchcancel', endPress);
-            
-            // 通常のクリックは無視
-            modalReset.addEventListener('click', (e) => {
-                e.preventDefault();
-            });
-        }
         resetCancel.addEventListener('click', () => {
             resetConfirmModal.classList.remove('active');
         });
@@ -3774,42 +3535,23 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 cell.style.cursor = 'pointer';
                 cell.style.transition = 'all 0.2s';
 
-                const isDark = document.body.classList.contains('theme-dark');
-                
-                // 🆕 未達成・未記録の領域は透明・スマートな空枠 (認知ストレス撤廃)
-                cell.style.background = 'transparent';
-                cell.style.border = isDark ? '1.5px dashed rgba(255, 255, 255, 0.12)' : '1.5px dashed rgba(15, 23, 42, 0.12)';
-                
                 // ホバー効果
                 cell.addEventListener('mouseenter', () => {
-                    cell.style.background = 'rgba(52, 211, 153, 0.1)';
-                    cell.style.borderColor = '#34d399';
+                    cell.style.background = 'rgba(2, 132, 199, 0.15)';
+                    cell.style.borderColor = 'var(--neon-primary)';
                 });
                 cell.addEventListener('mouseleave', () => {
-                    applyCellStateStyles();
-                });
-
-                function applyCellStateStyles() {
-                    const isDark = document.body.classList.contains('theme-dark');
                     if (cellDateStr === todayStr) {
-                        // 今日 (強調)
                         cell.style.background = 'transparent';
-                        cell.style.border = '2px solid var(--neon-secondary)';
-                        cell.style.boxShadow = '0 0 10px rgba(255, 0, 127, 0.3)';
+                        cell.style.borderColor = 'var(--neon-secondary)';
                     } else if (recordsByDate[cellDateStr]) {
-                        // 達成・積み上げの日 (エメラルドネオンのポジティブUIで連続性を強化)
-                        cell.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.25) 100%)';
-                        cell.style.border = '1.5px solid rgba(52, 211, 153, 0.55)';
-                        cell.style.boxShadow = '0 3px 8px rgba(16, 185, 129, 0.1)';
+                        cell.style.background = 'rgba(2, 132, 199, 0.1)';
+                        cell.style.borderColor = 'rgba(2, 132, 199, 0.25)';
                     } else {
-                        // 未記録 (透明スマート空枠)
-                        cell.style.background = 'transparent';
-                        cell.style.border = isDark ? '1.5px dashed rgba(255, 255, 255, 0.12)' : '1.5px dashed rgba(15, 23, 42, 0.12)';
-                        cell.style.boxShadow = 'none';
+                        cell.style.background = 'rgba(255, 255, 255, 0.03)';
+                        cell.style.borderColor = 'rgba(255, 255, 255, 0.05)';
                     }
-                }
-                
-                applyCellStateStyles();
+                });
 
                 // クリックして未来または過去のシミュレーションへ飛ぶ
                 cell.addEventListener('click', () => {
@@ -3850,10 +3592,32 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     
                     recordsByDate[cellDateStr].forEach(type => {
                         if (type === 'beer') {
-                            const emojiSpan = document.createElement('span');
-                            emojiSpan.innerText = '🥂';
-                            emojiSpan.style.fontSize = '0.8rem';
-                            emojiContainer.appendChild(emojiSpan);
+                            const beerWrapper = document.createElement('span');
+                            beerWrapper.style.position = 'relative';
+                            beerWrapper.style.display = 'inline-flex';
+                            beerWrapper.style.justifyContent = 'center';
+                            beerWrapper.style.alignItems = 'center';
+                            beerWrapper.style.width = '0.85rem';
+                            beerWrapper.style.height = '0.85rem';
+                            
+                            const beerEmoji = document.createElement('span');
+                            beerEmoji.innerText = '🍺';
+                            beerEmoji.style.fontSize = '0.8rem';
+                            beerEmoji.style.lineHeight = '1';
+                            
+                            const banEmoji = document.createElement('span');
+                            banEmoji.innerText = '🚫';
+                            banEmoji.style.position = 'absolute';
+                            banEmoji.style.fontSize = '0.8rem';
+                            banEmoji.style.top = '50%';
+                            banEmoji.style.left = '50%';
+                            banEmoji.style.transform = 'translate(-50%, -50%)';
+                            banEmoji.style.pointerEvents = 'none';
+                            banEmoji.style.lineHeight = '1';
+                            
+                            beerWrapper.appendChild(beerEmoji);
+                            beerWrapper.appendChild(banEmoji);
+                            emojiContainer.appendChild(beerWrapper);
                         } else {
                             let emoji = '✅';
                             if (type === 'tobacco') emoji = '🚭';
@@ -5478,27 +5242,22 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
         // --- 🆕 チェックインボタンの押下イベント登録 ---
         checkinBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', () => {
                 const type = btn.dataset.habit;
 
-                //心地よく震えるハプティクス
-                if (navigator.vibrate) {
-                    navigator.vibrate([15]);
-                }
-                
-                //色がじわっと広がる手応え (リップル)
-                createRipple(e, btn);
-
                 if (type === 'invest') {
+                    // もし今日すでに節約の履歴があるなら、ボタン押下でそれをすべて削除してトグル(非アクティブ化)
                     const todayStr = getTodayStr();
                     const hasInvestToday = history.some(item => item.date === todayStr && item.type === 'invest');
                     if (hasInvestToday) {
                         removeTodayHistoryItem('invest');
+                        // 計算と画面表示の更新
                         saveSettings();
                         calculate();
                         renderCalendar();
                         updateCheckinBtnStates();
                     } else {
+                        // 今日まだ節約していなければ、金額選択モーダルを開く
                         openFreeSavingModal();
                     }
                     return;
@@ -5507,10 +5266,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 activeHabits[type] = !activeHabits[type];
                 if (activeHabits[type]) {
                     btn.classList.add('active');
-                    btn.classList.add('active-click-anim');
-                    btn.addEventListener('animationend', () => {
-                        btn.classList.remove('active-click-anim');
-                    }, { once: true });
                     addHistoryItem(type);
                 } else {
                     btn.classList.remove('active');
@@ -5523,33 +5278,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 renderCalendar();
             });
         });
-
-        // 🆕 リップル効果ヘルパー
-        function createRipple(event, element) {
-            const circle = document.createElement("span");
-            const diameter = Math.max(element.clientWidth, element.clientHeight);
-            const radius = diameter / 2;
-            
-            circle.style.width = circle.style.height = `${diameter}px`;
-            
-            const rect = element.getBoundingClientRect();
-            const x = event.clientX - rect.left - radius;
-            const y = event.clientY - rect.top - radius;
-            
-            circle.style.left = `${x}px`;
-            circle.style.top = `${y}px`;
-            circle.classList.add("ripple-effect");
-            
-            const ripple = element.getElementsByClassName("ripple-effect")[0];
-            if (ripple) {
-                ripple.remove();
-            }
-            
-            element.appendChild(circle);
-            setTimeout(() => {
-                circle.remove();
-            }, 600);
-        }
 
         // 履歴に項目を追加
         function addHistoryItem(type, customAmount, targetDateStr = null) {
@@ -5595,108 +5323,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
 
         // 過去の履歴をリストレンダリング
-        // --- 🆕 削除のUndo機能実装 ---
-        let deleteUndoBackup = null;
-        let deleteUndoTimeout = null;
-
-        window.deleteHistoryItemWithUndo = function(id) {
-            if (deleteUndoTimeout) {
-                // すでに保留中の削除があれば即時確定
-                commitPendingDelete();
-            }
-            
-            const targetItem = history.find(item => item.id === id);
-            if (!targetItem) return;
-            
-            // バックアップを作成
-            deleteUndoBackup = {
-                history: JSON.parse(JSON.stringify(history)),
-                activeHabits: { ...activeHabits }
-            };
-            
-            // 配列から削除
-            history = history.filter(item => item.id !== id);
-            
-            // 今日チェックインしていた項目ならトグル解除
-            if (targetItem.date === getTodayStr()) {
-                const type = targetItem.type;
-                if (type === 'tobacco' || type === 'beer') {
-                    activeHabits[type] = false;
-                }
-            }
-            
-            // 画面を即座に更新
-            renderHistoryList();
-            calculate();
-            renderCalendar();
-            updateCheckinBtnStates();
-            
-            // トースト表示
-            showUndoToast(() => {
-                // 元に戻す (Undo実行)
-                if (deleteUndoTimeout) {
-                    clearTimeout(deleteUndoTimeout);
-                    deleteUndoTimeout = null;
-                }
-                if (deleteUndoBackup) {
-                    history = deleteUndoBackup.history;
-                    activeHabits = deleteUndoBackup.activeHabits;
-                    deleteUndoBackup = null;
-                }
-                hideUndoToast();
-                renderHistoryList();
-                calculate();
-                renderCalendar();
-                updateCheckinBtnStates();
-            });
-            
-            // 5秒間操作がなければ確定保存
-            deleteUndoTimeout = setTimeout(() => {
-                commitPendingDelete();
-            }, 5000);
-        };
-
-        function commitPendingDelete() {
-            if (deleteUndoTimeout) {
-                clearTimeout(deleteUndoTimeout);
-                deleteUndoTimeout = null;
-            }
-            deleteUndoBackup = null;
-            saveHistory();
-            saveSettings();
-            hideUndoToast();
-        }
-
-        function showUndoToast(onUndo) {
-            const toast = document.getElementById('undo-toast');
-            const btn = document.getElementById('undo-toast-btn');
-            if (!toast || !btn) return;
-            
-            toast.style.display = 'flex';
-            
-            // イベントリスナーの重複登録防止のためのノード複製
-            const newBtn = btn.cloneNode(true);
-            btn.replaceWith(newBtn);
-            
-            newBtn.addEventListener('click', () => {
-                onUndo();
-            });
-        }
-
-        function hideUndoToast() {
-            const toast = document.getElementById('undo-toast');
-            if (toast) {
-                toast.style.display = 'none';
-            }
-        }
-
-        // アンロード時に保留中の削除をコミット
-        window.addEventListener('beforeunload', () => {
-            if (deleteUndoTimeout) {
-                commitPendingDelete();
-            }
-        });
-
         function renderHistoryList() {
             sortHistoryByDate();
             historyListContainer.innerHTML = "";
@@ -5725,7 +5351,23 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             historyListContainer.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = parseInt(btn.dataset.id);
-                    deleteHistoryItemWithUndo(id);
+                    // 履歴から削除
+                    const targetItem = history.find(item => item.id === id);
+                    history = history.filter(item => item.id !== id);
+
+                    // もし今日削除したのが 今日チェックインしていた日次項目 であれば、状態を同期
+                    if (targetItem && targetItem.date === getTodayStr()) {
+                        const type = targetItem.type;
+                        if (type === 'tobacco' || type === 'beer') {
+                            activeHabits[type] = false;
+                        }
+                    }
+
+                    saveHistory();
+                    renderHistoryList();
+                    calculate();
+                    renderCalendar();
+                    updateCheckinBtnStates();
                 });
             });
         }
@@ -7445,11 +7087,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             </button>
         </div>
         <div id="ios-install-arrow" class="ios-install-arrow">⬇️</div>
-    </div>
-    <!-- ↩️ 削除取り消し用トースト -->
-    <div id="undo-toast" class="undo-toast" style="display: none;">
-        <span class="undo-toast-text">🗑️ 記録を削除しました</span>
-        <button id="undo-toast-btn" class="undo-toast-btn">元に戻す ↩️</button>
     </div>
 </body>
 </html>
