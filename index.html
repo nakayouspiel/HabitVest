@@ -1909,9 +1909,9 @@
                     📈 将来予測モード  タップで切替 
                 </div>
                 <div class="pace-toggle-container">
-                    <div id="pace-toggle-bg" class="pace-btn-sliding-bg" style="transform: translateX(100%);"></div>
-                    <button type="button" id="btn-pace-ideal" class="pace-toggle-btn">理想目標 🏆</button>
-                    <button type="button" id="btn-pace-real" class="pace-toggle-btn active">現実ペース 🏃</button>
+                    <div id="pace-toggle-bg" class="pace-btn-sliding-bg" style="transform: translateX(0);"></div>
+                    <button type="button" id="btn-pace-ideal" class="pace-toggle-btn active">理想目標 🏆</button>
+                    <button type="button" id="btn-pace-real" class="pace-toggle-btn">現実ペース 🏃</button>
                 </div>
                 <div id="pace-explanation" style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-bottom: 14px; font-weight: 500; min-height: 2.8em; line-height: 1.45; padding: 0 16px;">
                     💡 理想目標: 投資達成率を100%（毎日継続）と仮定した将来予測です
@@ -2368,8 +2368,8 @@
                     あなたはタバコをやめて、その分を投資することを考えていますか？
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button type="button" class="modal-btn" onclick="setOnboardHabit('tobacco', true)" style="margin-top: 0; width: 100%;">はい、考えている</button>
-                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('tobacco', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、考えていない</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('tobacco', true)" style="margin-top: 0; width: 100%;">はい、考えている</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('tobacco', false)" style="margin-top: 0; width: 100%;">いいえ、考えていない</button>
                 </div>
             </div>
 
@@ -2380,8 +2380,8 @@
                     あなたはお酒をやめて、その分を投資することを考えていますか？
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button type="button" class="modal-btn" onclick="setOnboardHabit('beer', true)" style="margin-top: 0; width: 100%;">はい、考えている</button>
-                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('beer', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、考えていない</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('beer', true)" style="margin-top: 0; width: 100%;">はい、考えている</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('beer', false)" style="margin-top: 0; width: 100%;">いいえ、考えていない</button>
                 </div>
             </div>
 
@@ -2392,8 +2392,8 @@
                     タバコやお酒のほかにも、何かを節約したお金を投資に回したり、毎月コツコツと投資を記録したいですか？
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button type="button" class="modal-btn" onclick="setOnboardHabit('invest', true)" style="margin-top: 0; width: 100%;">はい、記録したい</button>
-                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('invest', false)" style="margin-top: 0; border: 1px solid var(--border-glass); width: 100%;">いいえ、記録しない</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('invest', true)" style="margin-top: 0; width: 100%;">はい、記録したい</button>
+                    <button type="button" class="modal-btn-secondary" onclick="setOnboardHabit('invest', false)" style="margin-top: 0; width: 100%;">いいえ、記録しない</button>
                 </div>
             </div>
 
@@ -2737,7 +2737,7 @@ const settingsModal = document.getElementById('settings-modal');
         const onboardingModal = document.getElementById('onboarding-modal');
 
         // --- 状態変数 ---
-        let simulationPaceMode = 'real'; // 'ideal' or 'real'
+        let simulationPaceMode = 'ideal'; // 'ideal' or 'real'
 
         let profile = {
             name: "",
@@ -4865,17 +4865,22 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         };
 
         window.nextOnboardStep = function(stepIndex) {
-            const currentPane = document.getElementById('onboard-step-' + stepIndex);
-            if (currentPane) {
-                currentPane.style.display = 'none';
-                currentPane.classList.remove('active');
-            }
-            onboardState.currentStep = stepIndex + 1;
-            const nextPane = document.getElementById('onboard-step-' + (stepIndex + 1));
-            if (nextPane) {
-                nextPane.style.display = 'block';
-                nextPane.classList.add('active');
-            }
+            const isChoiceStep = [1, 2, 3, 4, 6, 7, 8, 9, 10].includes(stepIndex);
+            const delay = isChoiceStep ? 220 : 0;
+            
+            setTimeout(() => {
+                const currentPane = document.getElementById('onboard-step-' + stepIndex);
+                if (currentPane) {
+                    currentPane.style.display = 'none';
+                    currentPane.classList.remove('active');
+                }
+                onboardState.currentStep = stepIndex + 1;
+                const nextPane = document.getElementById('onboard-step-' + (stepIndex + 1));
+                if (nextPane) {
+                    nextPane.style.display = 'block';
+                    nextPane.classList.add('active');
+                }
+            }, delay);
         };
 
         window.prevOnboardStep = function(stepIndex) {
@@ -6918,6 +6923,22 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 loadSettings(); 
                 calculate();
                 renderHistoryList();
+
+                // 📲 オンボーディングのボタンクリック時の選択フィードバック
+                const obModal = document.getElementById('onboarding-modal');
+                if (obModal) {
+                    obModal.addEventListener('click', (e) => {
+                        const btn = e.target.closest('.modal-btn-secondary');
+                        if (btn) {
+                            const onclickAttr = btn.getAttribute('onclick') || '';
+                            if (onclickAttr.includes('setOnboard') || onclickAttr.includes('nextOnboardStep')) {
+                                btn.style.background = 'var(--btn-primary-bg)';
+                                btn.style.color = 'var(--btn-primary-text)';
+                                btn.style.borderColor = 'var(--btn-primary-bg)';
+                            }
+                        }
+                    });
+                }
 
 
 
