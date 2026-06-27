@@ -1,4 +1,4 @@
-const CACHE_NAME = 'habitvest-v135';
+const CACHE_NAME = 'habitvest-v136';
 const ASSETS = [
   './',
   'index.html',
@@ -44,6 +44,11 @@ self.addEventListener('message', (e) => {
 // 開発・本番共通で「ネットワークファースト」を適用
 // 常に最新データを取得し、オフラインのときだけキャッシュを返す
 self.addEventListener('fetch', (e) => {
+  // HTTP/HTTPSリクエストのみを処理対象にする（拡張機能の chrome-extension:// などを除外）
+  if (!e.request.url.startsWith('http')) {
+    return;
+  }
+
   // GET以外のメソッド（POSTなど）や外部の特定APIなどはキャッシュ対象外にする
   if (e.request.method !== 'GET') {
     e.respondWith(fetch(e.request));

@@ -2631,6 +2631,18 @@
     </nav>
 
     <script>
+        // 📲 PWA インストールの準備（loadイベントより早く発生する場合に備え、グローバルに早期登録）
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // バナー要素が既に描画されていれば表示
+            const pwaBanner = document.getElementById('pwa-install-banner');
+            if (pwaBanner && sessionStorage.getItem('pwa_banner_dismissed') !== 'true') {
+                pwaBanner.style.display = 'block';
+            }
+        });
+
         // DOM要素の取得
         const themeToggle = document.getElementById('theme-toggle');
         const settingsToggle = document.getElementById('settings-toggle');
@@ -6837,7 +6849,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=135')
+                navigator.serviceWorker.register('./sw.js?v=136')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
@@ -6937,14 +6949,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 
                 // すでにインストール済みの場合は何も表示しない
                 if (isStandalone) return;
-                
-                let deferredPrompt = null;
-                
-                // Android/Chrome等のネイティブインストールプロンプト監視
-                window.addEventListener('beforeinstallprompt', (e) => {
-                    e.preventDefault();
-                    deferredPrompt = e;
-                });
                 
                 // ホーム画面未追加の場合、過去に閉じていない限り必ずバナーを表示する
                 if (pwaBanner && sessionStorage.getItem('pwa_banner_dismissed') !== 'true') {
