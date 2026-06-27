@@ -1765,6 +1765,57 @@
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(-12px); }
         }
+    
+        /* --- 🆕 Undo Deletion Toast --- */
+        .undo-toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            z-index: 10000;
+            animation: toastFadeIn 0.3s ease-out;
+        }
+        .undo-toast-text {
+            font-size: 0.75rem;
+            color: #f8fafc;
+            font-weight: 500;
+        }
+        .undo-toast-btn {
+            background: transparent;
+            border: none;
+            color: #38bdf8;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+            outline: none;
+            transition: opacity 0.2s;
+        }
+        .undo-toast-btn:hover {
+            opacity: 0.8;
+        }
+        .undo-toast-btn:active {
+            transform: scale(0.96);
+        }
+        @keyframes toastFadeIn {
+            from {
+                bottom: 70px;
+                opacity: 0;
+            }
+            to {
+                bottom: 90px;
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -5323,6 +5374,108 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
 
         // 過去の履歴をリストレンダリング
+        // --- 🆕 削除のUndo機能実装 ---
+        let deleteUndoBackup = null;
+        let deleteUndoTimeout = null;
+
+        window.deleteHistoryItemWithUndo = function(id) {
+            if (deleteUndoTimeout) {
+                // すでに保留中の削除があれば即時確定
+                commitPendingDelete();
+            }
+            
+            const targetItem = history.find(item => item.id === id);
+            if (!targetItem) return;
+            
+            // バックアップを作成
+            deleteUndoBackup = {
+                history: JSON.parse(JSON.stringify(history)),
+                activeHabits: { ...activeHabits }
+            };
+            
+            // 配列から削除
+            history = history.filter(item => item.id !== id);
+            
+            // 今日チェックインしていた項目ならトグル解除
+            if (targetItem.date === getTodayStr()) {
+                const type = targetItem.type;
+                if (type === 'tobacco' || type === 'beer') {
+                    activeHabits[type] = false;
+                }
+            }
+            
+            // 画面を即座に更新
+            renderHistoryList();
+            calculate();
+            renderCalendar();
+            updateCheckinBtnStates();
+            
+            // トースト表示
+            showUndoToast(() => {
+                // 元に戻す (Undo実行)
+                if (deleteUndoTimeout) {
+                    clearTimeout(deleteUndoTimeout);
+                    deleteUndoTimeout = null;
+                }
+                if (deleteUndoBackup) {
+                    history = deleteUndoBackup.history;
+                    activeHabits = deleteUndoBackup.activeHabits;
+                    deleteUndoBackup = null;
+                }
+                hideUndoToast();
+                renderHistoryList();
+                calculate();
+                renderCalendar();
+                updateCheckinBtnStates();
+            });
+            
+            // 5秒間操作がなければ確定保存
+            deleteUndoTimeout = setTimeout(() => {
+                commitPendingDelete();
+            }, 5000);
+        };
+
+        function commitPendingDelete() {
+            if (deleteUndoTimeout) {
+                clearTimeout(deleteUndoTimeout);
+                deleteUndoTimeout = null;
+            }
+            deleteUndoBackup = null;
+            saveHistory();
+            saveSettings();
+            hideUndoToast();
+        }
+
+        function showUndoToast(onUndo) {
+            const toast = document.getElementById('undo-toast');
+            const btn = document.getElementById('undo-toast-btn');
+            if (!toast || !btn) return;
+            
+            toast.style.display = 'flex';
+            
+            // イベントリスナーの重複登録防止のためのノード複製
+            const newBtn = btn.cloneNode(true);
+            btn.replaceWith(newBtn);
+            
+            newBtn.addEventListener('click', () => {
+                onUndo();
+            });
+        }
+
+        function hideUndoToast() {
+            const toast = document.getElementById('undo-toast');
+            if (toast) {
+                toast.style.display = 'none';
+            }
+        }
+
+        // アンロード時に保留中の削除をコミット
+        window.addEventListener('beforeunload', () => {
+            if (deleteUndoTimeout) {
+                commitPendingDelete();
+            }
+        });
+
         function renderHistoryList() {
             sortHistoryByDate();
             historyListContainer.innerHTML = "";
@@ -5351,23 +5504,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             historyListContainer.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = parseInt(btn.dataset.id);
-                    // 履歴から削除
-                    const targetItem = history.find(item => item.id === id);
-                    history = history.filter(item => item.id !== id);
-
-                    // もし今日削除したのが 今日チェックインしていた日次項目 であれば、状態を同期
-                    if (targetItem && targetItem.date === getTodayStr()) {
-                        const type = targetItem.type;
-                        if (type === 'tobacco' || type === 'beer') {
-                            activeHabits[type] = false;
-                        }
-                    }
-
-                    saveHistory();
-                    renderHistoryList();
-                    calculate();
-                    renderCalendar();
-                    updateCheckinBtnStates();
+                    deleteHistoryItemWithUndo(id);
                 });
             });
         }
@@ -7087,6 +7224,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             </button>
         </div>
         <div id="ios-install-arrow" class="ios-install-arrow">⬇️</div>
+    </div>
+    <!-- ↩️ 削除取り消し用トースト -->
+    <div id="undo-toast" class="undo-toast" style="display: none;">
+        <span class="undo-toast-text">🗑️ 記録を削除しました</span>
+        <button id="undo-toast-btn" class="undo-toast-btn">元に戻す ↩️</button>
     </div>
 </body>
 </html>
