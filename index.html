@@ -644,8 +644,9 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             background: rgba(6, 9, 19, 0.65);
             z-index: 9999;
             display: flex;
@@ -657,6 +658,9 @@
 
         .tutorial-tooltip {
             position: fixed;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
             width: 92%;
             max-width: 320px;
             background: var(--bg-card);
@@ -729,6 +733,7 @@
         }
 
         .tutorial-arrow {
+            display: none !important;
             position: absolute;
             font-size: 1.3rem;
             color: var(--neon-primary);
