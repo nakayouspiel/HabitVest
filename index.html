@@ -1916,7 +1916,7 @@
                     <button class="checkin-btn daily" id="checkin-btn-invest" data-habit="invest" style="grid-column: span 2; display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 10px 10px;">
                         <div class="status-badge-area"></div>
                         <!-- 3層構造: メインラベル、目標・日次目安[薄字]、当月累計投資実績[ネオンカラー強調] -->
-                        <span class="label" style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 4px;">未来への投資</span>
+                        <span class="label" id="invest-btn-label" style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 4px;">未来への投資</span>
                         <div style="font-size: 0.75rem; display: flex; gap: 10px; align-items: center; color: var(--text-muted); font-weight: 600;">
                             <span id="checkin-badge-invest">目標: 30,000円</span>
                             <span style="opacity: 0.5;">|</span>
@@ -5297,19 +5297,15 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const type = btn.dataset.habit;
 
                 if (type === 'invest') {
-                    // もし今日すでに節約の履歴があるなら、ボタン押下でそれをすべて削除してトグル(非アクティブ化)
                     const todayStr = getTodayStr();
                     const hasInvestToday = history.some(item => item.date === todayStr && item.type === 'invest');
-                    if (hasInvestToday) {
-                        removeTodayHistoryItem('invest');
-                        // 計算と画面表示の更新
+                    if (!hasInvestToday) {
+                        addHistoryItem('invest');
                         saveSettings();
                         calculate();
+                        renderHistoryList();
                         renderCalendar();
                         updateCheckinBtnStates();
-                    } else {
-                        // 今日まだ節約していなければ、金額選択モーダルを開く
-                        openFreeSavingModal();
                     }
                     return;
                 }
@@ -5696,11 +5692,20 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // investは 今日、1回でも投資（invest）の履歴があるか で判定
             const todayStr = getTodayStr();
             const hasInvestToday = history.some(item => item.date === todayStr && item.type === 'invest');
+            const investLabelEl = document.getElementById('invest-btn-label');
             if (hasInvestToday) {
                 checkinBtnInvest.classList.add('active');
+                checkinBtnInvest.disabled = true;
+                if (investLabelEl) {
+                    investLabelEl.innerText = "投資済み！✨";
+                }
                 activeHabits.invest = true;
             } else {
                 checkinBtnInvest.classList.remove('active');
+                checkinBtnInvest.disabled = false;
+                if (investLabelEl) {
+                    investLabelEl.innerText = "未来への投資";
+                }
                 activeHabits.invest = false;
             }
         }
@@ -5871,7 +5876,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const months = y * 12;
                 if (monthlyRate > 0) {
                     // 初期元本 activeP が複利運用され、かつ将来の毎月節約額が積み立てられる
-                    totalInvest = activeP * Math.pow(1 + monthlyRate, months) + monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                    if (monthlySaving > 0) {
+                        totalInvest = activeP * Math.pow(1 + monthlyRate, months) + monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                    } else {
+                        totalInvest = activeP * Math.pow(1 + monthlyRate, months);
+                    }
                 } else {
                     totalInvest = totalSaving;
                 }
@@ -6097,14 +6106,45 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         // 🛡️ 数値入力値のバリデーションとパース用ヘルパー
         function validateAndParse(inputEl, defaultValue, isFloat = false) {
             if (!inputEl) return defaultValue;
-            let val = isFloat ? parseFloat(inputEl.value) : parseInt(inputEl.value, 10);
-            if (isNaN(val)) {
+            
+            // 空文字や異常値をガードするために、値をトリムしてチェック
+            let rawValue = inputEl.value;
+            if (typeof rawValue === 'string') {
+                rawValue = rawValue.trim();
+            }
+            
+            let val = isFloat ? parseFloat(rawValue) : parseInt(rawValue, 10);
+            if (isNaN(val) || rawValue === "") {
                 val = defaultValue;
             }
-            const min = parseFloat(inputEl.min);
-            const max = parseFloat(inputEl.max);
+
+            // IDや属性に応じた、より強力な安全ガード（クラッシュ・フリーズ防止）
+            let min = parseFloat(inputEl.min);
+            let max = parseFloat(inputEl.max);
+            
+            // IDによる自動判定
+            const id = inputEl.id || "";
+            
+            // 期間（Years）のガード
+            if (id.includes("years")) {
+                if (isNaN(min)) min = 1;
+                if (isNaN(max)) max = 100; // 100年以上のループを防止
+            }
+            // 利回り（Yield）のガード
+            else if (id.includes("yield")) {
+                if (isNaN(min)) min = 0;
+                if (isNaN(max)) max = 100;
+            }
+            // 金額（Price, Target, Investment）や数量のガード
+            else {
+                if (isNaN(min)) min = 0; // 最低金額は0
+                if (isNaN(max)) max = 1000000000; // 10億
+            }
+
+            // 値の範囲チェック
             if (!isNaN(min) && val < min) val = min;
             if (!isNaN(max) && val > max) val = max;
+            
             inputEl.value = val; // クリーンになった値をUI入力要素へ反映
             return val;
         }
@@ -6305,7 +6345,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const timelineContainer = document.querySelector('.timeline-container');
             let placeholder = document.getElementById('life-roadmap-placeholder');
             
-            if (monthlySaving <= 0 || history.length === 0) {
+            // 過去に1回でも投資履歴がある（history.length > 0）、または設定画面で投資等のトラッキングがONになっている場合はアンロック状態を維持
+            const isUnlocked = (history.length > 0) || !!profile.trackInvest || !!profile.trackTobacco || !!profile.trackBeer;
+            
+            if (!isUnlocked) {
                 if (timelineContainer) timelineContainer.style.display = 'none';
                 if (lifeRoadmapMonthlyVal) lifeRoadmapMonthlyVal.parentNode.style.display = 'none';
                 
@@ -6390,7 +6433,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // 金額と趣味に応じた文章の動的差し替え (レベルロック撤廃 ＆ 現在の累計実績からの未来投影)
             const hobby = profile.hobby || 'invest';
 
-            if (monthlySaving > 0) {
+            if (monthlySaving > 0 || isUnlocked) {
                 // 現在の累計実績 (totalEarned) をベースとした相対的な未来予測金額
                 const cumDay = floorTo100Jpy(totalEarned + dailySaving);
                 const cumWeek = floorTo100Jpy(totalEarned + dailySaving * 7);
@@ -6476,7 +6519,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             // ライフのゴールカード（id="rm-goal-card"）の出力の動的生成
             const rmGoalCard = document.getElementById('rm-goal-card');
-            if (rmGoalCard && monthlySaving > 0) {
+            if (rmGoalCard && (monthlySaving > 0 || isUnlocked)) {
                 // 過去の履歴から集計した実際の確定実績データを主軸にするため、理想の仮定値を用いた計算を廃止
                 let avgRate = 1.0;
                 let activeRates = [];
