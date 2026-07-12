@@ -1765,57 +1765,6 @@
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(-12px); }
         }
-    
-        /* --- 🆕 Undo Deletion Toast --- */
-        .undo-toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 16px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-            z-index: 10000;
-            animation: toastFadeIn 0.3s ease-out;
-        }
-        .undo-toast-text {
-            font-size: 0.75rem;
-            color: #f8fafc;
-            font-weight: 500;
-        }
-        .undo-toast-btn {
-            background: transparent;
-            border: none;
-            color: #38bdf8;
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-            padding: 0;
-            text-decoration: underline;
-            outline: none;
-            transition: opacity 0.2s;
-        }
-        .undo-toast-btn:hover {
-            opacity: 0.8;
-        }
-        .undo-toast-btn:active {
-            transform: scale(0.96);
-        }
-        @keyframes toastFadeIn {
-            from {
-                bottom: 70px;
-                opacity: 0;
-            }
-            to {
-                bottom: 90px;
-                opacity: 1;
-            }
-        }
     </style>
 </head>
 <body>
@@ -1916,7 +1865,7 @@
                     <button class="checkin-btn daily" id="checkin-btn-invest" data-habit="invest" style="grid-column: span 2; display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 10px 10px;">
                         <div class="status-badge-area"></div>
                         <!-- 3層構造: メインラベル、目標・日次目安[薄字]、当月累計投資実績[ネオンカラー強調] -->
-                        <span class="label" id="invest-btn-label" style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 4px;">未来への投資</span>
+                        <span class="label" style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 4px;">未来への投資</span>
                         <div style="font-size: 0.75rem; display: flex; gap: 10px; align-items: center; color: var(--text-muted); font-weight: 600;">
                             <span id="checkin-badge-invest">目標: 30,000円</span>
                             <span style="opacity: 0.5;">|</span>
@@ -2937,66 +2886,67 @@ const settingsModal = document.getElementById('settings-modal');
             const rates = { tobacco: 1.0, beer: 1.0, invest: 0.0 };
             const todayDate = parseDateSafely(getTodayStr()) || new Date();
             const startTrackingDate = parseDateSafely(profile.startDate) || todayDate;
+            const diffTime = todayDate.getTime() - startTrackingDate.getTime();
+            const elapsedDays = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
 
-            let oldestHistoryDate = null;
+            let oldestTobaccoDate = null;
+            let oldestBeerDate = null;
+
             const tobaccoDates = new Set();
             const beerDates = new Set();
-            const investDates = new Set();
-            let totalInvestAmount = 0;
 
             history.forEach(item => {
                 if (item.date) {
-                    const d = parseDateSafely(item.date);
-                    if (d) {
-                        if (!oldestHistoryDate || d < oldestHistoryDate) {
-                            oldestHistoryDate = d;
+                    if (item.type === 'tobacco') {
+                        tobaccoDates.add(item.date);
+                        const d = parseDateSafely(item.date);
+                        if (d) {
+                            if (!oldestTobaccoDate || d < oldestTobaccoDate) oldestTobaccoDate = d;
                         }
-                        if (item.type === 'tobacco') {
-                            tobaccoDates.add(item.date);
-                        } else if (item.type === 'beer') {
-                            beerDates.add(item.date);
-                        } else if (item.type === 'invest') {
-                            investDates.add(item.date);
-                            totalInvestAmount += item.amount;
+                    }
+                    if (item.type === 'beer') {
+                        beerDates.add(item.date);
+                        const d = parseDateSafely(item.date);
+                        if (d) {
+                            if (!oldestBeerDate || d < oldestBeerDate) oldestBeerDate = d;
                         }
                     }
                 }
             });
 
-            // 開始日はアプリ開始日か最初の履歴の日付のいずれか古い方
-            let baseStartDate = startTrackingDate;
-            if (oldestHistoryDate && oldestHistoryDate < baseStartDate) {
-                baseStartDate = oldestHistoryDate;
-            }
-
-            const diffTime = todayDate.getTime() - baseStartDate.getTime();
-            const elapsedDays = Math.max(1, Math.floor(diffTime / (1000 * 3600 * 24)) + 1);
-
             // タバコの継続率計算
+            let effectiveStartTobacco = oldestTobaccoDate || startTrackingDate;
             if (tobaccoDates.size > 0 || activeHabits.tobacco) {
-                rates.tobacco = elapsedDays > 0 ? Math.min(1.0, tobaccoDates.size / elapsedDays) : 1.0;
+                const diffTimeT = todayDate.getTime() - effectiveStartTobacco.getTime();
+                const diffDaysT = Math.floor(diffTimeT / (1000 * 3600 * 24)) + 1;
+                rates.tobacco = diffDaysT > 0 ? Math.min(1.0, tobaccoDates.size / diffDaysT) : 1.0;
             } else {
                 rates.tobacco = 0.0;
             }
 
             // ビールの継続率計算
+            let effectiveStartBeer = oldestBeerDate || startTrackingDate;
             if (beerDates.size > 0 || activeHabits.beer) {
-                rates.beer = elapsedDays > 0 ? Math.min(1.0, beerDates.size / elapsedDays) : 1.0;
+                const diffTimeB = todayDate.getTime() - effectiveStartBeer.getTime();
+                const diffDaysB = Math.floor(diffTimeB / (1000 * 3600 * 24)) + 1;
+                rates.beer = diffDaysB > 0 ? Math.min(1.0, beerDates.size / diffDaysB) : 1.0;
             } else {
                 rates.beer = 0.0;
             }
 
-            // 投資の継続率計算（一括投入を考慮した特別ルール）
-            const dailyTarget = (habitPrices.investMonthlyTarget || 0) / 30;
-            const bDays = dailyTarget > 0 ? totalInvestAmount / dailyTarget : 0;
-            const aDays = investDates.size;
-            let investAchievedDays = Math.max(aDays, bDays);
-            if (investAchievedDays > elapsedDays) {
-                investAchievedDays = elapsedDays;
-            }
-
-            if (investDates.size > 0 || activeHabits.invest) {
-                rates.invest = elapsedDays > 0 ? (investAchievedDays / elapsedDays) : 1.0;
+            // 投資の達成率（カレンダー当月基準）
+            const targetInvestMonthly = habitPrices.investMonthlyTarget;
+            if (targetInvestMonthly > 0) {
+                const currentYear = todayDate.getFullYear();
+                const currentMonth = todayDate.getMonth();
+                const totalInvestAmountThisMonth = history
+                    .filter(item => {
+                        if (item.type !== 'invest') return false;
+                        const itemDate = parseDateSafely(item.date);
+                        return itemDate && itemDate.getFullYear() === currentYear && itemDate.getMonth() === currentMonth;
+                    })
+                    .reduce((sum, item) => sum + item.amount, 0);
+                rates.invest = totalInvestAmountThisMonth / targetInvestMonthly;
             } else {
                 rates.invest = 0.0;
             }
@@ -4414,6 +4364,113 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             return idx !== -1 ? idx : list.length - 1;
         }
 
+        // ⚔️ レベルごとの必要累計貯蓄額の計算 (非線形カーブ: 3週間=21日でLv.5、5年=1800日でLv.99想定)
+        // C(L) = 3000 * (L - 1)^1.35
+        function getCumulativeSavingForLevel(L) {
+            if (L <= 1) return 0;
+            return Math.floor(Math.round(3000 * Math.pow(L - 1, 1.35)) / 100) * 100;
+        }
+
+        // 累計貯蓄額から現在のレベルを取得 (最大99)
+        function getLevelFromSaving(totalEarned) {
+            if (totalEarned <= 0) return 1;
+            let level = 1;
+            for (let L = 2; L <= 99; L++) {
+                if (getCumulativeSavingForLevel(L) <= totalEarned) {
+                    level = L;
+                } else {
+                    break;
+                }
+            }
+            return level;
+        }
+
+        // ⚔️ 自己投資称号の設定 (最高レベル99、非線形カーブに基づく)
+        function getRanksConfig() {
+            return [
+                { level: 1, title: "自己投資ビギナー", emoji: "🔰", minAmount: getCumulativeSavingForLevel(1) },
+                { level: 5, title: "習慣改善 of 芽生え", emoji: "🌱", minAmount: getCumulativeSavingForLevel(5) },
+                { level: 15, title: "自制の戦士", emoji: "⚔️", minAmount: getCumulativeSavingForLevel(15) },
+                { level: 30, title: "欲望の支配者", emoji: "🛡️", minAmount: getCumulativeSavingForLevel(30) },
+                { level: 50, title: "セルフコントロールの達人", emoji: "🧘", minAmount: getCumulativeSavingForLevel(50) },
+                { level: 70, title: "複利の魔術師", emoji: "🧙‍♂️", minAmount: getCumulativeSavingForLevel(70) },
+                { level: 85, title: "習慣の聖者", emoji: "👑", minAmount: getCumulativeSavingForLevel(85) },
+                { level: 99, title: "神域のFIREランナー", emoji: "🗽", minAmount: getCumulativeSavingForLevel(99) }
+            ];
+        }
+
+        // ⚔️ 自己投資称号ツリーのレンダリング
+        function renderStatusTree(currentLevel) {
+            const container = document.getElementById('life-status-tree-container');
+            if (!container) return;
+            container.innerHTML = "";
+
+            const ranks = getRanksConfig();
+
+            let currentRankIdx = 0;
+            for (let i = ranks.length - 1; i >= 0; i--) {
+                if (currentLevel >= ranks[i].level) {
+                    currentRankIdx = i;
+                    break;
+                }
+            }
+
+            ranks.forEach((rank, idx) => {
+                const isUnlocked = currentLevel >= rank.level;
+                const isCurrent = idx === currentRankIdx;
+                
+                const row = document.createElement('div');
+                row.style.display = 'flex';
+                row.style.justifyContent = 'space-between';
+                row.style.alignItems = 'center';
+                row.style.padding = '8px 12px';
+                row.style.borderRadius = '12px';
+                row.style.fontSize = '0.72rem';
+                row.style.transition = 'all 0.2s';
+
+                const isDark = document.body.classList.contains('theme-dark');
+                if (isCurrent) {
+                    row.style.background = isDark ? 'rgba(0, 243, 255, 0.08)' : 'rgba(2, 132, 199, 0.08)';
+                    row.style.border = '1px solid var(--neon-primary)';
+                    row.style.boxShadow = isDark ? '0 0 8px rgba(0, 243, 255, 0.2)' : '0 0 8px rgba(2, 132, 199, 0.15)';
+                } else if (isUnlocked) {
+                    row.style.background = isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(15, 23, 42, 0.04)';
+                    row.style.border = isDark ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(15, 23, 42, 0.06)';
+                    row.style.opacity = '0.85';
+                } else {
+                    row.style.background = isDark ? 'rgba(255, 255, 255, 0.01)' : 'rgba(15, 23, 42, 0.01)';
+                    row.style.border = isDark ? '1px dashed rgba(255, 255, 255, 0.05)' : '1px dashed rgba(15, 23, 42, 0.05)';
+                    row.style.opacity = '0.4';
+                }
+
+                const leftSide = document.createElement('div');
+                leftSide.style.display = 'flex';
+                leftSide.style.alignItems = 'center';
+                leftSide.style.gap = '8px';
+
+                const statusIcon = document.createElement('span');
+                statusIcon.innerText = isUnlocked ? '✅' : '🔒';
+                leftSide.appendChild(statusIcon);
+
+                const titleInfo = document.createElement('div');
+                titleInfo.innerHTML = `<span style="font-weight: 700; color: ${isUnlocked ? 'var(--text-sub)' : 'var(--text-muted)'};">Lv.${rank.level}</span> <span style="font-weight: 800; color: ${isCurrent ? 'var(--neon-primary)' : (isUnlocked ? 'var(--text-main)' : 'var(--text-muted)')};">${rank.title} ${rank.emoji}</span>`;
+                leftSide.appendChild(titleInfo);
+
+                const rightSide = document.createElement('div');
+                rightSide.style.textAlign = 'right';
+                
+                if (isCurrent) {
+                    rightSide.innerHTML = `<span style="background: var(--neon-primary); color: #0b0f19; font-weight: 800; font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.05em;">現在の称号</span>`;
+                } else {
+                    rightSide.innerHTML = `<span style="color: var(--text-muted); font-size: 0.65rem;">(累計 ${rank.minAmount.toLocaleString()}円〜)</span>`;
+                }
+
+                row.appendChild(leftSide);
+                row.appendChild(rightSide);
+                container.appendChild(row);
+            });
+        }
+
         // 🎓 クイックチュートリアル機能の定義
         let currentTutorialIndex = 0;
         const tutorialSteps = [
@@ -5189,15 +5246,19 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const type = btn.dataset.habit;
 
                 if (type === 'invest') {
+                    // もし今日すでに節約の履歴があるなら、ボタン押下でそれをすべて削除してトグル(非アクティブ化)
                     const todayStr = getTodayStr();
                     const hasInvestToday = history.some(item => item.date === todayStr && item.type === 'invest');
-                    if (!hasInvestToday) {
-                        addHistoryItem('invest');
+                    if (hasInvestToday) {
+                        removeTodayHistoryItem('invest');
+                        // 計算と画面表示の更新
                         saveSettings();
                         calculate();
-                        renderHistoryList();
                         renderCalendar();
                         updateCheckinBtnStates();
+                    } else {
+                        // 今日まだ節約していなければ、金額選択モーダルを開く
+                        openFreeSavingModal();
                     }
                     return;
                 }
@@ -5262,108 +5323,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         }
 
         // 過去の履歴をリストレンダリング
-        // --- 🆕 削除のUndo機能実装 ---
-        let deleteUndoBackup = null;
-        let deleteUndoTimeout = null;
-
-        window.deleteHistoryItemWithUndo = function(id) {
-            if (deleteUndoTimeout) {
-                // すでに保留中の削除があれば即時確定
-                commitPendingDelete();
-            }
-            
-            const targetItem = history.find(item => item.id === id);
-            if (!targetItem) return;
-            
-            // バックアップを作成
-            deleteUndoBackup = {
-                history: JSON.parse(JSON.stringify(history)),
-                activeHabits: { ...activeHabits }
-            };
-            
-            // 配列から削除
-            history = history.filter(item => item.id !== id);
-            
-            // 今日チェックインしていた項目ならトグル解除
-            if (targetItem.date === getTodayStr()) {
-                const type = targetItem.type;
-                if (type === 'tobacco' || type === 'beer') {
-                    activeHabits[type] = false;
-                }
-            }
-            
-            // 画面を即座に更新
-            renderHistoryList();
-            calculate();
-            renderCalendar();
-            updateCheckinBtnStates();
-            
-            // トースト表示
-            showUndoToast(() => {
-                // 元に戻す (Undo実行)
-                if (deleteUndoTimeout) {
-                    clearTimeout(deleteUndoTimeout);
-                    deleteUndoTimeout = null;
-                }
-                if (deleteUndoBackup) {
-                    history = deleteUndoBackup.history;
-                    activeHabits = deleteUndoBackup.activeHabits;
-                    deleteUndoBackup = null;
-                }
-                hideUndoToast();
-                renderHistoryList();
-                calculate();
-                renderCalendar();
-                updateCheckinBtnStates();
-            });
-            
-            // 5秒間操作がなければ確定保存
-            deleteUndoTimeout = setTimeout(() => {
-                commitPendingDelete();
-            }, 5000);
-        };
-
-        function commitPendingDelete() {
-            if (deleteUndoTimeout) {
-                clearTimeout(deleteUndoTimeout);
-                deleteUndoTimeout = null;
-            }
-            deleteUndoBackup = null;
-            saveHistory();
-            saveSettings();
-            hideUndoToast();
-        }
-
-        function showUndoToast(onUndo) {
-            const toast = document.getElementById('undo-toast');
-            const btn = document.getElementById('undo-toast-btn');
-            if (!toast || !btn) return;
-            
-            toast.style.display = 'flex';
-            
-            // イベントリスナーの重複登録防止のためのノード複製
-            const newBtn = btn.cloneNode(true);
-            btn.replaceWith(newBtn);
-            
-            newBtn.addEventListener('click', () => {
-                onUndo();
-            });
-        }
-
-        function hideUndoToast() {
-            const toast = document.getElementById('undo-toast');
-            if (toast) {
-                toast.style.display = 'none';
-            }
-        }
-
-        // アンロード時に保留中の削除をコミット
-        window.addEventListener('beforeunload', () => {
-            if (deleteUndoTimeout) {
-                commitPendingDelete();
-            }
-        });
-
         function renderHistoryList() {
             sortHistoryByDate();
             historyListContainer.innerHTML = "";
@@ -5392,7 +5351,23 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             historyListContainer.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = parseInt(btn.dataset.id);
-                    deleteHistoryItemWithUndo(id);
+                    // 履歴から削除
+                    const targetItem = history.find(item => item.id === id);
+                    history = history.filter(item => item.id !== id);
+
+                    // もし今日削除したのが 今日チェックインしていた日次項目 であれば、状態を同期
+                    if (targetItem && targetItem.date === getTodayStr()) {
+                        const type = targetItem.type;
+                        if (type === 'tobacco' || type === 'beer') {
+                            activeHabits[type] = false;
+                        }
+                    }
+
+                    saveHistory();
+                    renderHistoryList();
+                    calculate();
+                    renderCalendar();
+                    updateCheckinBtnStates();
                 });
             });
         }
@@ -5584,20 +5559,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // investは 今日、1回でも投資（invest）の履歴があるか で判定
             const todayStr = getTodayStr();
             const hasInvestToday = history.some(item => item.date === todayStr && item.type === 'invest');
-            const investLabelEl = document.getElementById('invest-btn-label');
             if (hasInvestToday) {
                 checkinBtnInvest.classList.add('active');
-                checkinBtnInvest.disabled = true;
-                if (investLabelEl) {
-                    investLabelEl.innerText = "投資済み！✨";
-                }
                 activeHabits.invest = true;
             } else {
                 checkinBtnInvest.classList.remove('active');
-                checkinBtnInvest.disabled = false;
-                if (investLabelEl) {
-                    investLabelEl.innerText = "未来への投資";
-                }
                 activeHabits.invest = false;
             }
         }
@@ -5768,11 +5734,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 const months = y * 12;
                 if (monthlyRate > 0) {
                     // 初期元本 activeP が複利運用され、かつ将来の毎月節約額が積み立てられる
-                    if (monthlySaving > 0) {
-                        totalInvest = activeP * Math.pow(1 + monthlyRate, months) + monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
-                    } else {
-                        totalInvest = activeP * Math.pow(1 + monthlyRate, months);
-                    }
+                    totalInvest = activeP * Math.pow(1 + monthlyRate, months) + monthlySaving * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
                 } else {
                     totalInvest = totalSaving;
                 }
@@ -5998,45 +5960,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
         // 🛡️ 数値入力値のバリデーションとパース用ヘルパー
         function validateAndParse(inputEl, defaultValue, isFloat = false) {
             if (!inputEl) return defaultValue;
-            
-            // 空文字や異常値をガードするために、値をトリムしてチェック
-            let rawValue = inputEl.value;
-            if (typeof rawValue === 'string') {
-                rawValue = rawValue.trim();
-            }
-            
-            let val = isFloat ? parseFloat(rawValue) : parseInt(rawValue, 10);
-            if (isNaN(val) || rawValue === "") {
+            let val = isFloat ? parseFloat(inputEl.value) : parseInt(inputEl.value, 10);
+            if (isNaN(val)) {
                 val = defaultValue;
             }
-
-            // IDや属性に応じた、より強力な安全ガード（クラッシュ・フリーズ防止）
-            let min = parseFloat(inputEl.min);
-            let max = parseFloat(inputEl.max);
-            
-            // IDによる自動判定
-            const id = inputEl.id || "";
-            
-            // 期間（Years）のガード
-            if (id.includes("years")) {
-                if (isNaN(min)) min = 1;
-                if (isNaN(max)) max = 100; // 100年以上のループを防止
-            }
-            // 利回り（Yield）のガード
-            else if (id.includes("yield")) {
-                if (isNaN(min)) min = 0;
-                if (isNaN(max)) max = 100;
-            }
-            // 金額（Price, Target, Investment）や数量のガード
-            else {
-                if (isNaN(min)) min = 0; // 最低金額は0
-                if (isNaN(max)) max = 1000000000; // 10億
-            }
-
-            // 値の範囲チェック
+            const min = parseFloat(inputEl.min);
+            const max = parseFloat(inputEl.max);
             if (!isNaN(min) && val < min) val = min;
             if (!isNaN(max) && val > max) val = max;
-            
             inputEl.value = val; // クリーンになった値をUI入力要素へ反映
             return val;
         }
@@ -6102,6 +6033,11 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const totalStatsDays = uniqueDates.size;
 
             // ライフタブのUI要素取得
+            const lifeLevel = document.getElementById('life-level');
+            const lifeTitle = document.getElementById('life-title');
+            const lifeExpBar = document.getElementById('life-exp-bar');
+            const lifeExpVal = document.getElementById('life-exp-val');
+            const lifeNextExpVal = document.getElementById('life-next-exp-val');
             const lifeStreak = document.getElementById('life-streak');
             
             const lifeStatsDays = document.getElementById('life-stats-days');
@@ -6157,6 +6093,49 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 }
             }
 
+            // RPG レベルと称号の計算 (累計金額に基づく非線形カーブ、最高Lv.99)
+            const level = getLevelFromSaving(totalEarned);
+            
+            let expProgress = 0;
+            let nextLevelExp = 0;
+            let percent = 0;
+            
+            if (level < 99) {
+                const currentLevelMin = getCumulativeSavingForLevel(level);
+                const nextLevelMin = getCumulativeSavingForLevel(level + 1);
+                nextLevelExp = nextLevelMin - currentLevelMin;
+                expProgress = totalEarned - currentLevelMin;
+                percent = (expProgress / nextLevelExp) * 100;
+            } else {
+                nextLevelExp = getCumulativeSavingForLevel(99) - getCumulativeSavingForLevel(98);
+                expProgress = nextLevelExp;
+                percent = 100;
+            }
+
+            if (lifeLevel) lifeLevel.innerText = `Lv. ${level}`;
+            if (lifeExpBar) lifeExpBar.style.width = `${percent}%`;
+            if (lifeExpVal) lifeExpVal.innerText = expProgress.toLocaleString();
+            if (lifeNextExpVal) lifeNextExpVal.innerText = nextLevelExp.toLocaleString();
+
+            // 称号の設定
+            const ranks = getRanksConfig();
+            let titleStr = `${ranks[0].title} ${ranks[0].emoji}`;
+            let badgeIcon = ranks[0].emoji;
+            for (let i = ranks.length - 1; i >= 0; i--) {
+                if (level >= ranks[i].level) {
+                    titleStr = `${ranks[i].title} ${ranks[i].emoji}`;
+                    badgeIcon = ranks[i].emoji;
+                    break;
+                }
+            }
+            
+            if (lifeTitle) lifeTitle.innerText = titleStr;
+            const badgeEl = document.getElementById('life-badge-icon');
+            if (badgeEl) badgeEl.innerText = badgeIcon;
+
+            // 称号ツリーをレンダリング
+            renderStatusTree(level);
+
             // 連続投資日数の計算 (Streak)
             const streak = calculateStreak();
             if (lifeStreak) {
@@ -6189,10 +6168,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             const timelineContainer = document.querySelector('.timeline-container');
             let placeholder = document.getElementById('life-roadmap-placeholder');
             
-            // 過去に1回でも投資履歴がある（history.length > 0）、または設定画面で投資等のトラッキングがONになっている場合はアンロック状態を維持
-            const isUnlocked = (history.length > 0) || !!profile.trackInvest || !!profile.trackTobacco || !!profile.trackBeer;
-            
-            if (!isUnlocked) {
+            if (monthlySaving <= 0 || history.length === 0) {
                 if (timelineContainer) timelineContainer.style.display = 'none';
                 if (lifeRoadmapMonthlyVal) lifeRoadmapMonthlyVal.parentNode.style.display = 'none';
                 
@@ -6277,7 +6253,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             // 金額と趣味に応じた文章の動的差し替え (レベルロック撤廃 ＆ 現在の累計実績からの未来投影)
             const hobby = profile.hobby || 'invest';
 
-            if (monthlySaving > 0 || isUnlocked) {
+            if (monthlySaving > 0) {
                 // 現在の累計実績 (totalEarned) をベースとした相対的な未来予測金額
                 const cumDay = floorTo100Jpy(totalEarned + dailySaving);
                 const cumWeek = floorTo100Jpy(totalEarned + dailySaving * 7);
@@ -6363,7 +6339,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             // ライフのゴールカード（id="rm-goal-card"）の出力の動的生成
             const rmGoalCard = document.getElementById('rm-goal-card');
-            if (rmGoalCard && (monthlySaving > 0 || isUnlocked)) {
+            if (rmGoalCard && monthlySaving > 0) {
                 // 過去の履歴から集計した実際の確定実績データを主軸にするため、理想の仮定値を用いた計算を廃止
                 let avgRate = 1.0;
                 let activeRates = [];
@@ -7111,11 +7087,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             </button>
         </div>
         <div id="ios-install-arrow" class="ios-install-arrow">⬇️</div>
-    </div>
-    <!-- ↩️ 削除取り消し用トースト -->
-    <div id="undo-toast" class="undo-toast" style="display: none;">
-        <span class="undo-toast-text">🗑️ 記録を削除しました</span>
-        <button id="undo-toast-btn" class="undo-toast-btn">元に戻す ↩️</button>
     </div>
 </body>
 </html>
