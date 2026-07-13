@@ -1970,7 +1970,7 @@
 
                 <div class="dashboard-grid">
                     <div class="dash-card">
-                        <div class="dash-label">浮いたお金</div>
+                        <div class="dash-label">積立元本</div>
                         <div class="dash-val" id="val-saving">--- 円</div>
                     </div>
                     <div class="dash-card">
@@ -4436,7 +4436,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 position: 'bottom',
                 arrowPos: 'center',
                 title: '資産シミュレーション',
-                desc: '浮いたお金を複利運用した場合に、将来どれくらい資産が増えるかをグラフで確認できます。'
+                desc: '積立元本を複利運用した場合に、将来どれくらい資産が増えるかをグラフで確認できます。'
             },
             {
                 tab: 'assets',
@@ -6889,7 +6889,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=137')
+                navigator.serviceWorker.register('./sw.js?v=138')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
