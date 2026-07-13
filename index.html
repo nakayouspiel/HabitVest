@@ -2109,18 +2109,13 @@
             -->
 
             <!-- 📖 習慣をお金に変えるブログ ボタンエリア -->
-            <a href="https://nakayouspiel.hatenablog.com/" target="_blank" rel="noopener" class="glass-card" style="margin-bottom: 16px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(0, 243, 255, 0.04) 100%); border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 16px; box-shadow: 0 4px 15px rgba(0, 243, 255, 0.03); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 243, 255, 0.08)'; this.style.background='linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(0, 243, 255, 0.08) 100%)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 15px rgba(0, 243, 255, 0.03)'; this.style.background='linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(0, 243, 255, 0.04) 100%)';">
-                <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
-                    <div style="font-size: 1.5rem; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: rgba(0, 243, 255, 0.08); border-radius: 12px; border: 1px solid rgba(0, 243, 255, 0.2);">
-                        📖
-                    </div>
-                    <div>
-                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px; letter-spacing: 0.02em;">習慣をお金に変えるブログ</div>
-                        <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.3;">悪い習慣を改善し、資産形成のコツを学ぶ</div>
-                    </div>
+            <a href="https://nakayouspiel.hatenablog.com/" target="_blank" rel="noopener" class="glass-card interactive-card" style="margin-bottom: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; text-decoration: none;">
+                <div style="text-align: left;">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">習慣をお金に変えるブログ</div>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.3;">悪い習慣を改善し、資産形成のコツを学ぶ</div>
                 </div>
-                <div style="font-size: 0.72rem; font-weight: 700; color: var(--neon-primary); display: flex; align-items: center; gap: 4px;">
-                    読む ↗
+                <div style="font-size: 0.65rem; font-weight: 600; color: var(--text-muted);">
+                    詳細
                 </div>
             </a>
 
@@ -6906,7 +6901,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=141')
+                navigator.serviceWorker.register('./sw.js?v=142')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
