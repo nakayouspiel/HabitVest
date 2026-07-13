@@ -2000,7 +2000,7 @@
                         <span style="display: flex; align-items: center; gap: 8px; letter-spacing: 0.02em;">📊 年別の資産推移</span>
                         <span id="asset-table-chevron" style="font-size: 0.6rem; color: var(--text-muted); display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 50%; transition: transform 0.3s ease, background 0.3s;">▼</span>
                     </button>
-                    <div id="asset-yearly-table-container" style="padding: 0 16px 12px 16px; overflow-x: hidden; overflow-y: auto; max-height: 280px; display: none; border-top: 1px solid var(--border-glass);">
+                    <div id="asset-yearly-table-container" style="padding: 12px 16px 12px 16px; overflow-x: hidden; overflow-y: auto; max-height: 340px; display: none; border-top: 1px solid var(--border-glass); -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;">
                         <!-- JSで動的にテーブルを挿入 -->
                     </div>
                 </div>
@@ -5816,7 +5816,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (accordionEl) accordionEl.style.display = 'block';
                 if (tableContainer) {
                     let tableHtml = `
-                        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; padding-right: 4px;">
                     `;
                     for (let i = 0; i < labels.length; i++) {
                         const diff = investData[i] - savingData[i];
@@ -6889,7 +6889,7 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                     });
                 }
 
-                navigator.serviceWorker.register('./sw.js?v=138')
+                navigator.serviceWorker.register('./sw.js?v=139')
                     .then(reg => {
                         console.log('Service Worker registered successfully:', reg.scope);
                         
