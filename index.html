@@ -248,6 +248,57 @@
             transform: translateY(-2px);
         }
 
+        .blog-card,
+        .blog-card:focus,
+        .blog-card:focus-visible,
+        .blog-card:visited {
+            border: 2.5px solid var(--neon-primary) !important;
+            background: linear-gradient(135deg, var(--bg-card), rgba(14, 165, 233, 0.04)) !important;
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.08) !important;
+            transition: all 0.2s ease !important;
+            outline: none !important;
+        }
+        .theme-dark .blog-card,
+        .theme-dark .blog-card:focus,
+        .theme-dark .blog-card:focus-visible,
+        .theme-dark .blog-card:visited {
+            background: linear-gradient(135deg, var(--bg-card), rgba(0, 243, 255, 0.04)) !important;
+            box-shadow: 0 6px 20px rgba(0, 243, 255, 0.12) !important;
+        }
+        .blog-card:active {
+            transform: scale(0.97) !important;
+            border-color: var(--neon-secondary) !important;
+            background: linear-gradient(135deg, var(--bg-card), rgba(217, 70, 239, 0.06)) !important;
+            box-shadow: 0 2px 10px rgba(217, 70, 239, 0.15) !important;
+        }
+        .theme-dark .blog-card:active {
+            background: linear-gradient(135deg, var(--bg-card), rgba(255, 0, 127, 0.06)) !important;
+            box-shadow: 0 2px 10px rgba(255, 0, 127, 0.2) !important;
+        }
+
+        /* 📈 チェックイン時の浮遊テキスト演出 */
+        @keyframes floatUpFade {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 15px) scale(0.7);
+            }
+            15% {
+                opacity: 1;
+                transform: translate(-50%, -5px) scale(1.1);
+            }
+            30% {
+                transform: translate(-50%, -10px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -45px) scale(0.9);
+            }
+        }
+        .floating-feedback {
+            animation: floatUpFade 0.8s cubic-bezier(0.215, 0.610, 0.355, 1) forwards;
+        }
+
+
         .card-title {
             font-size: 0.85rem;
             font-weight: 700;
@@ -1858,7 +1909,7 @@
         <header>
             <div class="header-title">
                 <h1>HabitVest</h1>
-                <p>投資で未来を！ <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.0  2026.06.14 </span></p>
+                <p>投資で未来を！ <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.5  2026.07.16 </span></p>
             </div>
             <div class="header-controls">
                 <button id="settings-toggle" class="control-btn" title="設定を開く">⚙️</button>
@@ -2109,13 +2160,13 @@
             -->
 
             <!-- 📖 習慣をお金に変えるブログ ボタンエリア -->
-            <a href="https://nakayouspiel.hatenablog.com/" target="_blank" rel="noopener" class="glass-card interactive-card" style="margin-bottom: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; text-decoration: none;">
+            <a href="https://nakayouspiel.hatenablog.com/" target="_blank" rel="noopener" class="glass-card interactive-card blog-card" style="margin-bottom: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; text-decoration: none;">
                 <div style="text-align: left;">
                     <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">習慣をお金に変えるブログ</div>
                     <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.3;">悪い習慣を改善し、資産形成のコツを学ぶ</div>
                 </div>
-                <div style="font-size: 0.65rem; font-weight: 600; color: var(--text-muted);">
-                    詳細
+                <div style="font-size: 0.65rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+                    詳細 <span>→</span>
                 </div>
             </a>
 
@@ -5195,6 +5246,44 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
             });
         }
 
+        function triggerCheckinFeedback(btnElement, text) {
+            // 1. 触覚フィードバック（バイブレーション）
+            if (navigator.vibrate) {
+                try {
+                    navigator.vibrate(15);
+                } catch(e) {}
+            }
+
+            // 2. 金額のポップアップ演出
+            const rect = btnElement.getBoundingClientRect();
+            const popup = document.createElement('div');
+            popup.className = 'floating-feedback';
+            popup.innerText = text;
+            
+            const scrollY = window.scrollY || window.pageYOffset;
+            const scrollX = window.scrollX || window.pageXOffset;
+            popup.style.position = 'absolute';
+            popup.style.top = `${rect.top + scrollY - 20}px`;
+            popup.style.left = `${rect.left + scrollX + rect.width / 2}px`;
+            popup.style.transform = 'translateX(-50%)';
+            popup.style.zIndex = '9999';
+            popup.style.pointerEvents = 'none';
+            popup.style.fontFamily = "var(--font-ui)";
+            popup.style.fontWeight = '800';
+            popup.style.fontSize = '1.15rem';
+            popup.style.color = 'var(--neon-secondary)';
+            popup.style.textShadow = '0 0 10px rgba(255, 0, 127, 0.4), 0 0 20px rgba(255, 0, 127, 0.2)';
+            
+            document.body.appendChild(popup);
+
+            popup.addEventListener('animationend', () => {
+                popup.remove();
+            });
+            setTimeout(() => {
+                if (popup.parentNode) popup.remove();
+            }, 1000);
+        }
+
         // --- 🆕 チェックインボタンの押下イベント登録 ---
         checkinBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -5210,6 +5299,9 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                         renderHistoryList();
                         renderCalendar();
                         updateCheckinBtnStates();
+
+                        const amount = floorTo100Jpy(Math.round(habitPrices.investMonthlyTarget / 30));
+                        triggerCheckinFeedback(btn, `+¥${amount.toLocaleString()}`);
                     }
                     return;
                 }
@@ -5218,6 +5310,14 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                 if (activeHabits[type]) {
                     btn.classList.add('active');
                     addHistoryItem(type);
+
+                    let amount = 0;
+                    if (type === 'tobacco') {
+                        amount = floorTo100Jpy(habitPrices.tobaccoPrice * habitPrices.tobaccoCount);
+                    } else if (type === 'beer') {
+                        amount = floorTo100Jpy(habitPrices.beerPrice * habitPrices.beerCount);
+                    }
+                    triggerCheckinFeedback(btn, `+¥${amount.toLocaleString()}`);
                 } else {
                     btn.classList.remove('active');
                     removeTodayHistoryItem(type);
