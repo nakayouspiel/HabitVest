@@ -252,9 +252,9 @@
         .blog-card:focus,
         .blog-card:focus-visible,
         .blog-card:visited {
-            border: 2.5px solid var(--neon-primary) !important;
-            background: linear-gradient(135deg, var(--bg-card), rgba(14, 165, 233, 0.04)) !important;
-            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.08) !important;
+            border: 1.5px solid rgba(14, 165, 233, 0.35) !important;
+            background: var(--bg-card) !important;
+            box-shadow: var(--card-shadow) !important;
             transition: all 0.2s ease !important;
             outline: none !important;
         }
@@ -262,18 +262,16 @@
         .theme-dark .blog-card:focus,
         .theme-dark .blog-card:focus-visible,
         .theme-dark .blog-card:visited {
-            background: linear-gradient(135deg, var(--bg-card), rgba(0, 243, 255, 0.04)) !important;
-            box-shadow: 0 6px 20px rgba(0, 243, 255, 0.12) !important;
+            border: 1.5px solid rgba(0, 243, 255, 0.38) !important;
+            background: var(--bg-card) !important;
         }
         .blog-card:active {
             transform: scale(0.97) !important;
             border-color: var(--neon-secondary) !important;
-            background: linear-gradient(135deg, var(--bg-card), rgba(217, 70, 239, 0.06)) !important;
-            box-shadow: 0 2px 10px rgba(217, 70, 239, 0.15) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
         }
         .theme-dark .blog-card:active {
-            background: linear-gradient(135deg, var(--bg-card), rgba(255, 0, 127, 0.06)) !important;
-            box-shadow: 0 2px 10px rgba(255, 0, 127, 0.2) !important;
+            background: rgba(0, 0, 0, 0.2) !important;
         }
 
         /* 📈 チェックイン時の浮遊テキスト演出 */
@@ -1909,7 +1907,7 @@
         <header>
             <div class="header-title">
                 <h1>HabitVest</h1>
-                <p>投資で未来を！ <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.6  2026.07.16 </span></p>
+                <p>投資で未来を！ <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.7  2026.07.16 </span></p>
             </div>
             <div class="header-controls">
                 <button id="settings-toggle" class="control-btn" title="設定を開く">⚙️</button>
