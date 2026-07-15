@@ -1909,7 +1909,7 @@
         <header>
             <div class="header-title">
                 <h1>HabitVest</h1>
-                <p>投資で未来を！ <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.5  2026.07.16 </span></p>
+                <p>投資で未来を！ <span style="font-size: 0.55rem; opacity: 0.55; font-weight: normal; margin-left: 2px; display: inline-block;">v1.4.6  2026.07.16 </span></p>
             </div>
             <div class="header-controls">
                 <button id="settings-toggle" class="control-btn" title="設定を開く">⚙️</button>
@@ -6082,18 +6082,10 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
 
             featuresAdvice += "毎月の積立ペースは、将来のあなたを支える大切な一歩です。投資において最も重要なのは、金額の大きさよりも、早く始めて長く続けることです。日々のお金の使い方の工夫が、将来の大きな自由になって返ってきます。\n";
 
-            let investmentAdvice = "";
-            investmentAdvice += "貯金は、お金を金庫に眠らせておくことです。数字は減りませんが、増えることもありません。対して投資は、価値を生む場所に預けて、一緒に育ててもらうことです。お金を働かせることで、時間が経つほどにお金そのものが新しい価値を生み出し、雪だるま式に増えていきます。\n\n";
-            if (bonusAmount > 0) {
-                investmentAdvice += "ただ手元にお金を貯めておく場合と比べて、お金を働かせることによって、なんと " + formatToYenMan(bonusAmount) + " もの上乗せが期待できる素晴らしい計画です。\n\n";
-            }
-            investmentAdvice += "今、世の中のモノの値段は少しずつ上がっています。ただお金を眠らせておくだけでは、買えるモノが少なくなってしまうため、実質的にお金の価値が目減りしているのと同じです。お金を価値ある形に変えて育てていくことは、自分を守るための賢い自己防衛になります。\n\n";
-            investmentAdvice += "日々の小さな節約は、単なる我慢や苦行ではありません。目先のささやかな消費をカットし、将来の嫌なことを断る自由や、人生の選択肢を勝ち取るためのクリエイティブな投資行動です。将来のあなたが今よりずっと自由で豊かに暮らす日を楽しみに、これからも自分のペースで一歩ずつ進んでいきましょう。";
 
             return {
                 current: currentAdvice.trim().replace(/\n/g, '<br>'),
-                features: featuresAdvice.trim().replace(/\n/g, '<br>'),
-                investment: investmentAdvice.trim().replace(/\n/g, '<br>')
+                features: featuresAdvice.trim().replace(/\n/g, '<br>')
             };
         }
 
@@ -6675,11 +6667,6 @@ const resetConfirmModal = document.getElementById('reset-confirm-modal');
                             <div style="background: rgba(219, 39, 119, 0.03); border: 1px solid rgba(219, 39, 119, 0.15); border-radius: 12px; padding: 14px; line-height: 1.6; font-size: 0.72rem; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                 <div style="font-weight: 800; font-size: 0.78rem; color: var(--neon-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">📊 シミュレーションの特徴</div>
                                 <div style="color: var(--text-sub);">${adviceData.features}</div>
-                            </div>
-                            <!-- 投資アドバイス -->
-                            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 14px; line-height: 1.6; font-size: 0.72rem; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                <div style="font-weight: 800; font-size: 0.78rem; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">💡 投資アドバイス</div>
-                                <div style="color: var(--text-sub);">${adviceData.investment}</div>
                             </div>
                         </div>
 
